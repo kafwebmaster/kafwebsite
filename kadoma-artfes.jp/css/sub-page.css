@@ -1,0 +1,141 @@
+/*header（ロゴが入った最上段のブロック）
+---------------------------------------------------------------------------*/
+/*トップページのヘッダーブロック*/
+.home header.sub-page {
+    position: relative;
+    width: 100%;
+    height: 12vh;
+    margin-bottom: 0;
+    text-align: center;
+}
+
+/*ロゴ共通*/
+header #logo {
+    width: 250px;
+    /*ロゴの幅*/
+    margin: 0;
+    /*上下に３文字分のスペースを空ける*/
+}
+
+/*トップページのロゴ共通*/
+.home header #logo {
+    position: absolute;
+    z-index: 1;
+    left: 35%;
+    /*左からの配置場所指定*/
+    top: 0;
+    /*上からの配置場所指定*/
+    transform: rotate(0deg);
+    /*10度回転させる*/
+    width: 30%;
+    /*ロゴの幅*/
+}
+
+header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2rem;
+    min-height: 0;
+    background: var(--accent-color);
+    bottom: -2rem;
+}
+
+@media screen and (max-width:600px) {
+
+    /*トップページのロゴ共通*/
+    .home header #logo {
+        width: 50% !important;
+        left: 30%;
+        /*左からの配置場所指定*/
+        top: 2rem;
+        /*上からの配置場所指定*/
+    }
+
+}
+
+/* Swiper */
+.swiper--wrapper {
+    /* wrapperのサイズを調整 */
+    width: 100%;
+    height: 300px;
+}
+
+.swiper-slide {
+    /* スライドのサイズを調整、中身のテキスト配置調整、背景色 */
+    color: #ffffff;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    line-height: 300px;
+    text-align: center;
+}
+
+#grayDisplay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100% !important;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 100;
+}
+
+#grayDisplay img {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    max-width: 90%;
+    max-height: 90%;
+    height: 90%;
+    object-fit: contain;
+}
+
+
+.course-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.course-item {
+    margin: 1%;
+    height: 10rem;
+    max-width: 23%;
+}
+
+.course-item img {
+    cursor: pointer;
+    width: 100%;
+    max-height: 10rem;
+    object-fit: contain;
+}
+
+.gallery {
+    padding: 60px;
+    text-align: center;
+}
+
+@media screen and (max-width:600px) {
+
+    .gallery {
+        padding: 4px;
+    }
+    .course-item {
+        height: 5rem;
+    }
+
+}
+
+.section-title {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 40px;
+}

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>パララックスギャラリーサイト</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background-color: rgba(51, 51, 51, 0.8);
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .menu {
+            display: none;
+        }
+
+        .menu a {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+        }
+
+        .menu a:hover {
+            background-color: #444;
+        }
+
+        .hamburger {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            height: 24px;
+            width: 30px;
+        }
+
+        .hamburger div {
+            background-color: #fff;
+            height: 3px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .parallax {
+            background-image: url('https://via.placeholder.com/1600x900');
+            height: 400px;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+        }
+
+        .content {
+            padding: 60px 10px 10px;
+            background-color: #f8f8f8;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+            padding: 10px;
+            margin: 0 auto;
+            max-width: 70%; /* 全体幅の70%に設定（左右に15%のマージン） */
+        }
+
+        .gallery img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
+
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 80%;
+        }
+
+        .lightbox:target {
+            display: flex;
+        }
+
+        .lightbox .close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #fff;
+            color: #333;
+            padding: 5px 10px;
+            text-decoration: none;
+            font-size: 20px;
+            border-radius: 5px;
+        }
+
+        .lightbox .close:hover {
+            background-color: #ddd;
+        }
+
+        @media (max-width: 768px) {
+            .menu {
+                display: block;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background-color: #333;
+                flex-direction: column;
+                align-items: center;
+                display: none;
+            }
+
+            .menu.open {
+                display: flex;
+            }
+
+            .gallery {
+                max-width: 100%; /* モバイル表示の際はマージンをなくす */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ギャラリーサイト</h1>
+        <div class="hamburger" id="hamburger">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="menu" id="menu">
+            <a href="#">Home</a>
+            <a href="#">Gallery</a>
+            <a href="#">Contact</a>
+        </div>
+    </div>
+    <div class="parallax"></div>
+    <div class="content">
+        <div class="gallery">
+            <a href="#img1"><img src="https://via.placeholder.com/600x400" alt="サンプル画像1"></a>
+            <a href="#img2"><img src="https://via.placeholder.com/600x400" alt="サンプル画像2"></a>
+            <a href="#img3"><img src="https://via.placeholder.com/600x400" alt="サンプル画像3"></a>
+            <a href="#img4"><img src="https://via.placeholder.com/600x400" alt="サンプル画像4"></a>
+            <a href="#img5"><img src="https://via.placeholder.com/600x400" alt="サンプル画像5"></a>
+            <a href="#img6"><img src="https://via.placeholder.com/600x400" alt="サンプル画像6"></a>
+        </div>
+    </div>
+    <div class="lightbox" id="img1">
+        <a href="#" class="close">&times;</a>
+        <img src="https://via.placeholder.com/600x400" alt="サンプル画像1">
+    </div>
+    <div class="lightbox" id="img2">
+        <a href="#" class="close">&times;</a>
+        <img src="https://via.placeholder.com/600x400" alt="サンプル画像2">
+    </div>
+    <div class="lightbox" id="img3">
+        <a href="#" class="close">&times;</a>
+        <img src="https://via.placeholder.com/600x400" alt="サンプル画像3">
+    </div>
+    <div class="lightbox" id="img4">
+        <a href="#" class="close">&times;</a>
+        <img src="https://via.placeholder.com/600x400" alt="サンプル画像4">
+    </div>
+    <div class="lightbox" id="img5">
+        <a href="#" class="close">&times;</a>
+        <img src="https://via.placeholder.com/600x400" alt="サンプル画像5">
+    </div>
+    <div class="lightbox" id="img6">
+        <a href="#" class="close">&times;</a>
+        <img src="https://via.placeholder.com/600x400" alt="サンプル画像6">
+    </div>
+
+    <script>
+        document.getElementById('hamburger').addEventListener('click', function () {
+            document.getElementById('menu').classList.toggle('open');
+        });
+    </script>
+</body>
+</html>

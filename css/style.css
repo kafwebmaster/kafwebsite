@@ -1,0 +1,824 @@
+@charset "utf-8";
+
+
+
+/*リセットCSS（sanitize.css）の読み込み
+---------------------------------------------------------------------------*/
+@import url("https://unpkg.com/sanitize.css");
+
+/*Google Fontsの読み込み
+---------------------------------------------------------------------------*/
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic&display=swap');
+
+/*Font Awesomeの読み込み
+---------------------------------------------------------------------------*/
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css");
+
+/*lightbox.cssの読み込み
+---------------------------------------------------------------------------*/
+@import url(https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/css/lightbox.css);
+
+/*slick.cssの読み込み
+---------------------------------------------------------------------------*/
+@import url("https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css");
+
+/*テンプレート専用cssファイルの読み込み
+---------------------------------------------------------------------------*/
+@import url("inview.css");
+
+
+/*CSSカスタムプロパティ（サイト全体を一括管理する為の設定）
+---------------------------------------------------------------------------*/
+:root {
+	--primary-color: #cd4e3d;		/*テンプレートのメインとなる色*/
+	--primary-text-color: #ccc;	/*メインの上で使うテキスト色*/
+	
+    --accent-color: #000;	/*テンプレートのアクセントとなる色*/
+    --accent-text-color: #ccc;	/*アクセントの上で使うテキスト色*/
+    --accent-text-color-white: #fff;	/*アクセントの上で使うテキスト色*/
+}
+
+
+/*opa1のキーフレーム設定
+---------------------------------------------------------------------------*/
+@keyframes opa1 {
+	0% {opacity: 0;}
+	100% {opacity: 1;}
+}
+
+
+/*animation1のキーフレーム設定（開閉ブロックのアニメーションに使用）
+---------------------------------------------------------------------------*/
+@keyframes animation1 {
+	0% {left: -200px;}
+	100% {left: 0px;}
+}
+
+
+/*fadeInのキーフレーム設定（テキストのフェードインに使用）
+---------------------------------------------------------------------------*/
+@keyframes fadeIn {
+	0% {opacity: 0;transform: scale(0.8);}
+	100% {opacity: 1;transform: scale(1);}
+}
+
+
+/*全体の設定
+---------------------------------------------------------------------------*/
+html,body {
+	height: 100%;
+	font-size: 13px;	/*基準となるフォントサイズ。*/
+}
+
+	/*画面幅900px以上の追加指定*/
+	@media screen and (min-width:900px) {
+
+	html, body {
+		font-size: 16px;	/*基準となるフォントサイズ。*/
+		width: 100%;
+		max-width: 1920px;
+		margin: auto;
+	}
+
+	}/*追加指定ここまで*/
+
+
+body {
+	font-family: "Sawarabi Mincho", "Hiragino Mincho Pro", "ヒラギノ明朝 Pro W3", "HGS明朝E", "ＭＳ Ｐ明朝", "MS PMincho", serif;	/*フォント種類*/
+	-webkit-text-size-adjust: none;
+	background: var(--primary-color);	/*背景色。css冒頭で指定しているprimary-colorを読み込みます*/
+	color: var(--primary-text-color);	/*文字色。css冒頭で指定しているprimary-text-colorを読み込みます*/
+	line-height: 2.2;		/*行間*/
+}
+
+/*リセット*/
+figure {margin: 0;}
+dd {margin: 0;}
+nav {margin: 0;padding: 0;}
+
+/*table全般の設定*/
+table {border-collapse:collapse;}
+
+/*画像全般の設定*/
+img {border: none;max-width: 100%;height: auto;vertical-align: middle;}
+
+/*videoタグ*/
+video {max-width: 100%;}
+
+/*iframeタグ*/
+iframe {width: 100%;}
+
+/*他*/
+input {font-size: 1rem;}
+
+
+/*section
+---------------------------------------------------------------------------*/
+section {
+	padding: 2rem;	/*section内の余白*/
+}
+
+	/*画面幅600px以上の追加指定*/
+	@media screen and (min-width:600px) {
+
+	section {
+		padding: 3rem 5rem;	/*section内の余白。上下、左右への順番。*/
+	}
+
+	}/*追加指定ここまで*/
+
+
+/*リンクテキスト全般の設定
+---------------------------------------------------------------------------*/
+a {
+	color: var(--primary-text-color);	/*文字色。css冒頭で指定しているprimary-text-colorを読み込みます*/
+	transition: 0.3s;	/*hoverまでにかける時間。0.3秒。*/
+	text-decoration: none;
+}
+
+/*マウスオン時*/
+a:hover {
+	filter: brightness(1.1);	/*少し明るくする*/
+}
+
+
+/*コンテナー（サイト全体を囲むブロック）
+---------------------------------------------------------------------------*/
+body:not(.home) #container {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+
+/*header（ロゴが入った最上段のブロック）
+---------------------------------------------------------------------------*/
+/*トップページのヘッダーブロック*/
+.home header {
+	position: relative;
+	width: 100%;
+	height: 90vh;
+	margin-bottom: 5vw;
+}
+
+/*ロゴ共通*/
+header #logo {
+	width: 250px;		/*ロゴの幅*/
+	margin: 3rem auto;	/*上下に３文字分のスペースを空ける*/
+}
+
+/*トップページのロゴ共通*/
+.home header #logo {
+	position: absolute;z-index: 1;
+	left: 30%;	/*左からの配置場所指定*/
+	top: 50%;	/*上からの配置場所指定*/
+	transform: rotate(-10deg);	/*10度回転させる*/
+	width: 30%;	/*ロゴの幅*/
+}
+
+/*ロゴをSVGで使う場合の設定*/
+#svg-logo {
+	animation: opa1 1s both;	/*一瞬ロゴが全部出ちゃうのを隠す為の応急措置です*/
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-miterlimit: 10;
+    stroke: #fff;	/*ここは文字色ではないので基本的に変更しない*/
+    stroke-width: 80;
+}
+
+/*ロゴをpng画像で使う場合の設定*/
+.home header #logo img {
+	animation: opa1 1s 1.5s both;	/*@keyframesのopa1を1秒かけて実行する。実行までの待機時間1.5秒。*/
+}
+
+/*ロゴをテキストで使う場合の設定*/
+.home header #logo.hosoku {
+	opacity: 1;		/*下の.hosokuで透明度を下げているので、通常通りの色を出す*/
+	width: auto;
+	font-size: 5vw;	/*画面幅に対する割合。大きくすると文字も大きくなります。*/
+}
+
+	/*画面幅600px以下の追加指定*/
+	@media screen and (max-width:600px) {
+
+	/*トップページのロゴ共通*/
+	.home header #logo {
+		width: 50%;
+	}
+
+	}/*追加指定ここまで*/
+
+header::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	width: 100%;
+	height: calc(5vw + 1px);
+	min-height: calc(3vw + 1px);
+	background: var(--accent-color);
+	bottom: -5vw;
+}
+
+
+/*メイン画像
+---------------------------------------------------------------------------*/
+#mainimg {
+	animation: opa1 1.5s 0.5s both;	/*@keyframesのopa1を1.5秒かけて実行する。実行までの待機時間0.5秒。*/
+	position: absolute;
+	right: 0;
+	width: 70%;	/*画面の半分だけに配置*/
+	height: 100%;
+	clip-path: polygon(0 0, 100% 0, 100% 100%, 30% 100%);	/*切り抜く形。左上,右上,右下,左下の順番で、それぞれ2つセットになっている数字はX軸 Y軸の順番。基点は左上(0 0)。*/
+	background: url('../images/img1.jpg') no-repeat center center / cover;	/*背景画像を読み込む指定*/
+}
+
+	/*画面のアスペクト比が1:2以下の場合の追加設定*/
+	@media screen and (max-aspect-ratio: 1/2) {
+
+	#mainimg {
+		width: 100%;		/*画像が細くなりすぎるので、全画面に出すように変更*/
+		clip-path: none;	/*切り抜きをリセット*/
+	}
+
+	}/*追加指定ここまで*/
+
+
+/*mainブロック
+---------------------------------------------------------------------------*/
+/*mainブロックの設定*/
+main {
+	flex: 1;
+}
+
+/*main内のh2*/
+main h2 {
+	font-size: 1.5rem;		/*文字サイズ。1.5倍。*/
+	font-weight: normal;	/*デフォルトの太字を標準に*/
+	line-height: 1.5;		/*行間*/
+	display: inline-block;	/*文字の幅にブロック幅を合わせる。これがないと画面幅いっぱいになって、下の右寄せ指定が離れすぎてしまう。*/
+	text-align: right;		/*テキストを右寄せ。上でinline-blockを指定したので、画面の右側ではなく、装飾文字と合わせた幅内で右に揃う。*/
+}
+
+	/*画面幅600px以上の追加指定*/
+	@media screen and (max-width:600px) {
+
+		main .h2-right {
+			width: 100%;
+			text-align: right;
+		}
+	
+	}/*追加指定ここまで*/
+
+/*大きな装飾文字*/
+.hosoku {
+	font-family: "Zen Maru Gothic";	/*冒頭で読み込んでいるGoogle Fontsの指定*/
+	font-weight: 700;
+	font-size: 2em;	/*文字サイズ。３倍。*/
+	display: block;
+	opacity: 0.5;	/*透明度。50%色が出た状態。*/
+}
+
+/*トップページの挨拶の最後の署名に使った設定*/
+.homemade-apple-regular {
+	font-family: "Homemade Apple";	/*冒頭で読み込んでいるGoogle Fontsの指定*/
+	font-weight: 400;
+	font-style: normal;
+}
+
+
+/*メニューブロック設定
+---------------------------------------------------------------------------*/
+#include-menubar a {display: block;text-decoration: none;}
+#include-menubar ul {list-style: none;margin: 0;padding: 0;}
+#include-menubar {display: none;}
+#include-menubar.d-b, #menubar_hdr.d-b {display: block;}
+#include-menubar.d-n, #menubar_hdr.d-n {display: none;}
+
+
+/*メニューブロック設定
+---------------------------------------------------------------------------*/
+/*メニューブロック*/
+#include-menubar {
+	position: fixed;overflow: auto;z-index: 100;
+	left: 0px;top: 0px;
+	width: 100%;
+	height: 100%;
+	padding: 100px 20px 20px;			/*ブロック内の余白。上、左右、下。*/
+	background: rgba(0,0,0,0.9);		/*背景色。0,0,0は黒の事で0.9は色が90%出た状態。*/
+	text-align: center;					/*内容をセンタリング*/
+	animation: animation1 0.2s both;	/*animation1を0.2秒かけて実行する*/
+	color: #fff;						/*文字色*/
+}
+
+/*メニュー１個あたりの設定*/
+#include-menubar a {
+	color: inherit;
+	padding: 10px;		/*メニュー内の余白*/
+}
+
+
+/*３本バー（ハンバーガー）アイコン設定
+---------------------------------------------------------------------------*/
+/*３本バーを囲むブロック*/
+#menubar_hdr {
+	position: fixed;z-index: 101;
+	cursor: pointer;
+	left: 0px;			/*右からの配置場所指定*/
+	top: 0px;			/*上からの配置場所指定*/
+	padding: 30px;		/*余白*/
+	width: 100px;		/*幅（３本バーが出ている場合の幅になります）*/
+	height: 100px;		/*高さ*/
+	display: flex;					/*flexを使う指定*/
+	flex-direction: column;			/*子要素（３本バー）を縦並びにする*/
+	justify-content: space-around;	/*並びかたの種類の指定*/
+}
+
+/*バー１本あたりの設定*/
+#menubar_hdr span {
+	display: block;
+	transition: 0.3s;	/*アニメーションにかける時間。0.3秒。*/
+	border-top: 1.5px solid #fff;	/*線の幅、線種、色*/
+}
+
+/*×印が出ている状態の設定。※１本目および２本目のバーの共通設定。*/
+#menubar_hdr.ham span:nth-of-type(1),
+#menubar_hdr.ham span:nth-of-type(3) {
+	transform-origin: center center;	/*変形の起点。センターに。*/
+	width: 50px;						/*バーの幅*/
+}
+
+/*×印が出ている状態の設定。※１本目のバー。*/
+#menubar_hdr.ham span:nth-of-type(1){
+	transform: rotate(45deg) translate(4px, 10px);	/*回転45°と、X軸Y軸への移動距離の指定*/
+}
+
+/*×印が出ている状態の設定。※３本目のバー。*/
+#menubar_hdr.ham span:nth-of-type(3){
+	transform: rotate(-45deg) translate(4px, -10px);	/*回転-45°と、X軸Y軸への移動距離の指定*/
+}
+
+/*×印が出ている状態の設定。※２本目のバー。*/
+#menubar_hdr.ham span:nth-of-type(2){
+	display: none;	/*２本目は使わないので非表示にする*/
+}
+
+
+/*フッター設定
+---------------------------------------------------------------------------*/
+small {font-size: 100%;}
+footer {
+	font-size: 0.7rem;		/*文字サイズ*/
+	text-align: center;		/*内容をセンタリング*/
+	padding: 1rem;			/*ボックス内の余白*/
+}
+
+/*リンクテキスト*/
+footer a {color: inherit;text-decoration: none;}
+
+/*著作部分*/
+footer .pr {display: block;}
+
+
+/*メニュー内にあるソーシャルメディアのアイコン
+---------------------------------------------------------------------------*/
+ul.icons {
+	list-style: none;
+	margin: 0;padding: 0;
+	display: flex;
+	justify-content: center;
+	align-self: center;
+}
+ul.icons li {
+	margin-right: 10px;	/*アイコン同士の余白*/
+}
+.icons img {
+	width: 32px;	/*XだけはFont Awesomeにまだなかったので画像で配置しました。そのサイズです。*/
+}
+.icons i {
+	font-size: 40px;	/*Font Awesomeのアイコンサイズ*/
+}
+
+
+/*活動報告（お知らせ用）ブロック
+---------------------------------------------------------------------------*/
+/*ブロック内のspan。日付の横のアイコン的な部分です。*/
+.news span {
+	display: inline-block;
+	line-height: 1;
+	text-align: center;
+	border-radius: 3px;		/*角を丸くする指定*/
+	border: 1px solid var(--primary-text-color);	/*枠線の幅、線種、色*/
+	padding: 0.3rem 1rem;	/*上下、左右へのブロック内の余白*/
+	margin: 0 1rem;			/*上下、左右へのブロックの外にとる余白*/
+	width: 8rem;			/*幅*/
+}
+
+	/*画面幅700px以上の追加指定*/
+	@media screen and (min-width:700px) {
+
+	/*ブロック全体*/
+	.news {
+		display: grid;	/*gridを使う指定*/
+		grid-template-columns: auto 1fr;	/*横並びの指定。日付とアイコン部分の幅は自動で、内容が入るブロックは残り幅一杯とる。*/
+	}
+
+	}/*追加指定ここまで*/
+
+
+/*list-grid（gallery.htmlでサムネイルを表示している部分の設定です）
+---------------------------------------------------------------------------*/
+/*listブロックを囲む外側のボックス*/
+.list-grid-trimming {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);	/*ここの「4」の数字が横に並べる数です。3列がいいなら(3, 1fr)です。*/
+	gap: 1rem;	/*マージン的な数値。サムネイル間を１文字分あけます。*/
+}
+
+/*ボックスを正方形にトリミングする為の指定なので変更しない。*/
+.list-grid-trimming .list {
+	position: relative;
+	overflow: hidden;
+	height: 0;
+	padding-top: 100%;
+}
+.list-grid-trimming .list a {
+	display: block;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+}
+.list-grid-trimming .list img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+	transition: 0.5s;	/*マウスオン時にかける時間。0.5秒。*/
+}
+
+/*マウスオン時の画像*/
+.list-grid-trimming .list img:hover {
+	transform: scale(1.1);	/*1.1倍に拡大*/
+	filter: contrast(1.3);	/*コントラストを1.3倍*/
+}
+
+
+/*bg1背景色がついたブロック
+---------------------------------------------------------------------------*/
+.bg1 {
+	position: relative;
+	background: var(--accent-color);	/*背景色。css冒頭で指定しているaccent-colorを読み込みます*/
+	color: var(--accent-text-color);	/*文字色。css冒頭で指定しているaccent-text-colorを読み込みます*/
+	padding-top: 3vw;		/*ボックス内の上に空ける余白*/
+	padding-bottom: 3vw;	/*ボックス内の下に空ける余白*/
+	margin-top: 1vw;		/*ボックス外の上に空ける余白*/
+	margin-bottom: 1vw;		/*ボックス外の下に空ける余白*/
+}
+.bg1 a {
+	color: inherit;
+}
+
+
+/*bg2背景色(白)がついたブロック
+---------------------------------------------------------------------------*/
+.bg2 {
+	position: relative;
+	background: var(--accent-text-color-white);	/*背景色。css冒頭で指定しているaccent-text-color-whiteを読み込みます*/
+	color: var(--accent-color);	/*文字色。css冒頭で指定しているaccent-colorを読み込みます*/
+	padding-top: 3vw;		/*ボックス内の上に空ける余白*/
+	padding-bottom: 3vw;	/*ボックス内の下に空ける余白*/
+	margin-top: 1vw;		/*ボックス外の上に空ける余白*/
+	margin-bottom: 1vw;		/*ボックス外の下に空ける余白*/
+	text-align: center;
+}
+.bg2 a {
+	color: inherit;
+}
+
+@media screen and (max-width:900px) {
+	section.bg2 {
+		padding: 2rem 0;
+	}
+}
+
+/*2カラムの設定
+---------------------------------------------------------------------------*/
+/*全体を囲むブロック*/
+.c2 {
+    display: flex;	/*flexを使う指定*/
+    gap: 3vw;		/*ボックスの間に空けるマージン的な要素。画面幅100%＝100vwです。*/
+}
+
+/*大きい方のボックス*/
+.c2 .large-box {
+    flex: 1;
+}
+
+/*小さい方のボックス*/
+.c2 .small-box {
+    flex-shrink: 0;
+    width: 20vw;	/*幅。これを変更すれば自動で大きな方のボックスも調整されます。画面幅100%＝100vwです。*/
+}
+
+/*左右を入れ替える場合*/
+.c2.reverse {
+	flex-direction: row-reverse;
+}
+
+
+/*ボックスの内側につける影
+---------------------------------------------------------------------------*/
+.box-shadow-inset {
+	position: relative;
+}
+.box-shadow-inset::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+	/*以下の行が実際の指定箇所。2つある1vwの数値を変更すればぼかし具合が変わります。var()の部分は、css冒頭で指定しているprimary-colorを読み込む指定*/
+	box-shadow: 0px 0px 1vw 1vw var(--primary-color) inset;
+}
+
+
+/*テキストのフェードイン設定
+---------------------------------------------------------------------------*/
+/* 初期状態でテキストを非表示にする */
+.fade-in-text {
+    visibility: hidden;
+}
+
+/* アニメーションを適用するクラス。
+animationの行の「0.1s」が文字の出現のなめらかさで、大きいほどなめらかに出てきます。現状0.1ですが、0.5など大きくするとなめらかに出てきます。
+１文字ずつの出現する際の時差は、js/main.jsの「テキストのフェードイン効果」の中にある「0.1」で調整できます。*/
+.char {
+    display: inline-block;
+    opacity: 0;
+    animation: fadeIn 0.1s linear both;
+}
+
+
+/*HBPギャラリーリンク
+---------------------------------------------------------------------------*/
+.p-btn-content {
+  width: 100%;
+  max-width: 60rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.p-btn-content__text{
+  font-size: 2.4rem;
+  font-weight: bold;
+  line-height: 1.5;
+  position: relative;
+  text-align: center;
+}
+.p-btn-content__text::before {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 8.5rem;
+  background: black;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -11.7rem;
+
+}
+.p-btn-content__btn{
+  margin-top: 2.6rem;
+  text-align: center;
+}
+ 
+.p-btn-content__link {
+  width: 20rem;
+  margin-left: 4%;
+}
+.c-btn3 {
+	display: inline-block;
+	width: 100%;
+	background: url(../images/btn-gallery.jpg) no-repeat center center / cover;
+	text-align: center;
+}
+.c-btn3__a {
+  padding: 3.7rem 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.c-btn3--red {
+  padding: 3.7rem 0;
+  background: red;
+  cursor: initial;
+  pointer-events: none;
+}
+.c-btn3__text {
+  font-size: 3rem;
+  text-align: left;
+  padding-left: 4%;
+  color: white;
+  line-height: 1.333;
+  font-family: "Zen Maru Gothic";
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+}
+.c-btn3__text-red {
+  font-size: 2.4rem;
+  color: white;
+  line-height: 1.333;
+  font-family: "Zen Maru Gothic";
+}
+.c-btn3__link {
+  font-size: 2rem;
+  color: #fff;
+  text-decoration: underline;
+  transform: .3s;
+}
+.c-btn3__link-red {
+  font-size: 2.6rem;
+  color: #fff;
+  transform: .3s;
+}
+.c-btn3__link:hover {
+  opacity: 0.7;
+}
+.c-btn6 {
+	display: inline-block;
+	width: 100%;
+	background: rgb(226, 168, 168);
+	font-size: 1.6rem;
+	font-weight: bold;
+	color: white;
+	text-align: center;
+	transition: .3s;
+}
+.c-btn6--2 {
+	font-size: 1.6rem;
+}
+.c-btn6:hover {
+	opacity: 0.7;
+}
+
+
+	@media screen and (max-width:900px) {
+		.p-btn-content {
+			padding-left: 0;
+			padding-right: 0;
+		}
+		.c-btn3 {
+			font-size: 3.6rem;
+			width: 100%;
+			max-width: 67.1rem;
+		  }
+		  .c-btn3__link-red {
+			font-size: 3.6rem;
+			color: #fff;
+			transform: .3s;
+		  }
+		  .c-btn6 {
+			padding: 1.2rem 0;
+			font-size: 2.4rem;
+		
+		  }
+		  .c-btn6--2 {
+			padding: 0.2rem 0;
+			font-size: 2rem;
+		  }
+	
+	}
+
+
+/*アニメーションボタン。（枠線をぐるっとなぞるアニメーション）
+---------------------------------------------------------------------------*/
+@keyframes w {0% {width: 0px;} 100% {width: 100%;}}
+@keyframes h {0% {height: 0px;} 100% {height: 100%;}}
+
+/*ボタンの一番の外側のボックス*/
+.animation-btn {
+	position: relative;		/*枠線をアニメーションさせる為に必要な指定*/
+	display: inline-block;
+	box-shadow: 0px 0px 0px 1px rgba(255,255,255,0.5) inset;	/*デフォルトで見えている枠線の設定。255,255,255は白の事で0.5は色が50%出た状態。*/
+}
+
+/*上のanimation-btnの内側にあるボックス*/
+.animation-btn-inner {
+	display: block;text-decoration: none;
+	padding: 0.5em 3em;		/*ボタン内の余白。上下、左右へ。emは文字の単位。1emが1文字分という事です。*/
+	letter-spacing: 0.1em;	/*文字間隔を少しだけ広くとる*/
+	text-indent: 0.1em;		/*letter-spacingを設定するとその分全体のテキスト位置がずれるので、戻す設定。同じ数字にしておけばOKです。*/
+}
+
+/*ボタン内でiタグを使う場合の設定*/
+.animation-btn-inner i {
+	display: inline-block;
+	transition: 0.3s;		/*アニメーションにかける時間。0.3秒。*/
+	padding-left: 1em;		/*テキストと、iタグの間の余白*/
+}
+.animation-btn-inner:hover i {
+	transform: translateX(5px);	/*マウスオン時にiタグを5pxだけ右に移動する*/
+}
+
+/*枠線共通*/
+.animation-btn::before,
+.animation-btn::after,
+.animation-btn-inner::before,
+.animation-btn-inner::after {
+	content: "";
+	position: absolute;
+	background-color: #fff;		/*background(背景)スタイルですが、ここでは枠線の色に使われます。*/
+	animation-duration: 0.2s;	/*アニメーションにかける時間。１辺あたり0.2秒。*/
+	animation-fill-mode: forwards;	/*アニメーション完了時に最後のフレームを維持。この１行を外してみると別の動作になって面白い動きになります。*/
+	animation-timing-function: linear;	/*アニメーションの速度のタイプ。同じ速度にする。*/
+}
+
+/*ラインアニメーション１（左上→右上）*/
+.animation-btn:hover::before {
+	left: 0px;	/*開始地点の指示*/
+	top: 0px;	/*開始地点の指示*/
+	height: 1px;		/*線の幅の代わりになります*/
+	animation-name: w;	/*上の「@keyframes」で使うアニメーション名の指定。*/
+}
+
+/*ラインアニメーション２（右上→右下）*/
+.animation-btn:hover::after {
+	right: 0px;	/*開始地点の指示*/
+	top: 0px;	/*開始地点の指示*/
+	width: 1px;			/*線の幅の代わりになります*/
+	animation-name: h;	/*上の「@keyframes」で使うアニメーション名の指定。*/
+	animation-delay: 0.2s;	/*アニメーションを0.2秒遅れてスタートさせる。*/
+}
+
+/*ラインアニメーション３（右下→左下）*/
+.animation-btn-inner:hover::before {
+	right: 0px;		/*開始地点の指示*/
+	bottom: 0px;	/*開始地点の指示*/
+	height: 1px;		/*線の幅の代わりになります*/
+	animation-name: w;	/*上の「@keyframes」で使うアニメーション名の指定。*/
+	animation-delay: 0.4s;	/*アニメーションを0.4秒遅れてスタートさせる。*/
+}
+
+/*ラインアニメーション４（左下→左上）*/
+.animation-btn-inner:hover::after {
+	left: 0px;		/*開始地点の指示*/
+	bottom: 0px;	/*開始地点の指示*/
+	width: 1px;			/*線の幅の代わりになります*/
+	animation-name: h;	/*上の「@keyframes」で使うアニメーション名の指定。*/
+	animation-delay: 0.6s;	/*アニメーションを0.6秒遅れてスタートさせる。*/
+}
+
+
+/*PAGE TOP（↑）設定
+---------------------------------------------------------------------------*/
+.pagetop-show {display: block;}
+
+/*ボタンの設定*/
+.pagetop a {
+	display: block;text-decoration: none;text-align: center;z-index: 99;
+	position: fixed;	/*スクロールに追従しない(固定で表示)為の設定*/
+	right: 20px;		/*右からの配置場所指定*/
+	bottom: 20px;		/*下からの配置場所指定*/
+	color: #fff;		/*文字色*/
+	font-size: 1.5rem;	/*文字サイズ*/
+	background: rgba(0,0,0,0.2);	/*背景色。0,0,0は黒の事で0.2は色が20%出た状態。*/
+	width: 60px;		/*幅*/
+	line-height: 60px;	/*高さ*/
+	border-radius: 50%;	/*円形にする*/
+}
+
+
+/*その他
+---------------------------------------------------------------------------*/
+.clearfix::after {content: "";display: block;clear: both;}
+.color-check, .color-check a {color: #ff0000 !important;}
+.color1, .color1 a {color: #daad11 !important;}
+.l {text-align: left !important;}
+.c {text-align: center !important;}
+.r {text-align: right !important;}
+.ws {width: 95%;display: block;}
+.wl {width: 95%;display: block;}
+.mb0 {margin-bottom: 0px !important;}
+.mb30 {margin-bottom: 30px !important;}
+.mb5rem {margin-bottom: 5rem !important;}
+.look {display: inline-block;padding: 0px 10px;margin: 1px;background: rgba(0,0,0,0.5);border: 1px solid #ccc; border-radius: 3px;word-break: break-all;}
+.small {font-size: 0.7em;}
+.large {font-size: 1.5em; letter-spacing: 0.1em;}
+.pc {display: none;}
+.dn {display: none !important;}
+
+	/*画面幅900px以上の追加指定*/
+	@media screen and (min-width:900px) {
+
+	.ws {width: 48%;display: inline;}
+	.sp {display: none;}
+	.pc {display: block;}
+
+	}/*追加指定ここまで*/
