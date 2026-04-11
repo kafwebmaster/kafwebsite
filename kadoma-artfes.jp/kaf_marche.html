@@ -109,10 +109,10 @@
                     <span class="hosoku fade-in-text pc">KADOMAARTFES2024開催情報</span>
                     <span class="hosoku fade-in-text sp">KADOMAARTFES2024</span>
                     <span class="hosoku fade-in-text sp">開催情報</span>
-                    <span class="blur">カドマアート・マルシェ<br class="sp">in 大和田 2024</span>
+                    <span class="blur">カドマアート・マルシェ<br class="sp">in 大和田 <span data-field="edition.eventYear">2026</span></span>
                 </h2>
                 <div class="logo-container">
-                    <img src="images/KAF2024.jpg" alt="KAF2024">
+                    <img src="images/KAF2024.jpg" alt="KAF5" data-src-field="images.mainVisual" data-alt-field="edition.displayNameShort">
                 </div>
                 <p>
                     職人の街、門真市ならではの『アートとアイデアの可能性』を感じる事ができるのがKADOMA ART FES。
@@ -133,7 +133,7 @@
                 <table>
                     <tr>
                         <th>名称</th>
-                        <td>KADOMA ART FES 2024</td>
+                        <td data-field="edition.displayName">KADOMA ART FES 5</td>
                     </tr>
                     <tr>
                         <th>メインイベント</th>
@@ -141,19 +141,19 @@
                     </tr>
                     <tr>
                         <th>開催日時</th>
-                        <td>2024年11月30日 (土) 〜 12月1日 (日) 10:00 〜 16:00</td>
+                        <td><span data-field="marche.dateRange">2026年3月7日 (土) 〜 3月8日 (日)</span> <span data-field="marche.time">10:00 〜 16:00</span></td>
                     </tr>
                     <tr>
                         <th>開催場所</th>
-                        <td>大和田駅前広場/ハッピービーンズカフェ</td>
+                        <td data-field="marche.venue">大和田駅前広場/ハッピービーンズカフェ</td>
                     </tr>
                     <tr>
                         <th>入場料</th>
-                        <td>無料</td>
+                        <td data-field="event.admission">無料</td>
                     </tr>
                     <tr>
                         <th>主催</th>
-                        <td>門真市文化芸術推進基本計画パイロットプロジェクト実行委員会<br>門真市<br>NPO法人トイボックス</td>
+                        <td><span data-field="organization.host">門真市文化芸術推進基本計画パイロットプロジェクト実行委員会</span><br>門真市<br>NPO法人トイボックス</td>
                     </tr>
                 </table>
  <div class="kaf-section-title">
@@ -167,8 +167,8 @@
                 </div>
                 <ul>
                     <li>門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY</li>
-                    <li>KADOMA ART FES CONTEST 2024</li>
-                    <li>カドマアート・マルシェ in 大和田 2024</li>
+                    <li><span data-field="edition.displayName">KADOMA ART FES 5</span> CONTEST</li>
+                    <li data-field="marche.displayName">カドマアート・マルシェ in 大和田 2026</li>
                     <li>ライブステージ</li>
                     <li>スタンプラリー</li>
                     <li>ウォールアート</li>
@@ -227,6 +227,7 @@
     <!--このテンプレート専用のスクリプト-->
     <script src="js/main.js"></script>
     <script src="js/include.js"></script>
+    <script src="js/data-loader.js"></script>
 
     <!--ロゴアニメーション-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vivus/0.4.6/vivus.min.js"></script>
