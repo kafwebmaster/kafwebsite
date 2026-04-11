@@ -1,0 +1,108 @@
+{
+  "edition": {
+    "slug": "kaf5",
+    "number": 5,
+    "displayName": "KADOMA ART FES 5",
+    "displayNameShort": "KAF5",
+    "displayNameCompact": "KADOMAARTFES5",
+    "fiscalYearLabel": "2025年度",
+    "eventYear": 2026,
+    "yearsRunning": 5
+  },
+  "event": {
+    "dateRange": "2026年3月7日 (土) - 3月8日 (日)",
+    "dateRangeLong": "2026年03月07日 (土) 〜 03月08日 (日)",
+    "time": "10:00 〜 16:00",
+    "timeShort": "10:00-16:00",
+    "venue": "大和田駅前広場 / 大和田南商店街 周辺",
+    "admission": "無料"
+  },
+  "contest": {
+    "status": "closed",
+    "statusLabel": "募集終了",
+    "entryDeadline": "2025年11月30日(日)",
+    "entryDeadlineShort": "2025年11月30日",
+    "exhibitionPeriod": "2026年3月7日 (土) 〜 3月8日 (日)",
+    "exhibitionPeriodFull": "2026年3月7日（土）8日（日）10:00～16:00",
+    "deliveryPeriod": "2026年1月中旬",
+    "entryPdf": "KAF5entry.pdf",
+    "entryFormUrl": "https://forms.gle/tN6MJoqWRJoSHwF18"
+  },
+  "marche": {
+    "displayName": "カドマアート・マルシェ in 大和田 2026",
+    "dateRange": "2026年3月7日 (土) 〜 3月8日 (日)",
+    "time": "10:00 〜 16:00"
+  },
+  "images": {
+    "flyerFront": "images/KAF5_flyer_omote.jpg",
+    "flyerBack": "images/KAF5_flyer_ura.jpg",
+    "flyerFull": "images/KAF5_flyer.jpg",
+    "mainVisual": "images/KAF5.jpg",
+    "supportList": "images/KAF5_support.jpg",
+    "webBanner": "images/KAF5web_banner2.jpg",
+    "entryThumbnail": "images/KAF5entry-img.png",
+    "contestBanner": "images/entry.jpg"
+  },
+  "gallery": {
+    "latestYear": 2024,
+    "latestPage": "2024gallery.html",
+    "latestLabel": "2024イベント風景Photoギャラリー"
+  },
+  "contact": {
+    "email": "kadoma.art.fes2021@gmail.com",
+    "entryEmail": "kadomaartfes.oubo@gmail.com"
+  },
+  "organization": {
+    "host": "門真市文化芸術推進基本計画パイロットプロジェクト実行委員会",
+    "coHost": "門真市・NPO法人トイボックス",
+    "support": "京阪ホールディングス株式会社"
+  },
+  "social": {
+    "youtube": "https://www.youtube.com/@kadomaartfes",
+    "instagram": "https://www.instagram.com/pilot_kadoma/"
+  },
+  "news": [
+    {
+      "date": "2026/02/05",
+      "category": "メディア掲載情報",
+      "text": "アートフェス作品審査会にてご紹介いただきました",
+      "link": "media.html"
+    },
+    {
+      "date": "2026/02/05",
+      "category": "コンテスト",
+      "text": "KADOMA ART FES CONTEST KAF5受賞作品を発表しました",
+      "link": "contest.html"
+    },
+    {
+      "date": "2026/01/25",
+      "category": "イベント",
+      "text": "KADOMA ART FES 5 イベント情報を更新いたしました。",
+      "link": "contest_entry.html"
+    },
+    {
+      "date": "2025/12/01",
+      "category": "コンテスト",
+      "text": "KADOMA ART FES 5 CONTESTの応募が終了しました。たくさんの応募ありがとうございました。",
+      "link": "contest_entry.html"
+    },
+    {
+      "date": "2025/10/20",
+      "category": "コンテスト",
+      "text": "KADOMA ART FES 5 CONTESTの応募締め切り日が変更になりました",
+      "link": "contest_entry.html"
+    },
+    {
+      "date": "2025/06/20",
+      "category": "コンテスト",
+      "text": "【募集終了】KADOMA ART FES 5 CONTESTの応募が開始されました",
+      "link": null
+    },
+    {
+      "date": "2025/06/20",
+      "category": "イベント",
+      "text": "KADOMA ART FES 5開催日時を発表しました",
+      "link": null
+    }
+  ]
+}
