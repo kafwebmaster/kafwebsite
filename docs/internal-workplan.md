@@ -158,7 +158,8 @@
 1. [ ] microCMS アカウント開設(無料プラン)
 2. [x] ~~Cloudflare Pages の現行ビルド設定を確認~~ → **完了**(`docs/cloudflare-settings.md` に記録)
 3. [ ] develop ブランチの作成と、検証用 Cloudflare Pages プロジェクトの作成
-   (本番プロジェクトには触れない。詳細は `docs/cloudflare-settings.md` 3 章)
+   (ビルド設定は環境ごとに分離できないことを確認済みのため、別プロジェクトで検証する。
+    本番プロジェクトには切替時まで触れない。手順は `docs/cloudflare-settings.md` 3 章)
 4. [ ] Instagram アカウントの種別確認(ビジネス/クリエイターか)
 5. [ ] アーカイブ対象の過去大会範囲の決定(KAF4 のみか、遡るか)
 6. [ ] 本番切替の希望日の確定

@@ -63,11 +63,38 @@
 
 ## 3. 【重要】移行中の安全な進め方
 
-### 課題
-Cloudflare Pages のビルド設定(コマンド・出力先)が **Production と Preview で共通の可能性**がある。
-共通の場合、本番稼働中に設定を Astro 用へ変更すると、**Astro の準備完了前に本番サイトが表示不能になる**。
+### 調査結果(2026-07-24 確認)
 
-### 対策: 検証用の別プロジェクトを作成する(推奨)
+**Cloudflare Pages では、ビルド設定(Build command / Build output directory)を UI 上で環境ごとに分けることはできない。**
+
+- 画面上部の「Choose Environment(Production / Preview)」の切り替えが適用されるのは **環境変数(Variables and secrets)などであり、ビルドコマンドや出力先ではない**
+- Build command / Build output directory は **プロジェクト全体で 1 つの共通設定**
+- ビルドコマンドのみ、公式に案内された回避策(`CF_PAGES_BRANCH` を使った条件分岐スクリプト)でブランチ別に変えられる。ただし**出力先ディレクトリは共通のまま**
+
+参考:
+- [Build configuration · Cloudflare Pages docs](https://developers.cloudflare.com/pages/configuration/build-configuration/)
+- [Set build commands per branch · Cloudflare Pages docs](https://developers.cloudflare.com/pages/how-to/build-commands-branches/)
+
+### 課題
+本番稼働中に本番プロジェクトの設定を Astro 用へ変更すると、**Astro の準備完了前に本番サイトが正しく表示されなくなる**。
+
+### 対策の選択肢
+
+| | 案A: 検証用プロジェクトを別途作成(推奨) | 案B: 条件分岐ビルドスクリプト |
+|---|---|---|
+| 概要 | 同じリポジトリを見る 2 つ目の Pages プロジェクトを作り、そこで検証する | `build.sh` で `CF_PAGES_BRANCH` を判定し、ブランチごとに処理を分ける |
+| 本番設定の変更時期 | **切替時(最後)のみ** | **着手時(最初)から** |
+| 開発中の本番リスク | **なし** | 低いが存在する(スクリプト不具合時) |
+| 管理するプロジェクト数 | 2 | 1 |
+| 切替作業 | 管理画面で 2 項目を変更 | コード変更(PR で確認・巻き戻し可) |
+
+**案A を推奨。** 開発中に本番プロジェクトへ一切触れないため、リスクが構造的にゼロになる。
+
+> 案B を採る場合は、Build command を `bash build.sh`、Build output を `dist` に変更した上で、
+> `main` では既存の静的ファイルを `dist` へ複製、`develop` では Astro をビルドする分岐を書く。
+> 切替が PR ベースになる利点はあるが、着手時点で本番設定に手を入れる必要がある。
+
+### 案A の具体的な構成
 
 本番プロジェクトには一切触れず、**同じリポジトリを参照する 2 つ目の Pages プロジェクト**を作って検証する。
 
@@ -92,9 +119,15 @@ Cloudflare Pages のビルド設定(コマンド・出力先)が **Production �
 4. 本番サイトの表示を確認
 5. 問題があれば本節 1 の値に戻す(即座に復旧可能)
 
-### 代替案: Preview 環境の個別設定を使う
-画面上部の **「Choose Environment」** を `Preview` に切り替えた際、Build configuration を Production と別に設定できる場合は、検証用プロジェクトを作らずに Preview 環境だけ Astro 用の設定にする方法も取れる。
-**着手時に、この切り替えが可能かどうかを確認すること。** 可能なら手順が簡略化できる。
+**検証用プロジェクトの作成手順(担当者作業)**
+1. Cloudflare ダッシュボード → Workers & Pages → **Create** → **Pages** → **Connect to Git**
+2. リポジトリ `kafwebmaster/kafwebsite` を選択
+3. プロジェクト名を入力(例: `kadoma-artfes-staging`)
+4. **Production branch** に `develop` を指定
+5. Build command に `npm run build`、Build output directory に `dist` を入力
+6. 保存してデプロイ(初回は `develop` に Astro がまだ無いため失敗する場合があるが問題ない)
+
+> 検証用プロジェクトは移行完了後に削除してよい。
 
 ---
 
