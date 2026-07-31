@@ -156,8 +156,9 @@
 優先度順。**1〜3 は人間側のタスクで、これが完了しないと Claude 側が動けない。**
 
 1. [ ] microCMS アカウント開設(無料プラン)
-2. [ ] Cloudflare Pages の現行ビルド設定を確認(現在の設定内容を Claude に共有)
-3. [ ] develop ブランチの作成とプレビュー環境の有効化
+2. [x] ~~Cloudflare Pages の現行ビルド設定を確認~~ → **完了**(`docs/cloudflare-settings.md` に記録)
+3. [ ] develop ブランチの作成と、検証用 Cloudflare Pages プロジェクトの作成
+   (本番プロジェクトには触れない。詳細は `docs/cloudflare-settings.md` 3 章)
 4. [ ] Instagram アカウントの種別確認(ビジネス/クリエイターか)
 5. [ ] アーカイブ対象の過去大会範囲の決定(KAF4 のみか、遡るか)
 6. [ ] 本番切替の希望日の確定
