@@ -1,0 +1,262 @@
+---
+import HeaderSub from '../components/HeaderSub.astro';
+import Menubar from '../components/Menubar.astro';
+import Footer from '../components/Footer.astro';
+import { getSiteData } from '../lib/content.js';
+const data = await getSiteData();
+---
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>まちかど　まちなか　アートギャラリー</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="大和田・古川橋駅前で行われる門真最大級アートイベントKADOMA ART FES">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sub-page.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/css/lightbox.min.css">
+    <style is:inline>
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px; /* ギャップを調整 */
+}
+.gallery img {
+    width: 100%;
+    height: auto;
+}
+.gallery-item {
+    width: calc(16.666% - 5px); /* ギャップを考慮した6列レイアウト */
+    margin-bottom: 5px;
+    position: relative;
+}
+.gallery-item img {
+    object-fit: cover; /* 画像をコンテナに合わせてトリミング */
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1 / 1; /* 正方形のアスペクト比を設定 */
+}
+@media (max-width: 1200px) {
+    .gallery-item {
+        width: calc(25% - 5px); /* 中程度の画面では4列レイアウト */
+    }
+}
+@media (max-width: 768px) {
+    .gallery-item {
+        width: calc(33.333% - 5px); /* スマホでは3列レイアウト */
+    }
+}
+@media (max-width: 480px) {
+    .gallery-item {
+        width: calc(50% - 5px); /* 小さな画面では2列レイアウト */
+    }
+}
+
+    .logo-container {
+        text-align: center; /* 画像をセンターに寄せるために追加 */
+    }
+    .logo-container img {
+        max-width: 70%; /* 画像の最大幅を70%に設定 */
+        height: auto; /* 高さは自動調整 */
+        display: block; /* 画像をブロック要素として扱い、センタリングするために追加 */
+        margin: 0 auto; /* 左右のマージンを自動で設定してセンターに寄せる */
+    }
+
+
+	.kaf-event-details {
+	    background-color: #fff; /* 背景を白くする */
+	    padding: 20px; /* 内側の余白を追加 */
+	    border-radius: 8px; /* 角を丸くする */
+	    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 影を追加 */
+	    color: #000; /* 文字の色を黒にする */
+	}
+	.kaf-event-details .kaf-section-title, .kaf-event-details .kaf-sub-section-title {
+	    font-size: 1.5em;
+	    font-weight: bold;
+	    margin-top: 20px;
+	    margin-bottom: 10px;
+	}
+	.kaf-event-details table {
+	    width: 100%;
+	    border-collapse: collapse;
+	    margin-bottom: 20px;
+	}
+	.kaf-event-details th, .kaf-event-details td {
+	    padding: 10px;
+	    text-align: left;
+	    border-bottom: 1px solid #ddd;
+	}
+	.kaf-event-details th {
+	    background-color: #f2f2f2;
+	    color: #000; /* 文字の色を黒にする */
+	}
+	.kaf-event-details ul {
+	    list-style-type: none;
+	    padding: 0;
+	}
+	.kaf-event-details li {
+	    padding: 10px;
+	    border-bottom: 1px solid #ddd;
+	    color: #000; /* 文字の色を黒にする */
+	}
+    </style>
+</head>
+<body class="home">
+    <div id="container">
+
+        <!-- header(include) -->
+        <HeaderSub />
+
+        <!-- コンテンツを追加する場合は、以下のmainタグの中で作成してください。 -->
+        <main>
+
+            <section class="bg1">
+                <h2 class="h2-right">
+                    <span class="hosoku fade-in-text pc">KADOMAARTFES5開催情報</span>
+                    <span class="hosoku fade-in-text sp">KADOMAARTFES</span>
+                    <span class="hosoku fade-in-text sp">開催情報</span>
+                    <span class="blur">MACHIKADO MACHINAKA <br class="sp">GALLERY</span>
+                </h2>
+                <div class="logo-container">
+                    <img src={data.images.flyerFull} alt={data.edition.displayNameShort} data-src-field="images.flyerFull" data-alt-field="edition.displayNameShort">
+                </div>
+                <p>
+                    職人の街、門真市ならではの『アートとアイデアの可能性』を感じる事ができるのがKADOMA ART FES。
+                    大和田駅前広場をメインとし、大和田南商店街周辺をアートで染める「MACHIKADO MACHINAKA GALLERY」を開催いたします。
+                    アートコンテストやアートを感じれるワークショップなど様々なアートイベントを予定。
+                </p>
+            </section>
+
+            <section class="kaf-event-details">
+                <div class="kaf-section-title">
+                    <span>イベントの詳細</span>
+                </div>
+                <p>
+                    職人の街、門真市ならではの『アートとアイデアの可能性』を感じることができるのがKADOMA ART FES。
+                    大和田駅前広場をメインとし、大和田南商店街周辺をアートで染める「MACHIKADO MACHINAKA GALLERY」を開催いたします。
+                    アートコンテストやアートを感じられるワークショップなど、様々なアートイベントを予定しています。
+                </p>
+                <table>
+                    <tr>
+                        <th>名称</th>
+                        <td data-field="edition.displayName">{data.edition.displayName}</td>
+                    </tr>
+                    <tr>
+                        <th>メインイベント</th>
+                        <td>門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY</td>
+                    </tr>
+                    <tr>
+                        <th>開催日時</th>
+                        <td><span data-field="event.dateRangeLong">{data.event.dateRangeLong}</span> <span data-field="event.time">{data.event.time}</span></td>
+                    </tr>
+                    <tr>
+                        <th>開催場所</th>
+                        <td data-field="event.venue">{data.event.venue}</td>
+                    </tr>
+                    <tr>
+                        <th>入場料</th>
+                        <td data-field="event.admission">{data.event.admission}</td>
+                    </tr>
+                    <tr>
+                        <th>主催</th>
+                        <td><span data-field="organization.host">{data.organization.host}</span><br>門真市<br>NPO法人トイボックス</td>
+                    </tr>
+                </table>
+                <div class="kaf-sub-section-title">
+                    <span>全体コンテンツ</span>
+                </div>
+    <ul>
+        <li>門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY</li>
+        <li><span data-field="edition.displayName">{data.edition.displayName}</span> CONTEST</li>
+        <li data-field="marche.displayName">{data.marche.displayName}</li>
+        <li>まちかどまちなかコンサート（8日のみ）</li>
+         <li><span data-field="edition.displayName">{data.edition.displayName}</span>　コンテスト表彰式</li>
+        <li>スタンプラリー</li>
+    </ul>
+            </section>
+
+            <!-- ギャラリーセクションをここに追加 -->
+            <section class="gallery-section">
+                <div class="gallery" id="gallery"></div>
+            </section>
+
+            <Footer data={data} />
+        </main>
+
+        <!--footer(include)-->
+
+    </div>
+    <!--/#container-->
+
+    <!--ページの上部へ戻るボタン-->
+    <div class="pagetop"><a href="#"><i class="fas fa-angle-double-up"></i></a></div>
+
+    <!--開閉ブロック(include)-->
+    <!-- メニュー内容を修正する場合は、includeHTML/menubar.htmlを修正してください。 -->
+    <Menubar data={data} />
+
+    <!--開閉ボタン（ハンバーガーアイコン）-->
+    <div id="menubar_hdr_inner">
+        <div id="menubar_hdr">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!--jQueryの読み込み-->
+    <script is:inline src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!--lightbox用jsファイルの読み込み-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox-plus-jquery.min.js"></script>
+
+    <!--Swiper-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script is:inline src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!--スライドショー（slick）-->
+    <script is:inline src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script is:inline src="js/slick-thumbnail.js"></script>
+    <script is:inline src="js/slick.js"></script>
+
+    <!--パララックス（inview）-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/protonet-jquery.inview/1.1.2/jquery.inview.min.js"></script>
+    <script is:inline src="js/jquery.inview_set.js"></script>
+
+    <!--このテンプレート専用のスクリプト-->
+    <script is:inline src="js/main.js"></script>
+
+    <!--ロゴアニメーション-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/vivus/0.4.6/vivus.min.js"></script>
+    <script is:inline>
+        new Vivus('svg-logo', {
+            start: 'autostart',
+            type: 'scenario-sync',
+            duration: 150,
+            forceRender: false,
+        });
+    </script>
+
+    <!-- ギャラリーセクションのスクリプト -->
+<script is:inline>
+    const galleryContainer = document.getElementById('gallery');
+    const imageFolder = 'images/gallery/';
+    const imageCount = 15;
+
+    for (let i = 1; i <= imageCount; i++) {
+        const imgElement = document.createElement('a');
+        imgElement.href = `${imageFolder}image${i}.jpg`;
+        imgElement.setAttribute('data-lightbox', 'gallery');
+        imgElement.classList.add('gallery-item');
+
+        const thumbnail = document.createElement('img');
+        thumbnail.src = `${imageFolder}thumb/image${i}_thumb.jpg`;
+        thumbnail.alt = `Image ${i}`;
+
+        imgElement.appendChild(thumbnail);
+        galleryContainer.appendChild(imgElement);
+    }
+</script>
+
+</body>
+
+</html>
