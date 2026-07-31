@@ -1,0 +1,31 @@
+---
+// 開閉メニュー (旧 includeHTML/menubar.html)
+// 旧 include.js は <div id="include-menubar"> の中身としてこの内容を挿入していた。
+// main.js が #include-menubar を開閉対象にしているため、wrapper div ごと出力して
+// DOM 構造を現行と一致させる。
+// 年度依存値はビルド時に差し込む (data-field 属性は対応関係の記録として残置)。
+const { data } = Astro.props;
+---
+<div id="include-menubar">
+<nav>
+    <ul>
+        <li><a href="index.html">HOME</a></li>
+        <li><a href="kaf_info.html">KAFとは</a></li>
+        <li><a href="kaf_mmg.html">イベント開催情報</a></li>
+        <li><a href="contest.html">KAFコンテスト<span data-field="edition.displayNameShort">{data.edition.displayNameShort}</span>受賞作品</a></li>
+        <li><a href="media.html">メディア掲載情報</a></li>
+        <li><a href="contest_entry.html">KAFコンテスト作品募集(<span data-field="contest.statusLabel">{data.contest.statusLabel}</span>)</a></li>
+        <li><a href={data.gallery.latestPage} data-href-field="gallery.latestPage" data-field="gallery.latestLabel">{data.gallery.latestLabel}</a></li>
+        <li><a href="kaf_support.html">協賛・応援について</a></li>
+    </ul>
+</nav>
+
+<ul class="icons">
+<!--
+    <li><a href="#"><img src="images/logo-x.svg" alt="X"></a></li>
+    <li><a href="#"><i class="fab fa-line"></i></a></li>
+-->
+    <li><a href={data.social.youtube} data-href-field="social.youtube"><i class="fab fa-youtube"></i></a></li>
+    <li><a href={data.social.instagram} data-href-field="social.instagram"><i class="fab fa-instagram"></i></a></li>
+</ul>
+</div>
