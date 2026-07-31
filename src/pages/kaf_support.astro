@@ -1,0 +1,444 @@
+---
+import HeaderSub from '../components/HeaderSub.astro';
+import Menubar from '../components/Menubar.astro';
+import Footer from '../components/Footer.astro';
+import { getSiteData } from '../lib/content.js';
+const data = await getSiteData();
+---
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>協賛・応援【KADOMA ART FES - 門真のまちをアートで染めよう】</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="大和田・古川橋駅前で行われる門真最大級アートイベントKADOMA ART FES">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sub-page.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/css/lightbox.min.css">
+    <style is:inline>
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px; /* ギャップを調整 */
+}
+.gallery img {
+    width: 100%;
+    height: auto;
+}
+.gallery-item {
+    width: calc(16.666% - 5px); /* ギャップを考慮した6列レイアウト */
+    margin-bottom: 5px;
+    position: relative;
+}
+.gallery-item img {
+    object-fit: cover; /* 画像をコンテナに合わせてトリミング */
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1 / 1; /* 正方形のアスペクト比を設定 */
+}
+@media (max-width: 1200px) {
+    .gallery-item {
+        width: calc(25% - 5px); /* 中程度の画面では4列レイアウト */
+    }
+}
+@media (max-width: 768px) {
+    .gallery-item {
+        width: calc(33.333% - 5px); /* スマホでは3列レイアウト */
+    }
+}
+@media (max-width: 480px) {
+    .gallery-item {
+        width: calc(50% - 5px); /* 小さな画面では2列レイアウト */
+    }
+}
+
+    .logo-container {
+        text-align: center; /* 画像をセンターに寄せるために追加 */
+    }
+    .logo-container img {
+        max-width: 70%; /* 画像の最大幅を70%に設定 */
+        height: auto; /* 高さは自動調整 */
+        display: block; /* 画像をブロック要素として扱い、センタリングするために追加 */
+        margin: 0 auto; /* 左右のマージンを自動で設定してセンターに寄せる */
+    }
+
+
+	.kaf-event-details {
+	    background-color: #fff; /* 背景を白くする */
+	    padding: 20px; /* 内側の余白を追加 */
+	    border-radius: 8px; /* 角を丸くする */
+	    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 影を追加 */
+	    color: #000; /* 文字の色を黒にする */
+	}
+	.kaf-event-details .kaf-section-title, .kaf-event-details .kaf-sub-section-title {
+	    font-size: 1.5em;
+	    font-weight: bold;
+	    margin-top: 20px;
+	    margin-bottom: 10px;
+	}
+	.kaf-event-details table {
+	    width: 100%;
+	    border-collapse: collapse;
+	    margin-bottom: 20px;
+	}
+	.kaf-event-details th, .kaf-event-details td {
+	    padding: 10px;
+	    text-align: left;
+	    border-bottom: 1px solid #ddd;
+	}
+	.kaf-event-details th {
+	    background-color: #f2f2f2;
+	    color: #000; /* 文字の色を黒にする */
+	}
+	.kaf-event-details ul {
+	    list-style-type: none;
+	    padding: 0;
+	}
+	.kaf-event-details li {
+	    padding: 10px;
+	    border-bottom: 1px solid #ddd;
+	    color: #000; /* 文字の色を黒にする */
+	}
+        @media (min-width: 1200px) {
+            .container {
+                margin: 0 15%; /* 左右に15％のマージンを追加 */
+            }
+        }
+
+
+        .table-container {
+            overflow-x: auto; /* 横スクロールを有効にする */
+            margin-bottom: 20px; /* テーブル間にスペースを追加 */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px; /* 最小幅を設定して、スマホで横スクロールを強制 */
+        }
+        th, td {
+            border: 1px solid #f2f2f2; /* ここで枠線の色を設定 */
+            padding: 8px;
+            text-align: left;
+            white-space: nowrap; /* セル内のテキストを折り返さないようにする */
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+
+
+a[href^="mailto:"] {
+    color: #0000EE; /* 濃い青色に設定 */
+    font-weight: bold; /* 太字に設定 */
+    text-decoration: underline; /* 下線を追加 */
+}
+
+a[href^="mailto:"]:hover {
+    color: #FF0000; /* ホバー時に赤色に変更 */
+    text-decoration: none; /* ホバー時に下線を消す */
+}
+    </style>
+</head>
+<body class="home">
+    <div id="container">
+
+        <!-- header(include) -->
+        <HeaderSub />
+
+        <!-- コンテンツを追加する場合は、以下のmainタグの中で作成してください。 -->
+        <main>
+
+            <section class="bg1">
+                <h2 class="h2-right">
+                    <span class="hosoku fade-in-text pc">協賛・応援</span>
+                    <span class="hosoku fade-in-text sp">協賛・応援</span>
+                    <span class="blur"><span data-field="edition.displayName">{data.edition.displayName}</span><br class="sp">協賛と応援のお礼</span>
+                </h2>
+                <div class="logo-container">
+                    <img src={data.images.mainVisual} alt={data.edition.displayName} data-src-field="images.mainVisual" data-alt-field="edition.displayName">
+                </div>
+ <p>「<span data-field="edition.displayName">{data.edition.displayName}</span>」はたくさんの応援にて開催されました。</p>
+
+ <p>門真市で2021年から開始し、目標としてその先10年間を見据え、もっと身近に多くの人が文化に触れ、鑑賞したりできる場や創作活動を広げる機会を創るべく、令和3年3月に「門真市文化芸術推進基本計画パイロットプロジェクト」が策定されました。</p>
+
+ <p>これを機に、「門真のまちを文化芸術でいっぱいにしよう」という理念のもと、市と市民有志が「協働と共創」を理念に、多くの市民が参加するパイロットプロジェクト推進委員会を発足しました。</p>
+
+ <p>「門真のまちなかに文化を感じられる取り組みを作っていきたい！」という想いを実現すべく、文化活動している人、していない人、企業の人、郵便局や市役所の職員も参加して、公民協働で作り上げたのが「KADOMA ART FES」です。</p>
+
+
+ <p>「<span data-field="edition.displayName">{data.edition.displayName}</span>」もたくさんの方の応援にて開催されました。来年度も引き続きたくさんの方からの応援を募集しております。詳しくは<a class="link" href="mailto:kadomaartfes.oubo@gmail.com">kadomaartfes.oubo@gmail.com</a>までご連絡ください。</p>
+
+ <p>門真の街がアートで染まる。そんなイベントとなるよう、皆様のご協力・ご支援にて開催されます。</p>
+
+                <p></p>
+            </section>
+
+            <section class="kaf-event-details">
+
+<div class="container">
+        <h1 data-field="edition.displayName">{data.edition.displayName}</h1>
+        <p>開催日時: <span data-field="event.dateRangeLong">{data.event.dateRangeLong}</span> <span data-field="event.time">{data.event.time}</span></p>
+        <p>イベント開催会場: <span data-field="event.venue">{data.event.venue}</span></p>
+        <p>主催: <span data-field="organization.host">{data.organization.host}</span>・<span data-field="organization.coHost">{data.organization.coHost}</span></p>
+ <h2>	<span data-field="edition.fiscalYearLabel">{data.edition.fiscalYearLabel}</span>KAF協賛一覧　</h2>
+              <div class="logo-container">
+<img src={data.images.supportList} alt={data.edition.displayNameShort} data-src-field="images.supportList" data-alt-field="edition.displayNameShort">
+
+                </div>
+<p>
+<li>板垣治療院</li>
+<li>（株）エヌ・ワイ・ティ</li>
+<li>大倉寺</li>
+<li>大阪国際大学</li>
+<li>門真エコネットワーク連絡会</li>
+<li>門真市民劇団“いっぽ”</li>
+<li>門真新モータープール</li>
+<li>門真ロータリークラブ </li>
+<li>きらぼし保育園</li>
+<li>光亜興産（株）</li>
+<li>珈琲館 大和田店</li>
+<li>サンローレル森川ビル</li>
+<li>柴田昌彦</li>
+<li>常光寺</li>
+<li>Studio Canaliy</li>
+<li>smile campus</li>
+<li>（株）創緑舎</li>
+<li>タルキ堂</li>
+<li>地域猫見守り隊</li>
+<li>（有）日本ビル管理</li>
+<li>橋本一行税理士事務所</li>
+<li>HAPPY BEANS CAFE</li>
+<li>花工房 井川園芸</li>
+<li>PAJERO</li>
+<li>（株）beleef</li>
+<li>フジイハウス産業（株）</li>
+<li>ぶらっと</li>
+<li>本町ピーコック</li>
+<li>益民山月庵</li>
+<li>（株）マルエイ工務店</li>
+<li>（有）三喜興産</li>
+<li>リサイクル工房 布くらふと</li>
+<li>（株）Roots</li>
+<li>和謡会</li>
+</p>
+
+<!--
+
+        <h2>協賛内容</h2>
+
+        <h3>協賛金プラン</h3>
+
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>金額</th>
+                    <th>内容</th>
+                    <th>詳細</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-label="金額">5,000円</td>
+                    <td data-label="内容">2024年11月30日・12月1日開催</td>
+                    <td data-label="詳細">マルシェで使用できるクーポン 協賛金額5%</td>
+                </tr>
+                <tr>
+                    <td data-label="金額">10,000円</td>
+                    <td data-label="内容">テキストでの名前を掲載</td>
+                    <td data-label="詳細" rowspan="4">
+                        HP、SNS、リーフレット、インフォメーション<br>
+                        図録に企業名を掲載<br>
+                        図録冊子 1冊無償提供<br>
+                        マルシェで使用できるクーポン 協賛金額5%
+                    </td>
+                </tr>
+                <tr>
+                    <td data-label="金額">50,000円</td>
+                    <td data-label="内容">ロゴ画像（小）<br>もしくはテキスト名前掲載</td>
+                </tr>
+                <tr>
+                    <td data-label="金額">100,000円</td>
+                    <td data-label="内容">ロゴ画像（中）名前掲載</td>
+                </tr>
+                <tr>
+                    <td data-label="金額">300,000円</td>
+                    <td data-label="内容">ロゴ（大）名前掲載</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+        <div class="note">
+            <p><strong>注意事項</strong>: リーフレット、インフォメーション、図録については、申し込み期限があります。</p>
+        </div>
+
+        <h3>景品協賛プラン</h3>
+        <p>門真のまちをアートで染めようMACHIKADO MACHINAKA GALLERYイベントにて開催の際に実施するスタンプラリーの応募景品・コンテスト景品をご用意いただける協賛企業を募集しております。</p>
+        <p>※衛生管理上の都合により、温度管理が必要なものや食品などはご遠慮させていただく場合がございます。</p>
+
+        <h3>クーポン協賛</h3>
+        <p>門真のまちをアートで染めようMACHIKADO MACHINAKA GALLERYイベントに配布するマップに、お店の情報を掲載・お得なクーポンなどをご用意いただける協賛店舗を募集しております。</p>
+
+        <h3>マルシェ協賛 企業・行政PRブース</h3>
+        <p>企業・行政PRブース（テント有り）の出展者様を募集しております。</p>
+        <p>企業のPRや市町の取り組み、特産品等のPRの場としてぜひご活用ください。</p>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>プラン</th>
+                    <th>内容</th>
+                    <th>金額</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>タイプA</td>
+                    <td>企業・行政PRブース（予定サイズ：奥2m×幅4m テント1～2張）</td>
+                    <td>20,000円</td>
+                </tr>
+                <tr>
+                    <td>タイプB</td>
+                    <td>企業・行政PRブース（予定サイズ：奥2m×幅2m 通常テント１張）</td>
+                    <td>10,000円</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+   <div class="important-info">
+            <p>・ブースサイズは、多少変更になる場合がございます。</p>
+            <p>・本ブースは、PRブース、ワークショップ（販売無し）となります。</p>
+            <p>・販売等で金銭が発生する場合は、事前にご相談ください。</p>
+            <p>・テントが必要な場合は、事前にご相談ください。</p>
+        </div>
+        <div class="note">
+            ※ブース料は、事前準備にかかった会場使用料などの経費に充てさせていただくため、中止の場合でもご返金できません。あらかじめご了承ください。
+        </div>
+
+        <h3>例</h3>
+        <div class="important-info">
+            <p>・ノベルティ配布（飲食物不可）</p>
+            <p>・チラシ配布</p>
+            <p>・アンケート実施</p>
+            <p>・ワークショップ</p>
+        </div>
+
+        <h3>申込方法</h3>
+        <p>メール（<a href="mailto:kadoma.art.fes2021@gmail.com">kadoma.art.fes2021@gmail.com</a>）にてお問い合わせください。後日、担当者より連絡させていただきます。</p>
+
+        <h3>申込期限</h3>
+        <p>2024年9月15日（日）</p>
+        <p>※協賛申込書提出の締切となります。期限後は、印刷物への掲載が間に合わない場合がございます。</p>
+
+        <h3>注意事項</h3>
+        <div class="important-info">
+            <p>・ポスター、リーフレット、インフォメーションボード、図録については、申し込み期限があります。</p>
+            <p>・各媒体の締切期限は、若干変更になる場合があります。詳しくは、事務局までお問合せ下さい。</p>
+            <p>・社名、社名ロゴの掲載につきましては、協賛金額の多い順、同額の場合は申し込み順、金額と申し込み順が同じ場合は、五十音順に掲載いたします。</p>
+            <p>・ポスター、リーフレットへの社名ロゴ掲載時のロゴの表示形式につきましては、掲載スペースの都合上、変更をお願いする場合があります。</p>
+            <p>・KADOMA ART FES 2024 公式ロゴを使用される場合には、別途申し出をお願いします。</p>
+        </div>
+-->
+        <h3>お問い合わせ先</h3>
+        <div class="contact-info">
+            <strong data-field="organization.host">{data.organization.host}</strong>
+            <p>門真市民文化会館ルミエールホール内</p>
+            <p>〒571-0030 大阪府門真市末広町２９−１</p>
+            <p>Email: <a href="mailto:kadoma.art.fes2021@gmail.com">kadoma.art.fes2021@gmail.com</a></p>
+            <p>FAX：06-6908-5922</p>
+        </div>
+
+
+    </div>
+
+            </section>
+
+            <!-- ギャラリーセクションをここに追加
+            <section class="gallery-section">
+                <div class="gallery" id="gallery"></div>
+            </section>
+ -->
+            <Footer data={data} />
+        </main>
+
+        <!--footer(include)-->
+
+    </div>
+    <!--/#container-->
+
+    <!--ページの上部へ戻るボタン-->
+    <div class="pagetop"><a href="#"><i class="fas fa-angle-double-up"></i></a></div>
+
+    <!--開閉ブロック(include)-->
+    <!-- メニュー内容を修正する場合は、includeHTML/menubar.htmlを修正してください。 -->
+    <Menubar data={data} />
+
+    <!--開閉ボタン（ハンバーガーアイコン）-->
+    <div id="menubar_hdr_inner">
+        <div id="menubar_hdr">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!--jQueryの読み込み-->
+    <script is:inline src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!--lightbox用jsファイルの読み込み-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox-plus-jquery.min.js"></script>
+
+    <!--Swiper-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script is:inline src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!--スライドショー（slick）-->
+    <script is:inline src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script is:inline src="js/slick-thumbnail.js"></script>
+    <script is:inline src="js/slick.js"></script>
+
+    <!--パララックス（inview）-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/protonet-jquery.inview/1.1.2/jquery.inview.min.js"></script>
+    <script is:inline src="js/jquery.inview_set.js"></script>
+
+    <!--このテンプレート専用のスクリプト-->
+    <script is:inline src="js/main.js"></script>
+
+    <!--ロゴアニメーション-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/vivus/0.4.6/vivus.min.js"></script>
+    <script is:inline>
+        new Vivus('svg-logo', {
+            start: 'autostart',
+            type: 'scenario-sync',
+            duration: 150,
+            forceRender: false,
+        });
+    </script>
+
+    <!-- ギャラリーセクションのスクリプト -->
+<script is:inline>
+    const galleryContainer = document.getElementById('gallery');
+    const imageFolder = 'images/gallery/';
+    const imageCount = 15;
+
+    for (let i = 1; i <= imageCount; i++) {
+        const imgElement = document.createElement('a');
+        imgElement.href = `${imageFolder}image${i}.jpg`;
+        imgElement.setAttribute('data-lightbox', 'gallery');
+        imgElement.classList.add('gallery-item');
+
+        const thumbnail = document.createElement('img');
+        thumbnail.src = `${imageFolder}thumb/image${i}_thumb.jpg`;
+        thumbnail.alt = `Image ${i}`;
+
+        imgElement.appendChild(thumbnail);
+        galleryContainer.appendChild(imgElement);
+    }
+</script>
+
+</body>
+
+</html>
