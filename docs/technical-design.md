@@ -48,7 +48,7 @@
 
 ### 1-4. data.json 連携の現況
 
-- 全 45 フィールド + news 7 件。HTML 側の data-* 属性は **73 箇所**(index 5 / kaf_mmg 11 / kaf_marche 11 / contest_entry 26 / kaf_support 15 / menubar 6)— 行番号付き完全対応表は調査ログ参照
+- 全 45 フィールド + news 7 件。HTML 側の data-* 属性は **74 箇所**(index 5 / kaf_mmg 11 / kaf_marche 11 / contest_entry 26 / kaf_support 15 / menubar 6)— 行番号付き完全対応表は調査ログ参照
 - 未参照フィールド: `edition.slug` `edition.number` `edition.displayNameCompact` `contest.status` `images.flyerBack` `images.webBanner` `gallery.latestYear` `contact.email` `contact.entryEmail` `organization.support`(後3者はハードコードのまま残存)
 
 ### 1-5. 調査で発見した既知問題(→ 5 章で対処方針)
@@ -158,7 +158,7 @@ src/lib/content.js の動作
 ### 4-1. 基本ルール
 
 1. **DOM 構造を現行と同一に保つ**。class / id / 属性 / 要素順序を変えない(CSS・jQuery プラグインが現行のまま動く前提を守る)
-2. data-* 属性(73 箇所)は**属性ごと維持**し、中身のテキスト/src/href をビルド時に `content.js` の値で埋める(属性は無害であり、変更箇所のトレーサビリティになる)
+2. data-* 属性(74 箇所)は**属性ごと維持**し、中身のテキスト/src/href をビルド時に `content.js` の値で埋める(属性は無害であり、変更箇所のトレーサビリティになる)
 3. 各ページの `<head>` 構成・CDN 読み込みは**現行と同一**(index だけ Swiper なし等の差異も維持 → 5-F)
 4. インライン `<style>` ブロック(ページ固有 CSS)は**そのままページ内に維持**
 5. インライン `<script>`(Vivus 初期化 / ギャラリー動的生成)も**そのまま維持**
