@@ -1,0 +1,20 @@
+---
+// サブページ用ヘッダー (旧 includeHTML/header.html)
+// 旧 include.js の挿入先 <div id="include-header"> ごと出力して DOM を一致させる。
+// Vivus (ロゴアニメ) は各ページ末尾の is:inline スクリプトが #svg-logo を対象に実行する。
+---
+<div id="include-header">
+<header class="sub-page">
+    <h1 id="logo">
+        <a href="index.html">
+            <svg id="svg-logo" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100%" height="30%"
+                viewBox="0 0 1700 500" style="enable-background:new 0 0 1700 500;" xml:space="preserve">
+                <image xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="images/logo.png" width="100%"
+                    height="100%" mask="url(#clipmask)"></image>
+            </svg>
+        </a>
+    </h1>
+    <div id="mainimg"></div>
+</header>
+</div>
