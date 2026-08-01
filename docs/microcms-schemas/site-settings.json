@@ -1,21 +1,21 @@
 {
   "apiFields": [
     {
-      "fieldId": "edition_displayName",
+      "fieldId": "edition_name",
       "name": "大会名(正式)",
       "kind": "text",
       "description": null,
       "required": true
     },
     {
-      "fieldId": "edition_displayNameShort",
+      "fieldId": "edition_nameShort",
       "name": "大会名(短縮)",
       "kind": "text",
       "description": null,
       "required": true
     },
     {
-      "fieldId": "edition_fiscalYearLabel",
+      "fieldId": "edition_fiscalYear",
       "name": "年度ラベル",
       "kind": "text",
       "description": null,
@@ -50,7 +50,7 @@
       "required": false
     },
     {
-      "fieldId": "edition_displayNameCompact",
+      "fieldId": "edition_nameCompact",
       "name": "大会名(スペースなし・予備)",
       "kind": "text",
       "description": null,
@@ -106,35 +106,35 @@
       "required": true
     },
     {
-      "fieldId": "contest_entryDeadline",
+      "fieldId": "contest_deadlineFull",
       "name": "応募締切(曜日付)",
       "kind": "text",
       "description": null,
       "required": true
     },
     {
-      "fieldId": "contest_entryDeadlineShort",
+      "fieldId": "contest_deadline",
       "name": "応募締切(短)",
       "kind": "text",
       "description": null,
       "required": true
     },
     {
-      "fieldId": "contest_exhibitionPeriod",
+      "fieldId": "contest_exhibPeriod",
       "name": "展示期間",
       "kind": "text",
       "description": null,
       "required": true
     },
     {
-      "fieldId": "contest_exhibitionPeriodFull",
+      "fieldId": "contest_exhibFull",
       "name": "展示期間(時間込)",
       "kind": "text",
       "description": null,
       "required": true
     },
     {
-      "fieldId": "contest_deliveryPeriod",
+      "fieldId": "contest_delivery",
       "name": "作品搬入時期",
       "kind": "text",
       "description": null,
@@ -173,7 +173,7 @@
       "multipleSelect": false
     },
     {
-      "fieldId": "marche_displayName",
+      "fieldId": "marche_name",
       "name": "マルシェ名称",
       "kind": "text",
       "description": null,
@@ -229,7 +229,7 @@
       "required": false
     },
     {
-      "fieldId": "images_entryThumbnail",
+      "fieldId": "images_entryThumb",
       "name": "応募要項サムネイル",
       "kind": "media",
       "description": null,

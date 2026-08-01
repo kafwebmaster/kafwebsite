@@ -117,14 +117,14 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 
 | フィールドID | 表示名 | 種類 | 現在値 | 表示 |
 |---|---|---|---|---|
-| `edition_displayName` | 大会名(正式) | テキスト | KADOMA ART FES 5 | 使用 |
-| `edition_displayNameShort` | 大会名(短縮) | テキスト | KAF5 | 使用 |
-| `edition_fiscalYearLabel` | 年度ラベル | テキスト | 2025年度 | 使用 |
+| `edition_name` | 大会名(正式) | テキスト | KADOMA ART FES 5 | 使用 |
+| `edition_nameShort` | 大会名(短縮) | テキスト | KAF5 | 使用 |
+| `edition_fiscalYear` | 年度ラベル | テキスト | 2025年度 | 使用 |
 | `edition_eventYear` | 開催年 | 数値 | 2026 | 使用 |
 | `edition_yearsRunning` | 開催回数(◯年目) | 数値 | 5 | 使用 |
 | `edition_slug` | 内部識別子 | テキスト | kaf5 | 予備 |
 | `edition_number` | 大会番号 | 数値 | 5 | 予備 |
-| `edition_displayNameCompact` | 大会名(スペースなし) | テキスト | KADOMAARTFES5 | 予備 |
+| `edition_nameCompact` | 大会名(スペースなし) | テキスト | KADOMAARTFES5 | 予備 |
 
 ### 3-2. 開催情報(event)
 
@@ -145,11 +145,11 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 | フィールドID | 表示名 | 種類 | 現在値 |
 |---|---|---|---|
 | `contest_statusLabel` | 募集ステータス表示 | テキスト | 募集終了 |
-| `contest_entryDeadline` | 応募締切(曜日付) | テキスト | 2025年11月30日(日) |
-| `contest_entryDeadlineShort` | 応募締切(短) | テキスト | 2025年11月30日 |
-| `contest_exhibitionPeriod` | 展示期間 | テキスト | 2026年3月7日 (土) 〜 3月8日 (日) |
-| `contest_exhibitionPeriodFull` | 展示期間(時間込) | テキスト | 2026年3月7日（土）8日（日）10:00～16:00 |
-| `contest_deliveryPeriod` | 作品搬入時期 | テキスト | 2026年1月中旬 |
+| `contest_deadlineFull` | 応募締切(曜日付) | テキスト | 2025年11月30日(日) |
+| `contest_deadline` | 応募締切(短) | テキスト | 2025年11月30日 |
+| `contest_exhibPeriod` | 展示期間 | テキスト | 2026年3月7日 (土) 〜 3月8日 (日) |
+| `contest_exhibFull` | 展示期間(時間込) | テキスト | 2026年3月7日（土）8日（日）10:00～16:00 |
+| `contest_delivery` | 作品搬入時期 | テキスト | 2026年1月中旬 |
 | `contest_entryPdf` | 応募用紙PDF | ファイル | KAF5entry.pdf |
 | `contest_entryFormUrl` | 応募フォームURL | テキスト | https://forms.gle/tN6MJoqWRJoSHwF18 |
 | `contest_status` | 募集状態(内部) | セレクト | closed(選択肢: open / closed) |
@@ -163,7 +163,7 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 
 | フィールドID | 表示名 | 種類 | 現在値 |
 |---|---|---|---|
-| `marche_displayName` | マルシェ名称 | テキスト | カドマアート・マルシェ in 大和田 2026 |
+| `marche_name` | マルシェ名称 | テキスト | カドマアート・マルシェ in 大和田 2026 |
 | `marche_dateRange` | 開催日 | テキスト | 2026年3月7日 (土) 〜 3月8日 (日) |
 | `marche_time` | 開催時間 | テキスト | 10:00 〜 16:00 |
 | `marche_venue` | 開催場所 | テキスト | 大和田駅前広場/ハッピービーンズカフェ |
@@ -178,7 +178,7 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 | `images_flyerFull` | フライヤー(全体) | KAF5_flyer.jpg | 使用(イベント詳細) |
 | `images_mainVisual` | メインビジュアル | KAF5.jpg | 使用(協賛/マルシェ) |
 | `images_supportList` | 協賛一覧画像 | KAF5_support.jpg | 使用(協賛) |
-| `images_entryThumbnail` | 応募要項サムネイル | KAF5entry-img.png | 使用(募集) |
+| `images_entryThumb` | 応募要項サムネイル | KAF5entry-img.png | 使用(募集) |
 | `images_contestBanner` | 募集バナー | entry.jpg | 使用(募集) |
 | `images_flyerBack` | フライヤー(裏) | KAF5_flyer_ura.jpg | 予備 |
 | `images_webBanner` | Webバナー | KAF5web_banner2.jpg | 予備 |
@@ -280,8 +280,25 @@ PAJERO / （株）beleef / フジイハウス産業（株） / ぶらっと / �
 
 ## 7. 命名・設計上の判断メモ
 
-- **フィールド ID を平坦化**(`edition_displayName` 等)したのは、カスタムフィールドの
+- **フィールド ID を平坦化**(`edition_name` 等)したのは、カスタムフィールドの
   入れ子を減らして登録作業と編集画面を単純にするため。コード側で階層構造へ復元する
+- **フィールド ID は 20 文字以内**(2026-08-01、インポート時の実機エラーで確認された制限)。
+  このため site.json のキー名と一部異なる短縮 ID を採用している。対応は取得層
+  (`src/lib/content.js`)が吸収する。短縮した 11 件:
+  | site.json | CMS フィールドID |
+  |---|---|
+  | edition.displayName | `edition_name` |
+  | edition.displayNameShort | `edition_nameShort` |
+  | edition.displayNameCompact | `edition_nameCompact` |
+  | edition.fiscalYearLabel | `edition_fiscalYear` |
+  | contest.entryDeadline | `contest_deadlineFull` |
+  | contest.entryDeadlineShort | `contest_deadline` |
+  | contest.exhibitionPeriod | `contest_exhibPeriod` |
+  | contest.exhibitionPeriodFull | `contest_exhibFull` |
+  | contest.deliveryPeriod | `contest_delivery` |
+  | images.entryThumbnail | `images_entryThumb` |
+  | marche.displayName | `marche_name` |
+  ⚠️ `contest_deadline`(短い表記)と `contest_deadlineFull`(曜日付)の対応に注意
 - **日付を文字列で保持**しているのは、現行サイトの多様な表記(`2026年3月6日 (金)` /
   `2026年03月06日 (金)` 等)を 1 文字も変えずに再現するため
 - **予備フィールド**(表示に使われていない 7 項目)も登録するのは、データを失わないため。
