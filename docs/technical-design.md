@@ -215,7 +215,42 @@ src/lib/content.js の動作
 | 環境変数 | `MICROCMS_SERVICE_DOMAIN` / `MICROCMS_API_KEY`(未設定ならローカル JSON で動作) |
 
 ローカル検証: `npm run dev`(開発サーバー)/ `npm run build && npm run preview`。
-表示一致検証: 現行 HTML と dist/ の HTML の構造 diff + スクリーンショット比較(第 4 週)。
+表示一致検証: `node scripts/dom-compare.mjs`(下記)+ スクリーンショット比較(第 4 週)。
+
+### 6-1. URL 挙動の検証結果(2026-08-01 実測)
+
+Cloudflare Pages は `.html` 付き URL を拡張子なし URL へ 308 リダイレクトする。
+**現行本番サイトも既に同じ挙動**であり、移行による変化はない。
+
+| リクエスト | 現行本番 | 検証環境(Astro 版) |
+|---|---|---|
+| `/kaf_mmg.html` | 308 → `/kaf_mmg` | 308 → `/kaf_mmg` |
+| `/kaf_mmg` | 200 | 200 |
+| `/index.html` | 308 → `/` | 308 → `/` |
+
+→ 受入基準 1(URL 一致)は**リダイレクト挙動を含めて満たしている**。
+`build.format: 'file'` により `dist/` 側のファイル名も現行と 1:1 で一致する。
+
+### 6-2. DOM 等価性の自動検証(`scripts/dom-compare.mjs`)
+
+parse5(ブラウザ同等の HTML5 パーサ)で以下を比較する回帰テスト。
+
+- 比較対象 A: 現行 HTML に include.js と data-loader.js の処理をシミュレート適用した DOM
+  (= 移行前にユーザーが実際に見ている状態)
+- 比較対象 B: `dist/` のビルド結果
+- 判定: タグ / id / class / src / href / data-* の構造ツリーと、全テキストの完全一致
+- 意図した差分のみ許容: フッター組織名の誤記是正、空の重複 include-footer div の非出力
+
+実行結果(2026-08-01): **全 10 ページで構造・テキストとも一致**。
+
+### 6-3. デプロイ検証(2026-08-01 実測)
+
+検証環境 `kadoma-artfes-staging.pages.dev` にて確認済み。
+
+- 全 10 ページ + CSS 3 / JS 4 / 画像 / PDF がすべて 200
+- 旧 `include.js` / `data-loader.js` への参照は 0 件
+- **デプロイされた HTML 10 件すべてがローカル `dist/` と SHA256 完全一致**
+  → ローカルで検証した DOM 等価性が、そのまま本番同等環境でも成立していることを確認
 
 ---
 
