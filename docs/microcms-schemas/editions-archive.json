@@ -1,0 +1,47 @@
+{
+  "apiFields": [
+    {
+      "fieldId": "year",
+      "name": "開催年",
+      "kind": "number",
+      "description": null,
+      "required": true
+    },
+    {
+      "fieldId": "title",
+      "name": "大会名",
+      "kind": "text",
+      "description": null,
+      "required": true
+    },
+    {
+      "fieldId": "dateRange",
+      "name": "開催期間",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "description",
+      "name": "紹介文",
+      "kind": "textArea",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "heroImage",
+      "name": "代表画像",
+      "kind": "media",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "gallery",
+      "name": "ギャラリー画像",
+      "kind": "mediaList",
+      "description": null,
+      "required": false
+    }
+  ],
+  "customFields": []
+}
