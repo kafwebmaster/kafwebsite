@@ -1,0 +1,121 @@
+---
+// アーカイブ一覧 (/archive.html)
+// 最新大会 (メニューの訴求枠) を除く過去大会をカードで並べる。
+// 有効エントリが 0 件の間は「準備中」+ noindex で生成する (休眠状態)。
+// 設計: docs/archive-feature-design.md 4-2
+import HeaderSub from '../components/HeaderSub.astro';
+import Menubar from '../components/Menubar.astro';
+import Footer from '../components/Footer.astro';
+import { getSiteData, getArchiveSplit } from '../lib/content.js';
+const data = await getSiteData();
+const { archives, past } = await getArchiveSplit();
+const dormant = archives.length === 0;
+---
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>アーカイブ【KADOMA ART FES - 門真のまちをアートで染めよう】</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="KADOMA ART FES 歴代イベントのアーカイブ">
+    {dormant && <meta name="robots" content="noindex">}
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/sub-page.css">
+    <link rel="stylesheet" href="/css/archive.css">
+</head>
+<body class="home">
+    <div id="container">
+
+        <!-- header(include) -->
+        <HeaderSub base="/" />
+
+        <main>
+
+            <section class="bg1">
+                <h2 class="h2-right">
+                    <span class="hosoku fade-in-text pc">KADOMA ART FES ARCHIVE</span>
+                    <span class="hosoku fade-in-text sp">ARCHIVE</span>
+                    <span class="blur"><br class="sp">アーカイブ</span>
+                </h2>
+                <p>歴代の KADOMA ART FES の記録です。</p>
+            </section>
+
+            <section class="bg2">
+{past.length > 0 ? (
+                <div class="archive-list">
+{past.map((a) => (
+                    <a class="archive-card" href={`/archive/${a.year}.html`}>
+                        {a.heroImage && <img src={a.heroImage} alt={a.title}>}
+                        <div class="archive-card-body">
+                            <div class="archive-card-year">{a.year}</div>
+                            <div class="archive-card-title">{a.title}</div>
+                            {a.dateRange && <div class="archive-card-date">{a.dateRange}</div>}
+                        </div>
+                    </a>
+))}
+                </div>
+) : (
+                <div class="archive-empty">
+                    <p>アーカイブは準備中です。</p>
+                </div>
+)}
+            </section>
+
+        </main>
+
+        <!--フッター-->
+        <Footer data={data} base="/" />
+
+    </div>
+    <!--/#container-->
+
+    <!--ページの上部へ戻るボタン-->
+    <div class="pagetop"><a href="#"><i class="fas fa-angle-double-up"></i></a></div>
+
+    <!--開閉ブロック-->
+    <Menubar data={data} base="/" />
+
+    <!--開閉ボタン（ハンバーガーアイコン）-->
+    <div id="menubar_hdr_inner">
+        <div id="menubar_hdr">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!--jQueryの読み込み-->
+    <script is:inline src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!--lightbox用jsファイルの読み込み-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox-plus-jquery.min.js"></script>
+
+    <!--Swiper-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script is:inline src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!--スライドショー（slick）-->
+    <script is:inline src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script is:inline src="/js/slick-thumbnail.js"></script>
+    <script is:inline src="/js/slick.js"></script>
+
+    <!--パララックス（inview）-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/protonet-jquery.inview/1.1.2/jquery.inview.min.js"></script>
+    <script is:inline src="/js/jquery.inview_set.js"></script>
+
+    <!--このテンプレート専用のスクリプト-->
+    <script is:inline src="/js/main.js"></script>
+
+    <!--ロゴアニメーション-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/vivus/0.4.6/vivus.min.js"></script>
+    <script is:inline>
+        new Vivus('svg-logo', {
+            start: 'autostart',
+            type: 'scenario-sync',
+            duration: 150,
+            forceRender: false,
+        });
+    </script>
+
+</body>
+
+</html>

@@ -5,7 +5,7 @@
 //        site.json と同じ入れ子構造に正しく復元されることを、実キー無しで保証する
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { mapSiteSettings, mapNews, mapSponsors } from '../src/lib/content.js';
+import { mapSiteSettings, mapNews, mapSponsors, mapArchives } from '../src/lib/content.js';
 
 const local = JSON.parse(fs.readFileSync('src/data/site.json', 'utf8'));
 
@@ -42,7 +42,7 @@ for (const [section, obj] of Object.entries(local)) {
 // 1-a: マニフェストありの場合 → ローカルパスに解決
 const manifest = Object.fromEntries(
     Object.keys(mock).filter(k => k.startsWith('images_') || k === 'contest_entryPdf')
-        .map(k => [k, `/cms-assets/${k}.bin`])
+        .map(k => [mock[k].url, `/cms-assets/${k}.bin`])
 );
 const mapped = mapSiteSettings(mock, local, manifest);
 for (const [section, obj] of Object.entries(local)) {
@@ -87,3 +87,32 @@ assert.deepEqual(ordered.map(s => s.name), ['A', 'C', 'B']);
 console.log('OK 4: sponsors → 登録順維持 / order 指定は優先');
 
 console.log('\n全テスト合格');
+
+// --- 4. archives (mapArchives) ---
+const A = (year, title, galleryCount, publishedAt, extra = {}) => ({
+    year, title, publishedAt,
+    dateRange: `${year}年開催`, description: `${title} の記録`,
+    heroImage: { url: `https://images.microcms-assets.io/assets/svc/hero${year}/hero.jpg` },
+    gallery: Array.from({ length: galleryCount }, (_, i) =>
+        ({ url: `https://images.microcms-assets.io/assets/svc/g${year}-${i}/p.jpg` })),
+    ...extra,
+});
+const rawArchives = [
+    A(2024, 'KADOMA ART FES 4', 3, '2026-08-01T00:00:00Z'),
+    A(2026, 'KADOMA ART FES 5', 2, '2026-08-02T00:00:00Z'),
+    A(2027, 'KADOMA ART FES 6', 0, '2026-08-03T00:00:00Z'),          // 写真ゼロ → 除外
+    A(2024, '重複の古い方', 5, '2025-01-01T00:00:00Z'),               // year 重複 (古い) → 除外
+    A(2026.5, '小数year', 2, '2026-08-01T00:00:00Z'),                 // 非整数 → 除外
+];
+const mappedA = mapArchives(rawArchives);
+assert.deepEqual(mappedA.map(a => a.year), [2026, 2024], 'year 降順・無効エントリ除外');
+assert.equal(mappedA[1].title, 'KADOMA ART FES 4', '重複は公開が新しい方を採用');
+assert.equal(mappedA[0].gallery.length, 2);
+assert.ok(mappedA[0].heroImage.startsWith('https://'), 'マニフェスト無しでは CMS URL のまま');
+// マニフェスト解決
+const aManifest = { 'https://images.microcms-assets.io/assets/svc/hero2026/hero.jpg': '/cms-assets/archive/2026/hero.jpg' };
+const mappedA2 = mapArchives(rawArchives, aManifest);
+assert.equal(mappedA2[0].heroImage, '/cms-assets/archive/2026/hero.jpg');
+console.log('OK 5: archives → 降順ソート / 写真ゼロ・重複・非整数の除外 / マニフェスト解決');
+
+console.log('\n全テスト合格 (archives 含む)');

@@ -1,0 +1,128 @@
+---
+// 年度別アーカイブ詳細 (/archive/{year}.html)
+// microCMS editions-archive の 1 件 = 1 ページ。
+// 見た目は既存 2024gallery.html の構成 (h2 複合構造 + 画像グリッド + grayDisplay
+// モーダル) を踏襲する。設計: docs/archive-feature-design.md 4-3
+import HeaderSub from '../../components/HeaderSub.astro';
+import Menubar from '../../components/Menubar.astro';
+import Footer from '../../components/Footer.astro';
+import { getSiteData, getArchives } from '../../lib/content.js';
+
+export async function getStaticPaths() {
+    const archives = await getArchives();
+    // params は文字列必須 (数値だと GetStaticPathsInvalidRouteParam でビルド失敗)
+    return archives.map((a) => ({
+        params: { year: String(a.year) },
+        props: { archive: a },
+    }));
+}
+
+const data = await getSiteData();
+const { archive } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{archive.year}イベント風景Photoギャラリー【KADOMA ART FES】</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content={`${archive.title} イベント風景Photoギャラリー`}>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/sub-page.css">
+</head>
+<body class="home">
+    <div id="container">
+
+        <!-- header(include) -->
+        <HeaderSub base="/" />
+
+        <main>
+
+            <section class="bg1">
+                <h2 class="h2-right">
+                    <span class="hosoku fade-in-text pc">{archive.title}</span>
+                    <span class="hosoku fade-in-text sp">ARCHIVE</span><span class="hosoku fade-in-text sp">GALLERY</span>
+                    <span class="blur">{archive.year}イベント風景Photoギャラリー</span>
+                </h2>
+                <p>{archive.title}{archive.dateRange && ` (${archive.dateRange})`}</p>
+                {archive.description && <p>{archive.description}</p>}
+                {archive.heroImage && (
+                <div class="logo-container">
+                    <img src={archive.heroImage} alt={archive.title}>
+                </div>
+                )}
+            </section>
+
+            <section class="course gallery" id="course">
+                <div class="container">
+                    <div class="course-wrapper">
+{archive.gallery.map((src) => (
+                        <div class="course-item">
+                            <img src={src} alt={`${archive.year}年 KADOMA ART FES 風景`} class="course-item-img">
+                        </div>
+))}
+                    </div>
+                </div>
+
+                <div id="grayDisplay"></div>
+
+            </section>
+
+        </main>
+
+        <!--フッター-->
+        <Footer data={data} base="/" />
+
+    </div>
+    <!--/#container-->
+
+    <!--ページの上部へ戻るボタン-->
+    <div class="pagetop"><a href="#"><i class="fas fa-angle-double-up"></i></a></div>
+
+    <!--開閉ブロック-->
+    <Menubar data={data} base="/" />
+
+    <!--開閉ボタン（ハンバーガーアイコン）-->
+    <div id="menubar_hdr_inner">
+        <div id="menubar_hdr">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!--jQueryの読み込み-->
+    <script is:inline src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!--lightbox用jsファイルの読み込み-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox-plus-jquery.min.js"></script>
+
+    <!--Swiper-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script is:inline src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!--スライドショー（slick）-->
+    <script is:inline src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script is:inline src="/js/slick-thumbnail.js"></script>
+    <script is:inline src="/js/slick.js"></script>
+
+    <!--パララックス（inview）-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/protonet-jquery.inview/1.1.2/jquery.inview.min.js"></script>
+    <script is:inline src="/js/jquery.inview_set.js"></script>
+
+    <!--このテンプレート専用のスクリプト-->
+    <script is:inline src="/js/main.js"></script>
+
+    <!--ロゴアニメーション-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/vivus/0.4.6/vivus.min.js"></script>
+    <script is:inline>
+        new Vivus('svg-logo', {
+            start: 'autostart',
+            type: 'scenario-sync',
+            duration: 150,
+            forceRender: false,
+        });
+    </script>
+
+</body>
+
+</html>
