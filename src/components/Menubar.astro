@@ -4,19 +4,32 @@
 // main.js が #include-menubar を開閉対象にしているため、wrapper div ごと出力して
 // DOM 構造を現行と一致させる。
 // 年度依存値はビルド時に差し込む (data-field 属性は対応関係の記録として残置)。
-const { data } = Astro.props;
+//
+// base プロパティ: ルート直下のページは未指定 (= "" で従来どおりの相対パス)。
+// /archive/ 配下のページは base="/" を渡し、ルート絶対パスで解決させる。
+//
+// ギャラリー枠とアーカイブ項目 (docs/archive-feature-design.md 4-1):
+// - アーカイブ (editions-archive) が 0 件の間は現行どおり
+//   site-settings の gallery.latestPage / latestLabel を表示 (休眠状態。
+//   このときの出力は従来とバイト単位で一致させる)
+// - 1 件以上あれば、最新大会の年度別ページ + 「アーカイブ」項目に切り替わる
+//   (この場合は生成リンクであり、旧 data-*-field の記録属性は付けない)
+import { getArchiveSplit } from '../lib/content.js';
+const { data, base = '' } = Astro.props;
+const { latest } = await getArchiveSplit();
 ---
 <div id="include-menubar">
 <nav>
     <ul>
-        <li><a href="index.html">HOME</a></li>
-        <li><a href="kaf_info.html">KAFとは</a></li>
-        <li><a href="kaf_mmg.html">イベント開催情報</a></li>
-        <li><a href="contest.html">KAFコンテスト<span data-field="edition.displayNameShort">{data.edition.displayNameShort}</span>受賞作品</a></li>
-        <li><a href="media.html">メディア掲載情報</a></li>
-        <li><a href="contest_entry.html">KAFコンテスト作品募集(<span data-field="contest.statusLabel">{data.contest.statusLabel}</span>)</a></li>
-        <li><a href={data.gallery.latestPage} data-href-field="gallery.latestPage" data-field="gallery.latestLabel">{data.gallery.latestLabel}</a></li>
-        <li><a href="kaf_support.html">協賛・応援について</a></li>
+        <li><a href={`${base}index.html`}>HOME</a></li>
+        <li><a href={`${base}kaf_info.html`}>KAFとは</a></li>
+        <li><a href={`${base}kaf_mmg.html`}>イベント開催情報</a></li>
+        <li><a href={`${base}contest.html`}>KAFコンテスト<span data-field="edition.displayNameShort">{data.edition.displayNameShort}</span>受賞作品</a></li>
+        <li><a href={`${base}media.html`}>メディア掲載情報</a></li>
+        <li><a href={`${base}contest_entry.html`}>KAFコンテスト作品募集(<span data-field="contest.statusLabel">{data.contest.statusLabel}</span>)</a></li>
+        {latest ? <Fragment><li><a href={`${base}archive/${latest.year}.html`}>{latest.year}イベント風景Photoギャラリー</a></li>
+        <li><a href={`${base}archive.html`}>アーカイブ</a></li></Fragment> : <li><a href={`${base}${data.gallery.latestPage}`} data-href-field="gallery.latestPage" data-field="gallery.latestLabel">{data.gallery.latestLabel}</a></li>}
+        <li><a href={`${base}kaf_support.html`}>協賛・応援について</a></li>
     </ul>
 </nav>
 

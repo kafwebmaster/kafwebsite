@@ -7,7 +7,7 @@
 // 同じ扱いで、正名称をデータから差し込む。
 // <br class="sp"> の改行位置は現行表示を保つため「パイロットプロジェクト」の
 // 直前で分割する (該当語が無い場合は分割しない)。
-const { data } = Astro.props;
+const { data, base = '' } = Astro.props;
 const host = data.organization.host;
 const splitAt = host.indexOf('パイロットプロジェクト');
 const hostBefore = splitAt > 0 ? host.slice(0, splitAt) : host;
@@ -22,6 +22,6 @@ const hostAfter = splitAt > 0 ? host.slice(splitAt) : null;
     <h3>{data.organization.support}</h3>
 </section>
 <footer>
-    <small>Copyright&copy; <a href="index.html">{host}</a> All Rights Reserved.</small>
+    <small>Copyright&copy; <a href={`${base}index.html`}>{host}</a> All Rights Reserved.</small>
 </footer>
 </div>
