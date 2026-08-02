@@ -112,53 +112,77 @@ if (PREVIEW && !YES) {
     process.exit(0);
 }
 
-// ビルド内実行 (方式A) では投入失敗でビルドを止めない。
-// 権限不足などで失敗しても、取得層がローカルデータへフォールバックするため
-// サイト自体は従来どおり成立する。
-const failSoft = (msg) => {
-    if (SEED_FLAG) {
-        console.warn(`[seed] ${msg}`);
-        console.warn('[seed] 投入をスキップしてビルドを続行します');
-        process.exit(0);
-    }
-    console.error(msg);
-    process.exit(1);
-};
+// 3 ステップは互いに独立して実行する。
+// 1 つが失敗しても残りを続行し、最後に成否の一覧を表示する
+// (前回、site-settings の失敗で news / sponsors まで未投入になった反省)。
+// ビルド内実行 (方式A) ではどの失敗でもビルドは止めない。
+const results = [];
 
-// --- 二重投入ガード ---
+// [1/3] site-settings (オブジェクト形式は PATCH のみ。
+//        管理画面で一度「下書き保存」されていないと "Content is not exists" になる)
+console.log('\n[1/3] site-settings を投入...');
 try {
-    for (const ep of ['news', 'sponsors']) {
-        const cur = await api('GET', ep, null, '?limit=0');
-        if (cur?.totalCount > 0) {
-            failSoft(`中止: ${ep} に既に ${cur.totalCount} 件のコンテンツがあります (二重投入防止)`);
-        }
-    }
-} catch (e) {
-    failSoft(`件数確認に失敗しました: ${e.message}`);
-}
-
-// --- 実行 ---
-try {
-    console.log('\n[1/3] site-settings を投入...');
     await api('PATCH', 'site-settings', settings);
-    console.log('  完了');
-
-    console.log('[2/3] news を投入 (7件・古い順)...');
-    for (const n of newsToPost) {
-        await api('POST', 'news', n);
-        console.log(`  + ${n.date} ${n.text.slice(0, 24)}...`);
-    }
-
-    console.log('[3/3] sponsors を投入 (34件)...');
-    for (const s of sponsorsToPost) {
-        await api('POST', 'sponsors', s);
-    }
+    results.push(['site-settings', 'OK', `${Object.keys(settings).length} 項目`]);
     console.log('  完了');
 } catch (e) {
-    failSoft(`投入中にエラーが発生しました: ${e.message}`);
+    results.push(['site-settings', 'FAIL', e.message]);
+    console.warn(`  失敗: ${e.message}`);
+    if (String(e.message).includes('Content is not exists')) {
+        console.warn('  → microCMS 管理画面で「サイト設定」を開き、空のまま「下書き保存」してから再実行してください');
+    }
 }
 
-console.log('\n[seed] 投入がすべて完了しました。');
-console.log('[seed] ⚠️ 次の 2 つを必ず実施してください:');
-console.log('[seed]   1. Cloudflare の環境変数 SEED_MICROCMS を削除する');
-console.log('[seed]   2. microCMS の API キーから POST / PATCH 権限を外し GET のみに戻す');
+// [2/3] news (二重投入ガード付き)
+console.log('[2/3] news を投入 (7件・古い順)...');
+try {
+    const cur = await api('GET', 'news', null, '?limit=0');
+    if (cur?.totalCount > 0) {
+        results.push(['news', 'SKIP', `既に ${cur.totalCount} 件あり (二重投入防止)`]);
+        console.warn(`  スキップ: 既に ${cur.totalCount} 件あります`);
+    } else {
+        for (const n of newsToPost) {
+            await api('POST', 'news', n);
+            console.log(`  + ${n.date} ${n.text.slice(0, 24)}...`);
+        }
+        results.push(['news', 'OK', `${newsToPost.length} 件`]);
+    }
+} catch (e) {
+    results.push(['news', 'FAIL', e.message]);
+    console.warn(`  失敗: ${e.message}`);
+}
+
+// [3/3] sponsors (二重投入ガード付き)
+console.log('[3/3] sponsors を投入 (34件)...');
+try {
+    const cur = await api('GET', 'sponsors', null, '?limit=0');
+    if (cur?.totalCount > 0) {
+        results.push(['sponsors', 'SKIP', `既に ${cur.totalCount} 件あり (二重投入防止)`]);
+        console.warn(`  スキップ: 既に ${cur.totalCount} 件あります`);
+    } else {
+        for (const s of sponsorsToPost) {
+            await api('POST', 'sponsors', s);
+        }
+        results.push(['sponsors', 'OK', `${sponsorsToPost.length} 件`]);
+        console.log('  完了');
+    }
+} catch (e) {
+    results.push(['sponsors', 'FAIL', e.message]);
+    console.warn(`  失敗: ${e.message}`);
+}
+
+// --- 結果サマリ ---
+console.log('\n[seed] ===== 投入結果 =====');
+for (const [ep, status, detail] of results) {
+    console.log(`[seed]   ${status.padEnd(4)} ${ep}: ${detail}`);
+}
+const allOk = results.every(([, s]) => s === 'OK' || s === 'SKIP');
+if (allOk) {
+    console.log('[seed] 投入がすべて完了しました。');
+    console.log('[seed] ⚠️ 次の 2 つを必ず実施してください:');
+    console.log('[seed]   1. Cloudflare の環境変数 SEED_MICROCMS を削除する');
+    console.log('[seed]   2. microCMS の API キーから POST / PATCH 権限を外し GET のみに戻す');
+} else {
+    console.warn('[seed] 一部が失敗しました。上記の指示に従い再実行してください (成功分は二重投入ガードで保護されます)');
+}
+if (!SEED_FLAG && !allOk) process.exit(1);
