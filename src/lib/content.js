@@ -55,6 +55,12 @@ const FIELD_MAP = {
         deliveryPeriod: 'contest_delivery',
         entryPdf: 'contest_entryPdf',
         entryFormUrl: 'contest_entryFormUrl',
+        // 2大会並走対応: サイト全体 (edition_*) と募集 (contest_*) を分離
+        editionName: 'contest_editionName',
+        venue: 'contest_venue',
+        entryFee: 'contest_entryFee',
+        mailingAddr: 'contest_mailingAddr',
+        bankInfo: 'contest_bankInfo',
     },
     marche: {
         displayName: 'marche_name',
@@ -89,6 +95,11 @@ const FIELD_MAP = {
     social: {
         youtube: 'social_youtube',
         instagram: 'social_instagram',
+    },
+    // 固定文言の CMS 化 (トップ紹介文など)
+    siteText: {
+        intro: 'site_introText',
+        mainEvent: 'site_mainEvent',
     },
 };
 

@@ -78,6 +78,8 @@ const RENAMES = {
     'contest.deliveryPeriod': 'contest_delivery',
     'images.entryThumbnail': 'images_entryThumb',
     'marche.displayName': 'marche_name',
+    'siteText.intro': 'site_introText',
+    'siteText.mainEvent': 'site_mainEvent',
 };
 const settings = {};
 for (const [section, obj] of Object.entries(site)) {

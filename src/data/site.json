@@ -26,7 +26,12 @@
     "exhibitionPeriodFull": "2026年3月7日（土）8日（日）10:00～16:00",
     "deliveryPeriod": "2026年1月中旬",
     "entryPdf": "KAF5entry.pdf",
-    "entryFormUrl": "https://forms.gle/tN6MJoqWRJoSHwF18"
+    "entryFormUrl": "https://forms.gle/tN6MJoqWRJoSHwF18",
+    "editionName": "KADOMA ART FES 5",
+    "venue": "大和田駅前広場 / 大和田南商店街 周辺",
+    "entryFee": "1点　1500円",
+    "mailingAddr": "〒571-0030　大阪府門真市末広町29-1門真市民文化会館ルミエールホール内\nKADOMA ART FES CONTEST係",
+    "bankInfo": "枚方信用金庫 大和田支店\n店005 普通0342014\n門真市文化芸術推進基本計画パイロットプロジェクト実行委員会"
   },
   "marche": {
     "displayName": "カドマアート・マルシェ in 大和田 2026",
@@ -61,6 +66,10 @@
   "social": {
     "youtube": "https://www.youtube.com/@kadomaartfes",
     "instagram": "https://www.instagram.com/pilot_kadoma/"
+  },
+  "siteText": {
+    "intro": "職人の街、門真市ならではの『アートとアイデアの可能性』を感じることができるのがKADOMA ART FES。 大和田駅前広場をメインとし、大和田南商店街周辺をアートで染める「MACHIKADO MACHINAKA GALLERY」を開催いたします。 アートコンテストやアートを感じられるワークショップなど、様々なアートイベントを予定しています。",
+    "mainEvent": "門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY"
   },
   "news": [
     {

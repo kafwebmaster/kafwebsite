@@ -325,6 +325,55 @@
       "kind": "text",
       "description": null,
       "required": false
+    },
+    {
+      "fieldId": "contest_editionName",
+      "name": "募集中の大会名",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "contest_venue",
+      "name": "展示場所(募集用)",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "contest_entryFee",
+      "name": "出品料",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "contest_mailingAddr",
+      "name": "応募先(郵送)",
+      "kind": "textArea",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "contest_bankInfo",
+      "name": "出品料振込先",
+      "kind": "textArea",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "site_introText",
+      "name": "トップ紹介文",
+      "kind": "textArea",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "site_mainEvent",
+      "name": "メインイベント名",
+      "kind": "text",
+      "description": null,
+      "required": false
     }
   ],
   "customFields": []
