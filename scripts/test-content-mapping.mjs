@@ -86,6 +86,17 @@ const ordered = mapSponsors([
 assert.deepEqual(ordered.map(s => s.name), ['A', 'C', 'B']);
 console.log('OK 4: sponsors → 登録順維持 / order 指定は優先');
 
+// --- 4. FIELD_MAP に無いキー (JSON のみで管理) のパススルー ---
+// siteText や contest の配列項目は CMS 側にフィールドが無いため、
+// CMS 応答が空でも site.json の値がそのまま通ること
+const mapped3 = mapSiteSettings({}, local, {});
+assert.deepEqual(mapped3.siteText, local.siteText, 'siteText はローカル値のまま');
+assert.deepEqual(mapped3.contest.rules, local.contest.rules, 'contest.rules はローカル値のまま');
+assert.deepEqual(mapped3.contest.eligibility, local.contest.eligibility, 'contest.eligibility はローカル値のまま');
+assert.equal(mapped3.contest.editionName, local.contest.editionName);
+assert.equal(mapped3.contest.entryFee, local.contest.entryFee);
+console.log('OK 5: FIELD_MAP に無いキー → site.json の値をパススルー');
+
 console.log('\n全テスト合格');
 
 // --- 4. archives (mapArchives) ---
@@ -113,6 +124,6 @@ assert.ok(mappedA[0].heroImage.startsWith('https://'), 'マニフェスト無し
 const aManifest = { 'https://images.microcms-assets.io/assets/svc/hero2026/hero.jpg': '/cms-assets/archive/2026/hero.jpg' };
 const mappedA2 = mapArchives(rawArchives, aManifest);
 assert.equal(mappedA2[0].heroImage, '/cms-assets/archive/2026/hero.jpg');
-console.log('OK 5: archives → 降順ソート / 写真ゼロ・重複・非整数の除外 / マニフェスト解決');
+console.log('OK 6: archives → 降順ソート / 写真ゼロ・重複・非整数の除外 / マニフェスト解決');
 
 console.log('\n全テスト合格 (archives 含む)');

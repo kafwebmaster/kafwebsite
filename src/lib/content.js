@@ -26,7 +26,10 @@ const localData = JSON.parse(fs.readFileSync(fromRoot('src/data/site.json'), 'ut
 
 // microCMS のフィールド ID は 20 文字以内の制限があるため、
 // site.json のキー名と一部異なる (docs/microcms-schema.md 7 章の対応表と同期)
-const FIELD_MAP = {
+// この表は「実際に microCMS に存在するフィールド」だけを持つ。
+// site.json にしか無いキー (siteText や contest の配列項目など) は
+// mapSiteSettings の末尾でローカル値をそのまま通す (CMS 化は KAF7 対応時)。
+export const FIELD_MAP = {
     edition: {
         displayName: 'edition_name',
         displayNameShort: 'edition_nameShort',
@@ -144,6 +147,15 @@ export function mapSiteSettings(cms, fallback, manifest = {}) {
                 v = unwrapSelect(v);
             }
             out[section][key] = v ?? fb; // CMS 未入力はローカル値で補完
+        }
+    }
+    // FIELD_MAP に無いセクション・キーは site.json の値をそのまま通す
+    // (news / sponsors などの配列セクションは別処理のため対象外)
+    for (const [section, obj] of Object.entries(fallback)) {
+        if (Array.isArray(obj) || typeof obj !== 'object' || obj === null) continue;
+        out[section] ??= {};
+        for (const [key, value] of Object.entries(obj)) {
+            if (!(key in out[section])) out[section][key] = value;
         }
     }
     return out;
