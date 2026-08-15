@@ -131,15 +131,8 @@ ul {
     <div class="logo-container">
         <img src={data.images.contestBanner} alt="作品募集" data-src-field="images.contestBanner">
     </div>
-<p>
-KADOMA ART FESは、様々なジャンルのアーティストの皆様のアイデアを取り入れ、アートの力で実現できる可能性を見出す事ができるアートフェスタを目指しています。
-2021年より毎年開催しているKADOMA ART FESも本年で<span data-field="edition.yearsRunning">{data.edition.yearsRunning}</span>年目となりました。
-本年度も大和田駅前エリアでの「MACHIKADO MACHINAKA GALLERY」を開催致します。
-地域の活性化と地元の方たちに喜んで頂けることを目指し職人の街、門真市ならではの『アートとアイデアの可能性』を感じる事ができる<span data-field="edition.displayName">{data.edition.displayName}</span>をお楽しみください。
-</p>
-<p>■<span data-field="contest.entryDeadlineShort">{data.contest.entryDeadlineShort}</span>まで、募集期間延長しました。<br>
-募集要領および出品規定、選考条件などをご確認の上、ご応募いただきますようお願いいたします。<br>
-</p>
+{data.contest.intro.map((line) => <p>{line}</p>)}
+<p><strong>{data.contest.draftNotice}</strong></p>
 <p data-field="organization.host">{data.organization.host}</p>
 
             </section>
@@ -199,7 +192,7 @@ KADOMA ART FESは、様々なジャンルのアーティストの皆様のアイ
 		<p>【展示期間】</p>
 		<p><span data-field="contest.exhibitionPeriodFull">{data.contest.exhibitionPeriodFull}</span>（予定）</p>
 		<p>【展示場所】</p>
-		<p>京阪大和田駅南側会場（大阪府門真市野里町をはじめとする開催地域）</p>
+		<p>{data.contest.exhibitVenueNote}</p>
 	</div>
 	<div class="note">
 		<p><strong>出品に関しての注意点</strong></p>

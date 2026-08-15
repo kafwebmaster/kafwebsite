@@ -113,7 +113,7 @@ const data = await getSiteData();
 
             <section class="bg1">
                 <h2 class="h2-right">
-                    <span class="hosoku fade-in-text pc">KADOMAARTFES5開催情報</span>
+                    <span class="hosoku fade-in-text pc"><span data-field="edition.displayNameCompact">{data.edition.displayNameCompact}</span>開催情報</span>
                     <span class="hosoku fade-in-text sp">KADOMAARTFES</span>
                     <span class="hosoku fade-in-text sp">開催情報</span>
                     <span class="blur">MACHIKADO MACHINAKA <br class="sp">GALLERY</span>
@@ -121,22 +121,14 @@ const data = await getSiteData();
                 <div class="logo-container">
                     <img src={data.images.flyerFull} alt={data.edition.displayNameShort} data-src-field="images.flyerFull" data-alt-field="edition.displayNameShort">
                 </div>
-                <p>
-                    職人の街、門真市ならではの『アートとアイデアの可能性』を感じる事ができるのがKADOMA ART FES。
-                    大和田駅前広場をメインとし、大和田南商店街周辺をアートで染める「MACHIKADO MACHINAKA GALLERY」を開催いたします。
-                    アートコンテストやアートを感じれるワークショップなど様々なアートイベントを予定。
-                </p>
+                <p>{data.mmg.intro}</p>
             </section>
 
             <section class="kaf-event-details">
                 <div class="kaf-section-title">
                     <span>イベントの詳細</span>
                 </div>
-                <p>
-                    職人の街、門真市ならではの『アートとアイデアの可能性』を感じることができるのがKADOMA ART FES。
-                    大和田駅前広場をメインとし、大和田南商店街周辺をアートで染める「MACHIKADO MACHINAKA GALLERY」を開催いたします。
-                    アートコンテストやアートを感じられるワークショップなど、様々なアートイベントを予定しています。
-                </p>
+                <p>{data.mmg.intro}</p>
                 <table>
                     <tr>
                         <th>名称</th>
@@ -144,7 +136,7 @@ const data = await getSiteData();
                     </tr>
                     <tr>
                         <th>メインイベント</th>
-                        <td>門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY</td>
+                        <td>{data.siteText.mainEvent}</td>
                     </tr>
                     <tr>
                         <th>開催日時</th>
@@ -167,13 +159,56 @@ const data = await getSiteData();
                     <span>全体コンテンツ</span>
                 </div>
     <ul>
-        <li>門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY</li>
-        <li><span data-field="edition.displayName">{data.edition.displayName}</span> CONTEST</li>
-        <li data-field="marche.displayName">{data.marche.displayName}</li>
-        <li>まちかどまちなかコンサート（8日のみ）</li>
-         <li><span data-field="edition.displayName">{data.edition.displayName}</span>　コンテスト表彰式</li>
-        <li>スタンプラリー</li>
+        {data.mmg.contents.map((item) => <li>{item}</li>)}
     </ul>
+
+                <div class="kaf-sub-section-title">
+                    <span>展示期間</span>
+                </div>
+                <table>
+                    {data.mmg.exhibition.map((row) => (
+                        <tr>
+                            <th>{row.label}</th>
+                            <td>{row.venue}　{row.period}{row.note && <><br />{row.note}</>}</td>
+                        </tr>
+                    ))}
+                </table>
+
+                <div class="kaf-sub-section-title">
+                    <span>開催期間中スペシャルイベント</span>
+                </div>
+                <table>
+                    <tr>
+                        <th>内容</th>
+                        <td>{data.mmg.galleryTalk.title}</td>
+                    </tr>
+                    <tr>
+                        <th>会場</th>
+                        <td>{data.mmg.galleryTalk.venue}</td>
+                    </tr>
+                    <tr>
+                        <th>日時</th>
+                        <td>{data.mmg.galleryTalk.schedule.map((line, i) => <>{i > 0 && <br />}{line}</>)}</td>
+                    </tr>
+                </table>
+                <p>{data.mmg.galleryTalk.note}</p>
+
+                <div class="kaf-sub-section-title">
+                    <span>{data.mmg.kadoban.title}</span>
+                </div>
+                <p>-{data.mmg.kadoban.subtitle}-</p>
+                <table>
+                    <tr>
+                        <th>日時</th>
+                        <td>{data.mmg.kadoban.date}</td>
+                    </tr>
+                    <tr>
+                        <th>会場</th>
+                        <td>{data.mmg.kadoban.venue}</td>
+                    </tr>
+                </table>
+                <p>{data.mmg.kadoban.description}</p>
+                <p>{data.mmg.kadoban.note}</p>
             </section>
 
             <!-- ギャラリーセクションをここに追加 -->
