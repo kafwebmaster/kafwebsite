@@ -60,13 +60,13 @@ const data = await getSiteData();
                 </div>
 <p><span class="homemade-apple-regular large">Kadoma Art Fes</span></p>
 <!--<p><span class="look">KADOMA ART FES</span></p>-->
-	<p>職人の街、門真市ならではの『アートとアイデアの可能性』を感じることができるのがKADOMA ART FES。 大和田駅前広場をメインとし、大和田南商店街周辺をアートで染める「MACHIKADO MACHINAKA GALLERY」を開催いたします。 アートコンテストやアートを感じられるワークショップなど、様々なアートイベントを予定しています。</p>
+	<p>{data.siteText.intro}</p>
 	<p></p>
 	<p></p>
-	<p>メインイベント：門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY</p>
+	<p>メインイベント：{data.siteText.mainEvent}</p>
 	<p>開催日時：<span data-field="event.dateRange">{data.event.dateRange}</span> <span data-field="event.timeShort">{data.event.timeShort}</span></p>
-	<p>開催場所：大和田駅前広場 / 大和田南商店街 周辺</p>
-	<p>入場料：無料</p>
+	<p>開催場所：{data.event.venue}</p>
+	<p>入場料：{data.event.admission}</p>
 	<p class="animation-btn"><a href="kaf_mmg.html" class="animation-btn-inner">イベント詳細はこちら<i class="fas fa-angle-right"></i></a></p>
 
 

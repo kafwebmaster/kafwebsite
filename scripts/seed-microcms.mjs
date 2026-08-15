@@ -28,6 +28,7 @@
 //   - 通常のビルドでは何もしない (SEED_MICROCMS が無ければ即終了)
 import fs from 'node:fs';
 import path from 'node:path';
+import { FIELD_MAP } from '../src/lib/content.js';
 
 const DOMAIN = process.env.MICROCMS_SERVICE_DOMAIN;
 // 投入専用キーがあればそれを、無ければビルド環境の読み取りキーを使う (方式A)
@@ -65,26 +66,17 @@ const api = async (method, endpoint, body, query = '') => {
 
 // --- 投入データの組み立て ---
 
-// site-settings: メディア系以外の 36 項目 (docs/microcms-schema.md の対応表と同期)
-const RENAMES = {
-    'edition.displayName': 'edition_name',
-    'edition.displayNameShort': 'edition_nameShort',
-    'edition.displayNameCompact': 'edition_nameCompact',
-    'edition.fiscalYearLabel': 'edition_fiscalYear',
-    'contest.entryDeadline': 'contest_deadlineFull',
-    'contest.entryDeadlineShort': 'contest_deadline',
-    'contest.exhibitionPeriod': 'contest_exhibPeriod',
-    'contest.exhibitionPeriodFull': 'contest_exhibFull',
-    'contest.deliveryPeriod': 'contest_delivery',
-    'images.entryThumbnail': 'images_entryThumb',
-    'marche.displayName': 'marche_name',
-};
+// site-settings: メディア系以外の 36 項目。
+// FIELD_MAP (= 実際に microCMS に存在するフィールドの対応表) を正として組み立てる。
+// site.json にしか無いキー (siteText や contest の配列項目など) は CMS に
+// フィールドが無いため、ここには含めない (存在しないフィールドへの PATCH は 400 になる)。
 const settings = {};
-for (const [section, obj] of Object.entries(site)) {
-    if (section === 'news' || section === 'sponsors' || section === 'images') continue;
-    for (const [key, value] of Object.entries(obj)) {
-        const cmsId = RENAMES[`${section}.${key}`] ?? `${section}_${key}`;
+for (const [section, fields] of Object.entries(FIELD_MAP)) {
+    if (section === 'images') continue; // メディアは手動アップロード
+    for (const [key, cmsId] of Object.entries(fields)) {
         if (cmsId === 'contest_entryPdf') continue; // ファイルは手動アップロード
+        const value = site[section]?.[key];
+        if (value === undefined) continue;
         settings[cmsId] = cmsId === 'contest_status' ? [value] : value;
     }
 }
