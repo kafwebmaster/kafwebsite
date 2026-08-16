@@ -2,8 +2,10 @@
 import HeaderSub from '../components/HeaderSub.astro';
 import Menubar from '../components/Menubar.astro';
 import Footer from '../components/Footer.astro';
-import { getSiteData } from '../lib/content.js';
+import { getSiteData, fillFields } from '../lib/content.js';
 const data = await getSiteData();
+// 文中の {contest.entryDeadlineShort} 等を CMS の値に差し替える
+const t = (s) => fillFields(s, data);
 ---
 <!DOCTYPE html>
 <html lang="ja">
@@ -131,7 +133,7 @@ ul {
     <div class="logo-container">
         <img src={data.images.contestBanner} alt="作品募集" data-src-field="images.contestBanner">
     </div>
-{data.contest.intro.map((line) => <p>{line}</p>)}
+{data.contest.intro.map((line) => <p>{t(line)}</p>)}
 <p><strong>{data.contest.draftNotice}</strong></p>
 <p data-field="organization.host">{data.organization.host}</p>
 
@@ -168,22 +170,22 @@ ul {
 <div class="note">
             <p><strong>出品費</strong></p>
             <p>{data.contest.entryFee}</p>
-            {data.contest.entryFeeNotes.map((line) => <p>{line}</p>)}
+            {data.contest.entryFeeNotes.map((line) => <p>{t(line)}</p>)}
         </div>
 
 	<div class="note">
 	    <p><strong>参加資格</strong></p>
-	    {data.contest.eligibility.map((line) => <p>{line}</p>)}
+	    {data.contest.eligibility.map((line) => <p>{t(line)}</p>)}
 	</div>
 
 	<div class="note">
 	    <p><strong>審査</strong></p>
-	    {data.contest.judging.map((line) => <p>{line}</p>)}
+	    {data.contest.judging.map((line) => <p>{t(line)}</p>)}
 	</div>
 
 	<div class="note">
 	    <p><strong>賞</strong></p>
-	    {data.contest.awards.map((line) => <p>{line}</p>)}
+	    {data.contest.awards.map((line) => <p>{t(line)}</p>)}
 	</div>
 
 	<div class="note">
@@ -196,15 +198,15 @@ ul {
 	</div>
 	<div class="note">
 		<p><strong>出品に関しての注意点</strong></p>
-		{data.contest.entryNotes.map((line) => <p>{line}</p>)}
+		{data.contest.entryNotes.map((line) => <p>{t(line)}</p>)}
 	</div>
 
 	<div class="note">
 		<p><strong>応募書類に関しての注意点</strong></p>
-		{data.contest.docNotes.map((line) => <p>{line}</p>)}
+		{data.contest.docNotes.map((line) => <p>{t(line)}</p>)}
 		<p><img src={data.images.entryThumbnail} alt="作品募集" data-src-field="images.entryThumbnail"></p>
 		<p><strong>オンライン申込の場合</strong></p>
-		{data.contest.docNotesOnline.map((line) => <p>{line}</p>)}
+		{data.contest.docNotesOnline.map((line) => <p>{t(line)}</p>)}
 	</div>
 
 
@@ -217,7 +219,7 @@ ul {
 
 	<div class="note">
         <h3>応募先：郵送</h3>
-        {data.contest.mailingAddr.map((line) => <p>{line}</p>)}
+        {data.contest.mailingAddr.map((line) => <p>{t(line)}</p>)}
 
         <h3>応募先：メール</h3>
         <p><a class="link" href={`mailto:${data.contact.entryEmail}`}>{data.contact.entryEmail}</a></p>
@@ -225,7 +227,7 @@ ul {
 
 	<div class="note">
         <h3>出品料振込先</h3>
-        {data.contest.bankInfo.map((line) => <p>{line}</p>)}
+        {data.contest.bankInfo.map((line) => <p>{t(line)}</p>)}
 	</div>
 
         <h3><span data-field="contest.editionName">{data.contest.editionName}</span> CONTEST出展規約</h3>
@@ -233,7 +235,7 @@ ul {
 	{data.contest.rules.map((group) => (
 		<>
 		<p><strong>{group.heading}</strong></p>
-		{group.items.map((item) => <p>{item}</p>)}
+		{group.items.map((item) => <p>{t(item)}</p>)}
 		</>
 	))}
 
