@@ -4,6 +4,13 @@ import Menubar from '../components/Menubar.astro';
 import Footer from '../components/Footer.astro';
 import { getSiteData } from '../lib/content.js';
 const data = await getSiteData();
+// 理念文の {yearsRunning} / {fiscalYearLabel} を CMS の値で差し込む
+// (「◯年目」「◯年度」を毎年書き換えずに済ませるため)
+// replaceAll + 関数形式にしているのは、同じ差込みを 1 行に 2 回書いても
+// 取りこぼさないため、および値に $& 等が含まれても置換パターンと解釈させないため
+const fill = (s) => s
+    .replaceAll('{yearsRunning}', () => data.edition.yearsRunning)
+    .replaceAll('{fiscalYearLabel}', () => data.edition.fiscalYearLabel);
 ---
 <!DOCTYPE html>
 <html lang="ja">
@@ -104,10 +111,7 @@ const data = await getSiteData();
         <img src="images/KAF_logo02.png" alt="KAFLOGO">
     </div>
 <p>
-KADOMA ART FESは、様々なジャンルのアーティストの皆様のアイデアを取り入れ、アートの力で実現できる可能性を見出す事ができるアートフェスタを目指しています。
-2021年より毎年開催しているKADOMA ART FESも本年で4年目となりました。
-2025年度も大和田駅前エリアでの「MACHIKADO MACHINAKA GALLERY」を開催致します。
-地域の活性化と地元の方たちに喜んで頂けることを目指し職人の街、門真市ならではの『アートとアイデアの可能性』を感じる事ができるKADOMA ART FESをお楽しみください。
+{data.siteText.about.map((line) => <>{fill(line)}{'\n'}</>)}
 </p>
             </section>
 
@@ -117,48 +121,38 @@ KADOMA ART FESは、様々なジャンルのアーティストの皆様のアイ
     <div class="kaf-section-title">
         <span>イベントの詳細</span>
     </div>
-    <p>
-        職人の街、門真市ならではの『アートとアイデアの可能性』を感じる事ができるのがKADOMA ART FES。
-        大和田駅前広場をメインとし、大和田南商店街周辺をアートで染める「MACHIKADO MACHINAKA GALLERY」を開催いたします。
-        アートコンテストやアートを感じれるワークショップなど様々なアートイベントを予定しています。
-    </p>
+    <p>{data.siteText.intro}</p>
     <table>
         <tr>
             <th>名称</th>
-            <td>KADOMA ART FES 5</td>
+            <td data-field="edition.displayName">{data.edition.displayName}</td>
         </tr>
         <tr>
             <th>メインイベント</th>
-            <td>門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY</td>
+            <td>{data.siteText.mainEvent}</td>
         </tr>
         <tr>
             <th>開催日時</th>
-            <td>2026年03月07日 (土) 〜 03月08日 (日) 10:00 〜 16:00</td>
+            <td><span data-field="event.dateRangeLong">{data.event.dateRangeLong}</span> <span data-field="event.time">{data.event.time}</span></td>
         </tr>
         <tr>
             <th>開催場所</th>
-            <td>大和田駅前広場 / 大和田南商店街 周辺</td>
+            <td data-field="event.venue">{data.event.venue}</td>
         </tr>
         <tr>
             <th>入場料</th>
-            <td>無料</td>
+            <td data-field="event.admission">{data.event.admission}</td>
         </tr>
         <tr>
             <th>主催</th>
-            <td>門真市文化芸術推進基本計画パイロットプロジェクト実行委員会<br>門真市<br>NPO法人トイボックス</td>
+            <td><span data-field="organization.host">{data.organization.host}</span><br>門真市<br>NPO法人トイボックス</td>
         </tr>
     </table>
     <div class="kaf-sub-section-title">
         <span>全体コンテンツ</span>
     </div>
     <ul>
-        <li>門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY</li>
-        <li>KADOMA ART FES 5 CONTEST</li>
-        <li>(予定）ライブステージ</li>
-        <li>(予定）スタンプラリー</li>
-        <li>ウォールアート</li>
-        <li>コンテスト授賞式</li>
-        <li>入賞作品の展示</li>
+        {data.mmg.contents.map((item) => <li>{item}</li>)}
     </ul>
 </section>
 
