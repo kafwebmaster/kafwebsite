@@ -236,7 +236,7 @@ const data = await getSiteData();
 			</div>
 </div>
 		
-<hr>
+{data.visibility.mediaEventInfo && <Fragment><hr>
 
   <span class="hosoku">KADOMA ART FES CONTEST KAF5<br>入賞作品展示</span>
  <section class="kaf-event-details">
@@ -268,7 +268,7 @@ const data = await getSiteData();
 
 
 
- </section>
+ </section></Fragment>}
             </section>
         </main>
     </div>
