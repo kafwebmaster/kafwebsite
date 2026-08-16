@@ -6,9 +6,11 @@ import { getSiteData } from '../lib/content.js';
 const data = await getSiteData();
 // 理念文の {yearsRunning} / {fiscalYearLabel} を CMS の値で差し込む
 // (「◯年目」「◯年度」を毎年書き換えずに済ませるため)
+// replaceAll + 関数形式にしているのは、同じ差込みを 1 行に 2 回書いても
+// 取りこぼさないため、および値に $& 等が含まれても置換パターンと解釈させないため
 const fill = (s) => s
-    .replace('{yearsRunning}', data.edition.yearsRunning)
-    .replace('{fiscalYearLabel}', data.edition.fiscalYearLabel);
+    .replaceAll('{yearsRunning}', () => data.edition.yearsRunning)
+    .replaceAll('{fiscalYearLabel}', () => data.edition.fiscalYearLabel);
 ---
 <!DOCTYPE html>
 <html lang="ja">
