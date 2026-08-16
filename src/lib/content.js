@@ -133,6 +133,23 @@ function resolveMedia(value, manifest, fallback) {
     return manifest[url] ?? url;
 }
 
+// 文中の差込み記法 {contest.entryDeadlineShort} を実際の値へ置換する。
+//
+// 「※受付期間◯◯までに…」のように、CMS で管理する値が文章の途中に現れる箇所で使う。
+// 日付を文章に直接書いてしまうと CMS で締切を変更しても追従しないため、
+// site.json 側は必ず差込み記法で書くこと。
+// 未定義のパスはそのまま残し、ビルドログに警告を出す (記述ミスの検知用)。
+export function fillFields(str, data) {
+    return String(str).replace(/\{([a-zA-Z0-9_.]+)\}/g, (whole, path) => {
+        const value = path.split('.').reduce((o, k) => (o == null ? o : o[k]), data);
+        if (value == null) {
+            console.warn(`[content] 差込み ${whole} に対応する値がありません (そのまま出力します)`);
+            return whole;
+        }
+        return String(value);
+    });
+}
+
 // site-settings (フラット) → site.json と同じ入れ子構造へ復元
 export function mapSiteSettings(cms, fallback, manifest = {}) {
     const out = {};
