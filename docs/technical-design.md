@@ -17,7 +17,7 @@
 | # | URL | 用途 | data-field 化 |
 |---|---|---|---|
 | 1 | `/index.html` | トップ | 済 |
-| 2 | `/kaf_info.html` | KAF とは | 未 |
+| 2 | `/kaf_info.html` | KAF とは | 済 |
 | 3 | `/kaf_mmg.html` | イベント開催情報 | 済 |
 | 4 | `/contest.html` | KAF5 受賞作品 | 未 |
 | 5 | `/media.html` | メディア掲載情報 | 未 |
