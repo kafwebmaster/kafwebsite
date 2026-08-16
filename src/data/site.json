@@ -214,7 +214,8 @@
     }
   },
   "visibility": {
-    "winnersPage": false
+    "winnersPage": false,
+    "mediaEventInfo": false
   },
   "news": [
     {
