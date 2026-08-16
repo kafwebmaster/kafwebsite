@@ -53,12 +53,25 @@ const manifest = {};
 let failed = 0;
 
 // microCMS のアセット URL は .../assets/{assetId}/{fileName} 形式。
-// アセット ID を名前に含めて衝突を防ぐ
+// アセット ID を名前に含めて衝突を防ぐ。
+//
+// ファイル名は必ず ASCII だけに落とすこと。
+// URL.pathname は日本語などをパーセントエンコードしたまま返すため、そのまま
+// ファイル名に使うと「%E3%82%BB」という文字列がファイル名になり、
+// ブラウザは同じ文字列をエンコード済みと解釈して「セ」にデコードして要求するため、
+// 実ファイルと要求パスが食い違って 404 になる (原寸の日本語名画像が壊れる)。
+// デコードしてから ASCII 以外を _ に潰すことで、この食い違いを構造的に無くす。
 const localNameFor = (url) => {
     const parts = new URL(url).pathname.split('/').filter(Boolean);
-    const file = parts.at(-1);
     const assetId = parts.at(-2) ?? 'x';
-    return `${assetId.slice(0, 8)}-${file}`;
+    let file = parts.at(-1);
+    try {
+        file = decodeURIComponent(file);
+    } catch {
+        // 不正なエスケープが含まれる場合はそのまま次の置換に任せる
+    }
+    const safe = file.replace(/[^\w.-]+/g, '_').replace(/_+/g, '_');
+    return `${assetId.slice(0, 8)}-${safe}`;
 };
 
 async function mirror(url, subdir, { isImage }) {
@@ -66,6 +79,10 @@ async function mirror(url, subdir, { isImage }) {
     const dir = path.join(OUT_DIR, subdir);
     fs.mkdirSync(dir, { recursive: true });
     const name = localNameFor(url);
+    if (encodeURIComponent(name) !== name) {
+        // ここに来る = URL に出すとエンコードされる文字が残っている (上の対策の破れ)
+        console.warn(`[sync-cms-assets] ファイル名に URL 安全でない文字が残っています: ${name}`);
+    }
     const dest = path.join(dir, name);
     const fetchUrl = isImage ? `${url}${IMAGE_PARAMS}` : url;
     try {
