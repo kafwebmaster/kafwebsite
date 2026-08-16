@@ -5,7 +5,7 @@
 //        site.json と同じ入れ子構造に正しく復元されることを、実キー無しで保証する
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { mapSiteSettings, mapNews, mapSponsors, mapArchives } from '../src/lib/content.js';
+import { mapSiteSettings, mapNews, mapSponsors, mapArchives, shortNameOf } from '../src/lib/content.js';
 
 const local = JSON.parse(fs.readFileSync('src/data/site.json', 'utf8'));
 
@@ -125,5 +125,16 @@ const aManifest = { 'https://images.microcms-assets.io/assets/svc/hero2026/hero.
 const mappedA2 = mapArchives(rawArchives, aManifest);
 assert.equal(mappedA2[0].heroImage, '/cms-assets/archive/2026/hero.jpg');
 console.log('OK 6: archives → 降順ソート / 写真ゼロ・重複・非整数の除外 / マニフェスト解決');
+
+// --- 5. 表示用の短縮名 (メニューの「KAF5イベント風景Photoギャラリー」) ---
+assert.equal(shortNameOf('KADOMA ART FES 5', 2026), 'KAF5');
+assert.equal(shortNameOf('KADOMA ART FES 6', 2026), 'KAF6');
+assert.equal(shortNameOf('KADOMA ART FES 10', 2031), 'KAF10');
+assert.equal(shortNameOf('KADOMAARTFES7', 2027), 'KAF7', '詰めた表記でも導出できる');
+assert.equal(shortNameOf('kadoma art fes 8', 2028), 'KAF8', '小文字でも導出できる');
+assert.equal(shortNameOf('門真アートフェス', 2029), '2029', '想定外の表記は開催年で代替する');
+assert.equal(shortNameOf(undefined, 2030), '2030', '大会名が無い場合も開催年で代替する');
+assert.equal(mappedA[0].shortName, 'KAF5', 'mapArchives が shortName を持つ');
+console.log('OK 7: 短縮名の導出 → 大会名から KAF◯ / 想定外は開催年で代替');
 
 console.log('\n全テスト合格 (archives 含む)');
