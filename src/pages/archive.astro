@@ -1,4 +1,5 @@
 ---
+import DevBanner from '../components/DevBanner.astro';
 // アーカイブ一覧 (/archive.html)
 // 最新大会 (メニューの訴求枠) を除く過去大会をカードで並べる。
 // 有効エントリが 0 件の間は「準備中」+ noindex で生成する (休眠状態)。
@@ -118,6 +119,7 @@ const dormant = past.length === 0;
         });
     </script>
 
+    <DevBanner />
 </body>
 
 </html>

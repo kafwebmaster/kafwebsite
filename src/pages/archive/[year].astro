@@ -1,4 +1,5 @@
 ---
+import DevBanner from '../../components/DevBanner.astro';
 // 年度別アーカイブ詳細 (/archive/{year}.html)
 // microCMS editions-archive の 1 件 = 1 ページ。
 // 見た目は既存 2024gallery.html の構成 (h2 複合構造 + 画像グリッド + grayDisplay
@@ -123,6 +124,7 @@ const { archive } = Astro.props;
         });
     </script>
 
+    <DevBanner />
 </body>
 
 </html>

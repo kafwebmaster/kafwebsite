@@ -1,0 +1,65 @@
+---
+// 「開発中(確認用サイト)」の表示帯
+//
+// 出す条件は「本番ドメイン以外」= ステージング (*.pages.dev) とローカル。
+// 判定をビルド時の環境変数ではなく実行時のホスト名にしているのは、
+// 設定漏れで本番 (kadoma-artfes.jp) に出てしまう事故を構造的に防ぐため。
+// また、要素は最初から置かず JS で差し込むので、本番では一瞬も表示されない。
+//
+// 表示位置は左下 (右下は「ページの上部へ戻る」ボタンが占有)。
+// クリックを妨げないよう pointer-events: none を指定している。
+// ビルド日時を併記しているのは、見ているページが再デプロイ後のものかを
+// 判断できるようにするため。
+const buildTime = new Date().toLocaleString('ja-JP', {
+    timeZone: 'Asia/Tokyo',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit',
+});
+---
+<style is:inline>
+    #dev-banner {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        z-index: 2147483647;
+        margin: 0;
+        padding: 7px 14px;
+        /* サイトの配色 (赤) に埋もれてページの一部に見えないよう、
+           あえて無関係な配色 (黒地 + 黄) にしている */
+        background: #111;
+        color: #ffd400;
+        border-top: 3px solid #ffd400;
+        border-right: 3px solid #ffd400;
+        font-family: sans-serif;
+        font-size: 12px;
+        font-weight: bold;
+        line-height: 1.5;
+        letter-spacing: .04em;
+        text-align: left;
+        border-top-right-radius: 6px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, .4);
+        pointer-events: none;
+    }
+    #dev-banner small {
+        display: block;
+        font-weight: normal;
+        font-size: 11px;
+        color: #fff;
+        opacity: .8;
+    }
+</style>
+<script is:inline define:vars={{ buildTime }}>
+    (function () {
+        var host = location.hostname;
+        var isPreview = host.endsWith('.pages.dev')
+            || host === 'localhost' || host === '127.0.0.1' || host === '';
+        if (!isPreview) return; // 本番ドメインでは何もしない
+        var el = document.createElement('div');
+        el.id = 'dev-banner';
+        el.innerHTML = '開発中 / 確認用サイト（公開前）';
+        var t = document.createElement('small');
+        t.textContent = 'ビルド: ' + buildTime;
+        el.appendChild(t);
+        document.body.appendChild(el);
+    })();
+</script>

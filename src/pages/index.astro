@@ -1,4 +1,5 @@
 ---
+import DevBanner from '../components/DevBanner.astro';
 // トップページ (旧 kadoma-artfes.jp/index.html)
 // 年度依存値はビルド時に data から差し込む。共通パーツはコンポーネントで
 // ビルド時挿入 (旧 include.js / data-loader.js は廃止)。
@@ -160,6 +161,7 @@ const data = await getSiteData();
         });
     </script>
 
+    <DevBanner />
 </body>
 
 </html>
