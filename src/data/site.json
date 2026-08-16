@@ -172,6 +172,11 @@
   "siteText": {
     "intro": "職人の街、門真市ならではの『アートとアイデアの可能性』を感じることができるのがKADOMA ART FES。 森川ビルをメイン会場とし、大和田南商店街周辺をアートで染める「MACHIKADO MACHINAKA GALLERY」を開催いたします。 過去受賞アーティストの作品展示やギャラリートーク、マルシェなど、様々なアートイベントを予定しています。【要確認】",
     "mainEvent": "門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY",
+    "about": [
+      "KADOMA ART FESは、様々なジャンルのアーティストの皆様のアイデアを取り入れ、アートの力で実現できる可能性を見出す事ができるアートフェスタを目指しています。",
+      "2021年より毎年開催しているKADOMA ART FESも本年で{yearsRunning}年目となりました。{fiscalYearLabel}も大和田駅前エリアでの「MACHIKADO MACHINAKA GALLERY」を開催致します。",
+      "地域の活性化と地元の方たちに喜んで頂けることを目指し職人の街、門真市ならではの『アートとアイデアの可能性』を感じる事ができるKADOMA ART FESをお楽しみください。"
+    ],
     "winnersEditionShort": "KAF5"
   },
   "mmg": {
