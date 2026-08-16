@@ -18,6 +18,12 @@
 4. 公開時(11 月)には **KAF5(2026)= 最新枠、KAF4(2024)= アーカイブ**が
    最初から揃った状態にする
 5. 年の表記は**開催年**(KAF5 = 2026。2025 は存在しない年になる)
+6. **表示ラベルは大会番号**(「KAF5イベント風景Photoギャラリー」)。
+   URL は開催年のまま (`/archive/2026.html`)。
+   同じ年に 2 大会ある場合 (KAF5 = 2026年3月 / KAF6 = 2026年9月) に
+   年では区別できないため、ラベルのみ大会番号を使う。
+   短縮名は大会名から導出する (`content.js` の `shortNameOf`)。
+   大会名が想定の形式でなければ開催年を使う
 
 ## 2. URL 設計
 
@@ -27,7 +33,7 @@
 | `/archive/{year}.html` | 年度別詳細(例 `/archive/2024.html`, `/archive/2026.html`) | CMS の editions-archive 1 件につき 1 ページ |
 
 - **最新大会の詳細ページも `/archive/{year}.html` に生成する**
-  (メニューの「2026イベント風景Photoギャラリー」のリンク先 = `/archive/2026.html`。
+  (メニューの「KAF5イベント風景Photoギャラリー」のリンク先 = `/archive/2026.html`。
    一覧には載せないだけで、ページ自体は同じ仕組みで作る)
 - `getStaticPaths` の params は **`String(item.year)`** で渡す
   (数値のまま渡すと Astro がビルドエラーになることを実測確認済み)
@@ -95,7 +101,7 @@ site-settings の仕組みをそのまま流用せず、以下のとおり拡張
 | 状態 | 「イベント風景Photoギャラリー」枠 | 「アーカイブ」項目 |
 |---|---|---|
 | **CMS にアーカイブ 0 件**(現在) | 現行どおり site-settings の `gallery.latestPage` / `latestLabel`(= 2024gallery.html) | **出さない** |
-| **1 件以上** | `/archive/{latest.year}.html` / `{latest.year}イベント風景Photoギャラリー` | 「アーカイブ」→ `/archive.html` を**ギャラリー枠の直後に追加** |
+| **1 件以上** | `/archive/{latest.year}.html` / `{latest.shortName}イベント風景Photoギャラリー` | 「アーカイブ」→ `/archive.html` を**過去大会が 2 件目以降のときだけ**追加 |
 
 - **0 件のときは現行と同一の出力**になる(機能が「眠っている」状態)。
   検証は「dist の**バイト比較**(休眠ビルド vs 変更前ビルド)」で行う
@@ -132,7 +138,7 @@ site-settings の仕組みをそのまま流用せず、以下のとおり拡張
   2. `section.bg1`: h2 は 2024gallery と同じ**複合構造**を踏襲 —
      `h2.h2-right` + `span.hosoku.fade-in-text.pc`(= title)+
      `span.hosoku.fade-in-text.sp`(ARCHIVE / GALLERY)+
-     `span.blur`(「{year}イベント風景Photoギャラリー」)。
+     `span.blur`(「{shortName}イベント風景Photoギャラリー」)。
      続けて title + dateRange + description + heroImage
   3. `section.course.gallery`: gallery 画像のグリッド(`.course-item` パターン。
      テキストを含まない純粋な画像グリッドなので既存クラスで成立し、
@@ -209,7 +215,7 @@ Swiper CDN を読まないページでは ReferenceError で後続処理
 2. **フィクスチャテスト**(`ARCHIVES_FIXTURE` でネットワーク無しビルド):
    - 2 件(2024/2026・写真あり)で: `/archive.html` に 2024 のみ /
      `/archive/2024.html` `/archive/2026.html` 生成 /
-     メニューが「2026イベント風景Photoギャラリー」+「アーカイブ」 /
+     メニューが「KAF5イベント風景Photoギャラリー」 /
      新ページ内のローカル参照が全て絶対パス / `_redirects` に 302 ルール 2 行
    - 1 件のみで: 一覧が「準備中」+ noindex
    - 写真ゼロの 2027 を混ぜて: 2027 が**無視される**(最新枠が奪われない)

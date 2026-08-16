@@ -242,6 +242,16 @@ export async function getSiteData() {
 //   (翌年大会の先行登録で空ギャラリーが最新枠を奪う事故の防止)
 // - year 重複は警告し、公開が新しい方 (publishedAt 降順で先勝ち) を採用
 // - year 降順に整列して返す
+// 表示用の短縮名 (「KAF5」など) を大会名から導出する。
+// 同じ年に 2 大会ある場合 (KAF5=2026年3月 / KAF6=2026年9月) に
+// 「2026イベント風景Photoギャラリー」では区別できないため、
+// メニューと詳細ページの見出しはこの短縮名を使う。
+// 大会名が想定の形式でなければ開催年を使う (表示が空にならないように)。
+export const shortNameOf = (title, year) => {
+    const m = String(title ?? '').match(/KADOMA\s*ART\s*FES\s*0*(\d+)/i);
+    return m ? `KAF${m[1]}` : String(year);
+};
+
 export function mapArchives(contents, manifest = {}) {
     const seen = new Map();
     // publishedAt 降順で処理し、重複 year は最初 (=公開が新しい方) を採用
@@ -265,6 +275,7 @@ export function mapArchives(contents, manifest = {}) {
         seen.set(year, {
             year,
             title: item.title ?? '',
+            shortName: shortNameOf(item.title, year),
             dateRange: item.dateRange ?? '',
             description: item.description ?? '',
             heroImage: resolveMedia(item.heroImage, manifest, null),

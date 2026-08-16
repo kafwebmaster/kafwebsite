@@ -26,7 +26,7 @@ const { archive } = Astro.props;
 
 <head>
     <meta charset="UTF-8">
-    <title>{archive.year}イベント風景Photoギャラリー【KADOMA ART FES】</title>
+    <title>{archive.shortName}イベント風景Photoギャラリー【KADOMA ART FES】</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content={`${archive.title} イベント風景Photoギャラリー`}>
     <link rel="stylesheet" href="/css/style.css">
@@ -44,7 +44,7 @@ const { archive } = Astro.props;
                 <h2 class="h2-right">
                     <span class="hosoku fade-in-text pc">{archive.title}</span>
                     <span class="hosoku fade-in-text sp">ARCHIVE</span><span class="hosoku fade-in-text sp">GALLERY</span>
-                    <span class="blur">{archive.year}イベント風景Photoギャラリー</span>
+                    <span class="blur">{archive.shortName}イベント風景Photoギャラリー</span>
                 </h2>
                 <p>{archive.title}{archive.dateRange && ` (${archive.dateRange})`}</p>
                 {archive.description && <p>{archive.description}</p>}
@@ -60,7 +60,7 @@ const { archive } = Astro.props;
                     <div class="course-wrapper">
 {archive.gallery.map((src) => (
                         <div class="course-item">
-                            <img src={src} alt={`${archive.year}年 KADOMA ART FES 風景`} class="course-item-img">
+                            <img src={src} alt={`${archive.title} 風景`} class="course-item-img">
                         </div>
 ))}
                     </div>
