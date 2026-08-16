@@ -9,7 +9,9 @@ import Footer from '../components/Footer.astro';
 import { getSiteData, getArchiveSplit } from '../lib/content.js';
 const data = await getSiteData();
 const { archives, past } = await getArchiveSplit();
-const dormant = archives.length === 0;
+// 過去大会が 0 件の間はメニューからリンクされない (Menubar.astro 参照) ため、
+// 休眠時と同様に noindex にする (準備中ページの誤インデックス防止)
+const dormant = past.length === 0;
 ---
 <!DOCTYPE html>
 <html lang="ja">

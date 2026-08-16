@@ -12,11 +12,14 @@
 // - アーカイブ (editions-archive) が 0 件の間は現行どおり
 //   site-settings の gallery.latestPage / latestLabel を表示 (休眠状態。
 //   このときの出力は従来とバイト単位で一致させる)
-// - 1 件以上あれば、最新大会の年度別ページ + 「アーカイブ」項目に切り替わる
+// - 1 件以上あれば、ギャラリー枠が最新大会の年度別ページに切り替わる
 //   (この場合は生成リンクであり、旧 data-*-field の記録属性は付けない)
+// - 「アーカイブ」項目は過去大会 (最新を除く) が 1 件以上あるときだけ出す。
+//   1 件しか無い状態では一覧が「準備中」になるだけなので、リンク自体を出さない
+//   (KAF5 のみ登録 = ギャラリー枠だけ切り替わり、アーカイブは KAF7 以降に出る)
 import { getArchiveSplit } from '../lib/content.js';
 const { data, base = '' } = Astro.props;
-const { latest } = await getArchiveSplit();
+const { latest, past } = await getArchiveSplit();
 ---
 <div id="include-menubar">
 <nav>
@@ -28,7 +31,7 @@ const { latest } = await getArchiveSplit();
         <li><a href={`${base}media.html`}>メディア掲載情報</a></li>
         <li><a href={`${base}contest_entry.html`}>KAFコンテスト作品募集(<span data-field="contest.statusLabel">{data.contest.statusLabel}</span>)</a></li>
         {latest ? <Fragment><li><a href={`${base}archive/${latest.year}.html`}>{latest.year}イベント風景Photoギャラリー</a></li>
-        <li><a href={`${base}archive.html`}>アーカイブ</a></li></Fragment> : <li><a href={`${base}${data.gallery.latestPage}`} data-href-field="gallery.latestPage" data-field="gallery.latestLabel">{data.gallery.latestLabel}</a></li>}
+        {past.length > 0 && <li><a href={`${base}archive.html`}>アーカイブ</a></li>}</Fragment> : <li><a href={`${base}${data.gallery.latestPage}`} data-href-field="gallery.latestPage" data-field="gallery.latestLabel">{data.gallery.latestLabel}</a></li>}
         <li><a href={`${base}kaf_support.html`}>協賛・応援について</a></li>
     </ul>
 </nav>
