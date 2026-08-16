@@ -27,8 +27,8 @@
     "deliveryPeriod": "2026年1月中旬",
     "entryPdf": "KAF5entry.pdf",
     "entryFormUrl": "https://forms.gle/tN6MJoqWRJoSHwF18",
-    "editionName": "KADOMA ART FES 5",
-    "venue": "大和田駅前広場 / 大和田南商店街 周辺",
+    "editionName": "KADOMA ART FES 7",
+    "venue": "京阪 古川橋駅前周辺地域【要確認】",
     "entryFee": "1点　1500円",
     "entryFeeNotes": [
       "※振込手数料は出品者様負担となります。",
@@ -127,7 +127,13 @@
       "枚方信用金庫 大和田支店",
       "店005 普通0342014",
       "門真市文化芸術推進基本計画パイロットプロジェクト実行委員会"
-    ]
+    ],
+    "intro": [
+      "KADOMA ART FESは、様々なジャンルのアーティストの皆様のアイデアを取り入れ、アートの力で実現できる可能性を見出す事ができるアートフェスタを目指しています。2022年より開催しているアートコンテストでは、これまで多くの新進気鋭のアーティスト作品に光をあててきました。",
+      "2027年開催のKADOMA ART FES 7では、会場を京阪 古川橋駅前周辺地域に移し、「MACHIKADO MACHINAKA GALLERY」でのアート作品展示を予定しています。【要確認】"
+    ],
+    "draftNotice": "※本ページは KADOMA ART FES 7 CONTEST の準備中ドラフトです。募集期間・出品料・応募方法などの各要項は確定後に更新します（現在の日付・金額等は前回大会のものです）。",
+    "exhibitVenueNote": "京阪 古川橋駅前周辺地域（KADOMADO / 古川橋駅前ロータリー / そよら古川橋駅前 / 光亜興産 / ルミエールホール 他）【要確認】"
   },
   "marche": {
     "displayName": "カドマアート・マルシェ in 大和田 2026",
@@ -164,8 +170,45 @@
     "instagram": "https://www.instagram.com/pilot_kadoma/"
   },
   "siteText": {
-    "intro": "職人の街、門真市ならではの『アートとアイデアの可能性』を感じることができるのがKADOMA ART FES。 大和田駅前広場をメインとし、大和田南商店街周辺をアートで染める「MACHIKADO MACHINAKA GALLERY」を開催いたします。 アートコンテストやアートを感じられるワークショップなど、様々なアートイベントを予定しています。",
-    "mainEvent": "門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY"
+    "intro": "職人の街、門真市ならではの『アートとアイデアの可能性』を感じることができるのがKADOMA ART FES。 森川ビルをメイン会場とし、大和田南商店街周辺をアートで染める「MACHIKADO MACHINAKA GALLERY」を開催いたします。 過去受賞アーティストの作品展示やギャラリートーク、マルシェなど、様々なアートイベントを予定しています。【要確認】",
+    "mainEvent": "門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY",
+    "winnersEditionShort": "KAF5"
+  },
+  "mmg": {
+    "intro": "職人の街、門真市ならではの『アートとアイデアの可能性』を感じることができるのがKADOMA ART FES。 森川ビルをメイン会場とし、大和田南商店街周辺をアートで染める「MACHIKADO MACHINAKA GALLERY」を開催いたします。 今年は過去開催5年間の展示の中での受賞アーティストの作品を集結し、アーティストと来場者・まちの人たちとの交流会を開催いたします。【要確認】",
+    "contents": [
+      "門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY",
+      "KADOMA ART FES CONTEST 過去受賞者作品展示",
+      "カドマアート・マルシェ in 大和田 2026（飲食スペース設置）",
+      "アート作品の展示 / ギャラリートーク（アーティスト交流会）",
+      "ウォールアート"
+    ],
+    "exhibition": [
+      {
+        "label": "平面作品",
+        "venue": "大和田駅付近店舗",
+        "period": "2026年9月26日(土) 〜 10月25日(日)",
+        "note": "【要確認】展示店舗の一覧・閲覧可能時間は確定後に掲載します"
+      },
+      {
+        "label": "立体作品",
+        "venue": "森川ビル",
+        "period": "2026年10月24日(土)・25日(日)",
+        "note": ""
+      }
+    ],
+    "galleryTalk": {
+      "title": "ギャラリートーク（アーティスト交流会）",
+      "venue": "森川ビル",
+      "schedule": [
+        "2026年10月24日(土) 10:00〜20:00",
+        "2026年10月25日(日) 10:00〜16:00"
+      ],
+      "note": "【要確認】参加方法（予約要否・定員・参加費）・登壇アーティスト"
+    }
+  },
+  "visibility": {
+    "winnersPage": false
   },
   "news": [
     {

@@ -27,6 +27,18 @@ for (const { from, year } of LEGACY) {
     }
 }
 
+// 受賞作品ページ (contest.html) の非公開化 (KAF6 対応)
+// site.json の visibility.winnersPage が false の間はトップへ 302 し、
+// 直接アクセスも不能にする (メニュー非表示は Menubar.astro 側の同じフラグで連動)。
+// ページ自体は削除せずビルドに含めたままなので、フラグを true に戻せば即復活する。
+// Cloudflare Pages の _redirects は静的ファイルより優先されるため、
+// dist/contest.html が存在していてもリダイレクトが有効になる。
+const visibility = JSON.parse(fs.readFileSync('src/data/site.json', 'utf8')).visibility ?? {};
+if (visibility.winnersPage === false) {
+    lines.push('/contest / 302');
+    lines.push('/contest.html / 302');
+}
+
 if (lines.length === 0) {
     console.log('[postbuild-redirects] 対象のアーカイブページが無いためリダイレクトは出力しません');
     process.exit(0);

@@ -113,19 +113,15 @@ const data = await getSiteData();
 
             <section class="bg1">
                 <h2 class="h2-right">
-                    <span class="hosoku fade-in-text pc">KADOMAARTFES2024開催情報</span>
-                    <span class="hosoku fade-in-text sp">KADOMAARTFES2024</span>
+                    <span class="hosoku fade-in-text pc"><span data-field="edition.displayNameCompact">{data.edition.displayNameCompact}</span>開催情報</span>
+                    <span class="hosoku fade-in-text sp">KADOMAARTFES</span>
                     <span class="hosoku fade-in-text sp">開催情報</span>
                     <span class="blur">カドマアート・マルシェ<br class="sp">in 大和田 <span data-field="edition.eventYear">{data.edition.eventYear}</span></span>
                 </h2>
                 <div class="logo-container">
                     <img src={data.images.mainVisual} alt={data.edition.displayNameShort} data-src-field="images.mainVisual" data-alt-field="edition.displayNameShort">
                 </div>
-                <p>
-                    職人の街、門真市ならではの『アートとアイデアの可能性』を感じる事ができるのがKADOMA ART FES。
-                    大和田駅前広場をメインとし、大和田南商店街周辺をアートで染める「MACHIKADO MACHINAKA GALLERY」を開催いたします。
-                    アートコンテストやアートを感じれるワークショップなど様々なアートイベントを予定。
-                </p>
+                <p>{data.siteText.intro}</p>
             </section>
 
             <section class="kaf-event-details">
@@ -134,8 +130,7 @@ const data = await getSiteData();
                 </div>
                 <p>
                     職人の街、門真市ならではの『アートとアイデアの可能性』を感じることができるのがKADOMA ART FES。
-                    大和田駅前広場をメインとし、大和田南商店街周辺をアートで染める「MACHIKADO MACHINAKA GALLERY」と合わせて大和田駅前広場にてマルシェを開催いたします。
-                    アートコンテストやアートを感じられるワークショップなど、様々なアートイベントを予定しています。
+                    「MACHIKADO MACHINAKA GALLERY」と合わせて、<span data-field="marche.venue">{data.marche.venue}</span>にてアート作品に囲まれながら飲食を楽しみ、交流を深めるマルシェを開催いたします。【要確認】
                 </p>
                 <table>
                     <tr>
@@ -144,7 +139,7 @@ const data = await getSiteData();
                     </tr>
                     <tr>
                         <th>メインイベント</th>
-                        <td>門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY</td>
+                        <td>{data.siteText.mainEvent}</td>
                     </tr>
                     <tr>
                         <th>開催日時</th>
@@ -173,14 +168,7 @@ const data = await getSiteData();
                     <span>全体コンテンツ</span>
                 </div>
                 <ul>
-                    <li>門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY</li>
-                    <li><span data-field="edition.displayName">{data.edition.displayName}</span> CONTEST</li>
-                    <li data-field="marche.displayName">{data.marche.displayName}</li>
-                    <li>ライブステージ</li>
-                    <li>スタンプラリー</li>
-                    <li>ウォールアート</li>
-                    <li>コンテスト授賞式</li>
-                    <li>入賞作品の展示</li>
+                    {data.mmg.contents.map((item) => <li>{item}</li>)}
                 </ul>
             </section>
 
