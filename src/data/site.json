@@ -216,6 +216,9 @@
       "note": "【要確認】入場料・チケット/申込の要否・出演者"
     }
   },
+  "visibility": {
+    "winnersPage": false
+  },
   "news": [
     {
       "date": "2026/02/05",

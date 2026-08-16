@@ -24,7 +24,7 @@ const { latest } = await getArchiveSplit();
         <li><a href={`${base}index.html`}>HOME</a></li>
         <li><a href={`${base}kaf_info.html`}>KAFとは</a></li>
         <li><a href={`${base}kaf_mmg.html`}>イベント開催情報</a></li>
-        <li><a href={`${base}contest.html`}>KAFコンテスト<span data-field="siteText.winnersEditionShort">{data.siteText.winnersEditionShort}</span>受賞作品</a></li>
+        {data.visibility.winnersPage && <li><a href={`${base}contest.html`}>KAFコンテスト<span data-field="siteText.winnersEditionShort">{data.siteText.winnersEditionShort}</span>受賞作品</a></li>}
         <li><a href={`${base}media.html`}>メディア掲載情報</a></li>
         <li><a href={`${base}contest_entry.html`}>KAFコンテスト作品募集(<span data-field="contest.statusLabel">{data.contest.statusLabel}</span>)</a></li>
         {latest ? <Fragment><li><a href={`${base}archive/${latest.year}.html`}>{latest.year}イベント風景Photoギャラリー</a></li>
