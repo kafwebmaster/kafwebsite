@@ -44,7 +44,7 @@ const data = await getSiteData();
 
         <main>
             <section class="c">
-                <img src="images/img_large_1.jpg" alt="X">
+                <img src={data.images.mainVisual} alt={data.edition.displayName} data-src-field="images.mainVisual" data-alt-field="edition.displayName">
             </section>
 
 
