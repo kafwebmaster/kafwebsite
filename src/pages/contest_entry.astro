@@ -135,8 +135,8 @@ ul {
         <img src={data.images.contestBanner} alt="作品募集" data-src-field="images.contestBanner">
     </div>
 {data.contest.intro.map((line) => <p>{t(line)}</p>)}
-<p><strong>{data.contest.draftNotice}</strong></p>
-<p data-field="organization.host">{data.organization.host}</p>
+{data.contest.draftNotice && <p><strong>{data.contest.draftNotice}</strong></p>}
+<p>{data.contest.organizer}</p>
 
             </section>
 
@@ -148,13 +148,14 @@ ul {
 
         <h3>開催要項</h3>
         <ul>
-            <li><span style="color: #000;">募集期間：～<span data-field="contest.entryDeadline">{data.contest.entryDeadline}</span>まで</span></li>
+            <li><span style="color: #000;">募集期間：{data.contest.entryStart} ～ <span data-field="contest.entryDeadline">{data.contest.entryDeadline}</span></span></li>
             <li><span style="color: #000;">出品料：{data.contest.entryFee}</span></li>
             <li><span style="color: #000;">募集作品：平面作品・立体作品（ジャンル問いません）</span></li>
-            <li><span style="color: #000;">審査：一次審査は書類選考により行います。通過者には、作品提出による最終審査をご案内し、審査員による審査を行います。</span></li>
+            <li><span style="color: #000;">審査：一次審査は書類及び作品画像により行います。本審査は審査員審査によって選出されます。</span></li>
               <li><span style="color: #000;">展示期間：<span data-field="contest.exhibitionPeriod">{data.contest.exhibitionPeriod}</span></span></li>
             <li><span style="color: #000;">展示場所：<span data-field="contest.venue">{data.contest.venue}</span></span></li>
-            <li><span style="color: #000;">主催：<span data-field="organization.host">{data.organization.host}</span>・<span data-field="organization.coHost">{data.organization.coHost}</span></span></li>
+            <li><span style="color: #000;">主催：{data.contest.organizer}</span></li>
+            <li><span style="color: #000;">後援：<span data-field="organization.support">{data.organization.support}</span></span></li>
         </ul>
      <h3>オンライン応募の場合</h3>
 	<p><a class="btn-download" href={data.contest.entryFormUrl} target="_blank" data-href-field="contest.entryFormUrl">オンライン応募フォーム</a></p>
@@ -165,8 +166,8 @@ ul {
         <h3><span data-field="contest.editionName">{data.contest.editionName}</span>　CONTEST応募要項</h3>
         <div class="note">
             <p><strong>申込受付期間</strong></p>
-            <p>～<span data-field="contest.entryDeadline">{data.contest.entryDeadline}</span></p>
-            <p>郵送は当日の消印有効。メール・申込フォーム入力は当日の23：59まで送信有効。</p>
+            <p>{data.contest.entryStart} ～ <span data-field="contest.entryDeadline">{data.contest.entryDeadline}</span></p>
+            {data.contest.entryPeriodNotes.map((line) => <p>{t(line)}</p>)}
         </div>
 <div class="note">
             <p><strong>出品費</strong></p>
@@ -184,14 +185,14 @@ ul {
 	    {data.contest.judging.map((line) => <p>{t(line)}</p>)}
 	</div>
 
-	<div class="note">
+	{data.contest.awards.length > 0 && <div class="note">
 	    <p><strong>賞</strong></p>
 	    {data.contest.awards.map((line) => <p>{t(line)}</p>)}
-	</div>
+	</div>}
 
 	<div class="note">
 		<p><strong>作品展示について</strong></p>
-		<p>本コンテストに応募された作品は、MACHIKADO MACHINAKA GALLERYにて展示を行います。</p>
+		<p>{data.contest.exhibitIntro}</p>
 		<p>【展示期間】</p>
 		<p><span data-field="contest.exhibitionPeriodFull">{data.contest.exhibitionPeriodFull}</span>（予定）</p>
 		<p>【展示場所】</p>
