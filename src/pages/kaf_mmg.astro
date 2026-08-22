@@ -101,6 +101,25 @@ const data = await getSiteData();
 	    border-bottom: 1px solid #ddd;
 	    color: #000; /* 文字の色を黒にする */
 	}
+
+	/* 展示店舗一覧 (アコーディオン)。9 店舗で縦に長くなるため折りたたむ */
+	.kaf-event-details details.store-list {
+	    margin-bottom: 20px;
+	}
+	.kaf-event-details details.store-list summary {
+	    cursor: pointer;
+	    font-weight: bold;
+	    padding: 10px;
+	    background-color: #f2f2f2;
+	    border-bottom: 1px solid #ddd;
+	}
+	.kaf-event-details details.store-list a {
+	    color: #3498db;
+	    text-decoration: none;
+	}
+	.kaf-event-details details.store-list a:hover {
+	    text-decoration: underline;
+	}
     </style>
 </head>
 <body class="home">
@@ -174,6 +193,20 @@ const data = await getSiteData();
                         </tr>
                     ))}
                 </table>
+
+                <details class="store-list">
+                    <summary>展示店舗一覧（{data.mmg.stores.length}店舗）</summary>
+                    <ul>
+                        {data.mmg.stores.map((s) => (
+                            <li>
+                                <strong>{s.name}</strong><br />
+                                {s.address}
+                                {s.lines.map((line) => <><br />{line}</>)}
+                                {s.instagram && <><br /><a href={`https://www.instagram.com/${s.instagram.replace('@', '')}/`} target="_blank" rel="noopener">Instagram: {s.instagram}</a></>}
+                            </li>
+                        ))}
+                    </ul>
+                </details>
 
                 <div class="kaf-sub-section-title">
                     <span>開催期間中スペシャルイベント</span>
