@@ -32,7 +32,7 @@ const IMAGE_PARAMS = '?w=1600&q=75';
 const SITE_MEDIA_FIELDS = [
     'images_flyerFront', 'images_flyerFull', 'images_mainVisual',
     'images_supportList', 'images_entryThumb', 'images_contestBanner',
-    'images_flyerBack', 'images_webBanner',
+    'images_flyerBack', 'images_webBanner', 'images_supportPoster',
     'contest_entryPdf',
 ];
 

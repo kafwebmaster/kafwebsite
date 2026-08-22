@@ -156,7 +156,7 @@ a[href^="mailto:"]:hover {
                     <span class="blur"><span data-field="edition.displayName">{data.edition.displayName}</span><br class="sp">協賛と応援のお礼</span>
                 </h2>
                 <div class="logo-container">
-                    <img src={data.images.mainVisual} alt={data.edition.displayName} data-src-field="images.mainVisual" data-alt-field="edition.displayName">
+                    <img src={data.images.supportPoster || data.images.mainVisual} alt={data.edition.displayName} data-src-field="images.supportPoster" data-alt-field="edition.displayName">
                 </div>
  <p>「<span data-field="edition.displayName">{data.edition.displayName}</span>」はたくさんの応援にて開催されました。</p>
 
