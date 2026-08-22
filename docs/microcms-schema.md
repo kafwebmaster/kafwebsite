@@ -212,7 +212,8 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 |---|---|---|---|
 | `images_flyerFront` | フライヤー(表) | KAF5_flyer_omote.jpg | 使用(トップ) |
 | `images_flyerFull` | フライヤー(全体) | KAF5_flyer.jpg | 使用(イベント詳細) |
-| `images_mainVisual` | メインビジュアル | KAF5.jpg | 使用(協賛/マルシェ) |
+| `images_mainVisual` | メインビジュアル | KAF5.jpg | 使用(トップ/マルシェ。協賛の代替) |
+| `images_supportPoster` | 協賛ポスター | (未登録) | 使用(協賛。未登録の間はメインビジュアルを表示) |
 | `images_supportList` | 協賛一覧画像 | KAF5_support.jpg | 使用(協賛) |
 | `images_entryThumb` | 応募要項サムネイル | KAF5entry-img.png | 使用(募集) |
 | `images_contestBanner` | 募集バナー | entry.jpg | 使用(募集) |

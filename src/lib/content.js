@@ -74,6 +74,7 @@ export const FIELD_MAP = {
         webBanner: 'images_webBanner',
         entryThumbnail: 'images_entryThumb',
         contestBanner: 'images_contestBanner',
+        supportPoster: 'images_supportPoster',
     },
     gallery: {
         latestYear: 'gallery_latestYear',
