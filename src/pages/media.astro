@@ -122,6 +122,23 @@ const data = await getSiteData();
 	    color: #000; /* 文字の色を黒にする */
 	}
 
+    /* 年号別の見出し (メディア掲載を年ごとに整理して残すため) */
+    .media-year {
+        display: block; /* 既存 CSS が h2 を inline-block にするため明示 */
+        text-align: left;
+        font-size: 2em;
+        border-bottom: 3px solid #cd4e3d;
+        padding-bottom: 6px;
+        margin-top: 10px;
+    }
+    .media-entry-title {
+        text-align: left;
+        margin: 15px 0;
+    }
+    /* 動画は小さめに埋め込む (画面幅が狭い場合ははみ出さない) */
+    iframe.media-embed {
+        max-width: 100%;
+    }
 
     </style>
 
@@ -145,6 +162,8 @@ const data = await getSiteData();
                 <p></p>
             </section>
             <section class="bg2">
+                <h2 class="media-year">2025</h2>
+                <p class="media-entry-title"><strong>海洋堂　宮脇センムチャンネルにてKAF5審査会を紹介して頂きました。</strong></p>
                 <span class="hosoku">【宮脇センムチャンネル・センムとあそぼう】</span>
 <h2> 
 <a href="https://youtube.com/@miyawakisenmu" data-lightbox="award" data-title="https://youtube.com/@miyawakisenmu">
@@ -157,7 +176,7 @@ const data = await getSiteData();
   <p>門真が世界に誇るフィギュアメーカー「海洋堂」の宮脇センムによる、フィギュアや模型の魅力を発信するYouTubeチャンネルです。</p>
   <p>この度「KADOMA ART FES」紹介動画内で出演者のおふたりにお気に入り作品を選定いただきました。</p>
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/LKI61B_ADVk?si=kHX4B4NBlVNJg-9O" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe class="media-embed" width="400" height="225" src="https://www.youtube.com/embed/LKI61B_ADVk?si=kHX4B4NBlVNJg-9O" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
   <p><a href="https://youtu.be/LKI61B_ADVk?si=usS7lkPX3tmt4zr_" data-lightbox="award" data-title="https://youtu.be/LKI61B_ADVk?si=usS7lkPX3tmt4zr_">
 
 (URL)：https://youtu.be/LKI61B_ADVk?si=usS7lkPX3tmt4zr_  </a></p>
