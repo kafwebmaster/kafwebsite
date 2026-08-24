@@ -161,6 +161,17 @@ const data = await getSiteData();
     .media-cols.award-cols > div {
         text-align: center;
     }
+    .media-cols.award-cols img {
+        margin-left: auto;
+        margin-right: auto; /* 作品画像をカラムの中央に置く */
+    }
+    /* 特別賞: 動画ブロックとの間に余白を取り、見出しとして明示する */
+    .award-heading {
+        margin-top: 50px;
+    }
+    .award-lead {
+        margin-bottom: 25px;
+    }
     @media (max-width: 767px) {
         .media-cols {
             flex-direction: column; /* スマホは 1 カラムで縦に並べる */
@@ -218,8 +229,8 @@ const data = await getSiteData();
   </div>
 </div>
 
-  <p>こちらを正式に特別賞として2点ご紹介いたします！</p>
-  <p>【特別賞】</p>
+  <div class="award-heading"><span class="hosoku">特別賞</span></div>
+  <p class="award-lead">こちらを正式に特別賞として2点ご紹介いたします！</p>
 <div class="media-cols award-cols">
   <div>
  <h3><ウーイェイよしたか賞></h3>
