@@ -135,9 +135,40 @@ const data = await getSiteData();
         text-align: left;
         margin: 15px 0;
     }
-    /* 動画は小さめに埋め込む (画面幅が狭い場合ははみ出さない) */
+    /* PC は 2 カラム (本文 | 動画、賞 | 賞、審査員 | 審査員)。スマホは 1 カラム */
+    .media-cols {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+        width: 100%;
+        text-align: left;
+    }
+    .media-cols > * {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+    .media-col-video {
+        flex: 0 1 480px; /* 動画は右端に大きめで配置 */
+        margin-left: auto;
+    }
+    /* 幅に合わせて 16:9 を保ったまま伸縮させる (高さが潰れないように) */
     iframe.media-embed {
+        width: 100%;
         max-width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+    }
+    .media-cols.award-cols > div {
+        text-align: center;
+    }
+    @media (max-width: 767px) {
+        .media-cols {
+            flex-direction: column; /* スマホは 1 カラムで縦に並べる */
+        }
+        .media-cols > *, .media-col-video {
+            flex: none;
+            width: 100%;
+        }
     }
 
     </style>
@@ -172,26 +203,35 @@ const data = await getSiteData();
 
 </h2>
 <div class="award-entry">
- 
+
+<div class="media-cols">
+  <div class="media-col-text">
   <p>門真が世界に誇るフィギュアメーカー「海洋堂」の宮脇センムによる、フィギュアや模型の魅力を発信するYouTubeチャンネルです。</p>
   <p>この度「KADOMA ART FES」紹介動画内で出演者のおふたりにお気に入り作品を選定いただきました。</p>
-
-<iframe class="media-embed" width="400" height="225" src="https://www.youtube.com/embed/LKI61B_ADVk?si=kHX4B4NBlVNJg-9O" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
   <p><a href="https://youtu.be/LKI61B_ADVk?si=usS7lkPX3tmt4zr_" data-lightbox="award" data-title="https://youtu.be/LKI61B_ADVk?si=usS7lkPX3tmt4zr_">
 
 (URL)：https://youtu.be/LKI61B_ADVk?si=usS7lkPX3tmt4zr_  </a></p>
   <p>動画タイトル：【街のアートを覗き見しよう！】センムと遊ぼう！#326〜門真アートフェスティバル2026探訪〜</p>
-<p></p>
+  </div>
+  <div class="media-col-video">
+<iframe class="media-embed" width="560" height="315" src="https://www.youtube.com/embed/LKI61B_ADVk?si=kHX4B4NBlVNJg-9O" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+  </div>
+</div>
 
   <p>こちらを正式に特別賞として2点ご紹介いたします！</p>
   <p>【特別賞】</p>
+<div class="media-cols award-cols">
+  <div>
  <h3><ウーイェイよしたか賞></h3>
  <img src="images/contest/14-2.jpg" alt="　廃校奇譚">
   <p>作品「廃校奇譚」　作者 三上健二郎</p>
+  </div>
+  <div>
   <h3><椿奈々賞></h3>
-
  <img src="images/contest/39-2.jpg" alt="日常の風景">
   <p>作品「日常の風景」　作者 櫻井聖子</p>
+  </div>
+</div>
 <p></p>
 
 </div>
@@ -212,7 +252,7 @@ const data = await getSiteData();
 			</div>
 
 
-
+<div class="media-cols">
 			<div class="profile-section">
 				 <img src="images/contest/yoshimoto_24848984.JPG" alt="ウーイェイよしたか">
 				<h3>ウーイェイよしたか</h3>
@@ -254,6 +294,7 @@ const data = await getSiteData();
 <p>ザ・日本の芸術！</p>
 <p>絵画は額縁も込みで作品だと考えると全体的にとてもお綺麗な作品だなと感じました。</p>
 			</div>
+</div>
 </div>
 		
 {data.visibility.mediaEventInfo && <Fragment><hr>
