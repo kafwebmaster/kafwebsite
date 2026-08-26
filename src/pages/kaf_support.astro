@@ -158,7 +158,7 @@ a[href^="mailto:"]:hover {
                 <div class="logo-container">
                     <img src={data.images.supportPoster || data.images.mainVisual} alt={data.edition.displayName} data-src-field="images.supportPoster" data-alt-field="edition.displayName">
                 </div>
- <p>「<span data-field="edition.displayName">{data.edition.displayName}</span>」はたくさんの応援にて開催されました。</p>
+ <p>「{data.support.editionName}」はたくさんの応援にて開催されました。</p>
 
  <p>門真市で2021年から開始し、目標としてその先10年間を見据え、もっと身近に多くの人が文化に触れ、鑑賞したりできる場や創作活動を広げる機会を創るべく、令和3年3月に「門真市文化芸術推進基本計画パイロットプロジェクト」が策定されました。</p>
 
@@ -167,7 +167,7 @@ a[href^="mailto:"]:hover {
  <p>「門真のまちなかに文化を感じられる取り組みを作っていきたい！」という想いを実現すべく、文化活動している人、していない人、企業の人、郵便局や市役所の職員も参加して、公民協働で作り上げたのが「KADOMA ART FES」です。</p>
 
 
- <p>「<span data-field="edition.displayName">{data.edition.displayName}</span>」もたくさんの方の応援にて開催されました。来年度も引き続きたくさんの方からの応援を募集しております。詳しくは<a class="link" href="mailto:kadomaartfes.oubo@gmail.com">kadomaartfes.oubo@gmail.com</a>までご連絡ください。</p>
+ <p>{data.support.appeal}詳しくは<a class="link" href={`mailto:${data.contact.email}`}>{data.contact.email}</a>までご連絡ください。</p>
 
  <p>門真の街がアートで染まる。そんなイベントとなるよう、皆様のご協力・ご支援にて開催されます。</p>
 
@@ -177,11 +177,11 @@ a[href^="mailto:"]:hover {
             <section class="kaf-event-details">
 
 <div class="container">
-        <h1 data-field="edition.displayName">{data.edition.displayName}</h1>
-        <p>開催日時: <span data-field="event.dateRangeLong">{data.event.dateRangeLong}</span> <span data-field="event.time">{data.event.time}</span></p>
-        <p>イベント開催会場: <span data-field="event.venue">{data.event.venue}</span></p>
-        <p>主催: <span data-field="organization.host">{data.organization.host}</span>・<span data-field="organization.coHost">{data.organization.coHost}</span></p>
- <h2>	<span data-field="edition.fiscalYearLabel">{data.edition.fiscalYearLabel}</span>KAF協賛一覧　</h2>
+        <h1>{data.support.archive.title}</h1>
+        <p>開催日時: {data.support.archive.dateTime}</p>
+        <p>イベント開催会場: {data.support.archive.venue}</p>
+        <p>主催: {data.support.archive.host}</p>
+ <h2>	{data.support.archive.sponsorsHeading}　</h2>
               <div class="logo-container">
 <img src={data.images.supportList} alt={data.edition.displayNameShort} data-src-field="images.supportList" data-alt-field="edition.displayNameShort">
 
