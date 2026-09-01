@@ -222,9 +222,6 @@ ul {
 	<div class="note">
         <h3>応募先：郵送</h3>
         {data.contest.mailingAddr.map((line) => <p>{t(line)}</p>)}
-
-        <h3>応募先：メール</h3>
-        <p><a class="link" href={`mailto:${data.contact.entryEmail}`}>{data.contact.entryEmail}</a></p>
 	</div>
 
 	<div class="note">
