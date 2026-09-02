@@ -1,0 +1,331 @@
+{
+  "apiFields": [
+    {
+      "fieldId": "edition_name",
+      "name": "大会名(正式)",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "edition_nameShort",
+      "name": "大会名(短縮)",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "edition_fiscalYear",
+      "name": "年度ラベル",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "edition_eventYear",
+      "name": "開催年",
+      "kind": "number",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "edition_yearsRunning",
+      "name": "開催回数(◯年目)",
+      "kind": "number",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "edition_slug",
+      "name": "内部識別子(予備)",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "edition_number",
+      "name": "大会番号(予備)",
+      "kind": "number",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "edition_nameCompact",
+      "name": "大会名(スペースなし・予備)",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "event_dateRange",
+      "name": "開催日(短)",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "event_dateRangeLong",
+      "name": "開催日(長)",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "event_time",
+      "name": "開催時間",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "event_timeShort",
+      "name": "開催時間(短)",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "event_venue",
+      "name": "開催場所",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "event_admission",
+      "name": "入場料",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "contest_statusLabel",
+      "name": "募集ステータス表示",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "contest_deadlineFull",
+      "name": "応募締切(曜日付)",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "contest_deadline",
+      "name": "応募締切(短)",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "contest_exhibPeriod",
+      "name": "展示期間",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "contest_exhibFull",
+      "name": "展示期間(時間込)",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "contest_delivery",
+      "name": "作品搬入時期",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "contest_entryPdf",
+      "name": "応募用紙PDF",
+      "kind": "file",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "contest_entryFormUrl",
+      "name": "応募フォームURL",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "contest_status",
+      "name": "募集状態(内部)",
+      "kind": "select",
+      "description": null,
+      "required": false,
+      "selectItems": [
+        {
+          "id": "kafStatOpen",
+          "value": "open"
+        },
+        {
+          "id": "kafStatClsd",
+          "value": "closed"
+        }
+      ],
+      "multipleSelect": false
+    },
+    {
+      "fieldId": "marche_name",
+      "name": "マルシェ名称",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "marche_dateRange",
+      "name": "開催日",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "marche_time",
+      "name": "開催時間",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "marche_venue",
+      "name": "開催場所",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "images_flyerFront",
+      "name": "フライヤー(表)",
+      "kind": "media",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "images_flyerFull",
+      "name": "フライヤー(全体)",
+      "kind": "media",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "images_mainVisual",
+      "name": "メインビジュアル",
+      "kind": "media",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "images_supportList",
+      "name": "協賛一覧画像",
+      "kind": "media",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "images_entryThumb",
+      "name": "応募要項サムネイル",
+      "kind": "media",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "images_contestBanner",
+      "name": "募集バナー",
+      "kind": "media",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "images_flyerBack",
+      "name": "フライヤー(裏・予備)",
+      "kind": "media",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "images_webBanner",
+      "name": "Webバナー(予備)",
+      "kind": "media",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "gallery_latestPage",
+      "name": "最新ギャラリーのリンク先",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "gallery_latestLabel",
+      "name": "最新ギャラリーの表示名",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "gallery_latestYear",
+      "name": "最新ギャラリーの年(予備)",
+      "kind": "number",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "contact_email",
+      "name": "問い合わせメール",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "contact_entryEmail",
+      "name": "応募用メール",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "organization_host",
+      "name": "主催",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "organization_coHost",
+      "name": "共催",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "organization_support",
+      "name": "後援",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "social_youtube",
+      "name": "YouTube URL",
+      "kind": "text",
+      "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "social_instagram",
+      "name": "Instagram URL",
+      "kind": "text",
+      "description": null,
+      "required": false
+    }
+  ],
+  "customFields": []
+}

@@ -1,0 +1,308 @@
+---
+import DevBanner from '../components/DevBanner.astro';
+import HeaderSub from '../components/HeaderSub.astro';
+import Menubar from '../components/Menubar.astro';
+import Footer from '../components/Footer.astro';
+import { getSiteData, fillFields } from '../lib/content.js';
+const data = await getSiteData();
+// 文中の {contest.entryDeadlineShort} 等を CMS の値に差し替える
+const t = (s) => fillFields(s, data);
+---
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>作品募集【KADOMA ART FES - 門真のまちをアートで染めよう】</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="大和田・古川橋駅前で行われる門真最大級アートイベントKADOMA ART FES">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sub-page.css">
+</head>
+<style is:inline>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .logo-container {
+        text-align: center; /* 画像をセンターに寄せるために追加 */
+    }
+    .logo-container img {
+        max-width: 70%; /* 画像の最大幅を70%に設定 */
+        height: auto; /* 高さは自動調整 */
+        display: block; /* 画像をブロック要素として扱い、センタリングするために追加 */
+        margin: 0 auto; /* 左右のマージンを自動で設定してセンターに寄せる */
+    }
+
+h1, h2 {
+    font-size: 2em;
+    margin-bottom: 10px;
+
+    text-align: left; 
+}
+
+p {
+    margin-bottom: 15px;
+}
+
+ul {
+    margin-bottom: 15px;
+    color: #FFF;
+    list-style-type: none; /* リストのマーカーを消す */
+}
+
+.note {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-left: 4px solid #cd4e3d;
+    background-color: #f1f1f1;
+}
+
+.note p {
+    margin-bottom: 8px;
+}
+
+.link {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    display: flex; /* 左詰めにするための flexbox */
+    flex-direction: column; /* 縦方向に並べる */
+    text-align: left; /* テキストを左揃えにする */
+}
+
+.btn-download {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #cd4e3d;
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.2em;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-download:hover {
+    background-color: #e06655;
+}
+</style>
+<body class="home">
+    <div id="container">
+
+        <!-- header(include) -->
+        <HeaderSub />
+
+        <!-- コンテンツを追加する場合は、以下のmainタグの中で作成してください。 -->
+        <main>
+
+            <section class="bg1">
+            <section class="bg1">
+
+                <h2 class="h2-right">
+                    <span class="hosoku fade-in-text pc">KAF CONTEST</span>
+                    <span class="hosoku fade-in-text sp">KAF</span>
+                    <span class="hosoku fade-in-text sp">CONTEST</span>
+                    <span class="blur"><br class="sp">作品募集</span>
+                </h2>
+    <div class="logo-container">
+        <img src={data.images.contestBanner} alt="作品募集" data-src-field="images.contestBanner">
+    </div>
+{data.contest.intro.map((line) => <p>{t(line)}</p>)}
+{data.contest.draftNotice && <p><strong>{data.contest.draftNotice}</strong></p>}
+<p>{data.contest.organizer}</p>
+
+            </section>
+
+
+<section class="bg2">
+    <div class="container">
+        <h1>【<span data-field="contest.statusLabel">{data.contest.statusLabel}</span>】<span data-field="contest.editionName">{data.contest.editionName}</span> CONTEST</h1>
+        <p><strong>「MACHIKADO MACHINAKA GALLERY」を生かしてより多くの新進気鋭のアーティスト作品に光をあて、来場者・まちの人たちがアート作品により身近に接することができるようコンテストを開催いたします。</strong></p>
+
+        <h3>開催要項</h3>
+        <ul>
+            <li><span style="color: #000;">募集期間：{data.contest.entryStart} ～ <span data-field="contest.entryDeadline">{data.contest.entryDeadline}</span></span></li>
+            <li><span style="color: #000;">出品料：{data.contest.entryFee}</span></li>
+            <li><span style="color: #000;">募集作品：平面作品・立体作品（ジャンル問いません）</span></li>
+            <li><span style="color: #000;">審査：一次審査は書類及び作品画像により行います。本審査は審査員審査によって選出されます。</span></li>
+              <li><span style="color: #000;">展示期間：<span data-field="contest.exhibitionPeriod">{data.contest.exhibitionPeriod}</span></span></li>
+            <li><span style="color: #000;">展示場所：<span data-field="contest.venue">{data.contest.venue}</span></span></li>
+            <li><span style="color: #000;">主催：{data.contest.organizer}</span></li>
+            <li><span style="color: #000;">後援：<span data-field="organization.support">{data.organization.support}</span></span></li>
+        </ul>
+     <h3>オンライン応募の場合</h3>
+	<p><a class="btn-download" href={data.contest.entryFormUrl} target="_blank" data-href-field="contest.entryFormUrl">オンライン応募フォーム</a></p>
+
+
+        <h3>オフライン応募用紙ダウンロード</h3>
+	<p><a class="btn-download" href={data.contest.entryPdf} target="_blank" data-href-field="contest.entryPdf">応募用紙PDFダウンロード</a></p>
+        <h3><span data-field="contest.editionName">{data.contest.editionName}</span>　CONTEST応募要項</h3>
+        <div class="note">
+            <p><strong>申込受付期間</strong></p>
+            <p>{data.contest.entryStart} ～ <span data-field="contest.entryDeadline">{data.contest.entryDeadline}</span></p>
+            {data.contest.entryPeriodNotes.map((line) => <p>{t(line)}</p>)}
+        </div>
+<div class="note">
+            <p><strong>出品費</strong></p>
+            <p>{data.contest.entryFee}</p>
+            {data.contest.entryFeeNotes.map((line) => <p>{t(line)}</p>)}
+        </div>
+
+	<div class="note">
+	    <p><strong>参加資格</strong></p>
+	    {data.contest.eligibility.map((line) => <p>{t(line)}</p>)}
+	</div>
+
+	<div class="note">
+	    <p><strong>審査</strong></p>
+	    {data.contest.judging.map((line) => <p>{t(line)}</p>)}
+	</div>
+
+	{data.contest.awards.length > 0 && <div class="note">
+	    <p><strong>賞</strong></p>
+	    {data.contest.awards.map((line) => <p>{t(line)}</p>)}
+	</div>}
+
+	<div class="note">
+		<p><strong>作品展示について</strong></p>
+		<p>{data.contest.exhibitIntro}</p>
+		<p>【展示期間】</p>
+		<p><span data-field="contest.exhibitionPeriodFull">{data.contest.exhibitionPeriodFull}</span>（予定）</p>
+		<p>【展示場所】</p>
+		<p>{data.contest.exhibitVenueNote}</p>
+	</div>
+	<div class="note">
+		<p><strong>出品に関しての注意点</strong></p>
+		{data.contest.entryNotes.map((line) => <p>{t(line)}</p>)}
+	</div>
+
+	<div class="note">
+		<p><strong>応募書類に関しての注意点</strong></p>
+		{data.contest.docNotes.map((line) => <p>{t(line)}</p>)}
+		<p><img src={data.images.entryThumbnail} alt="作品募集" data-src-field="images.entryThumbnail"></p>
+		<p><strong>オンライン申込の場合</strong></p>
+		{data.contest.docNotesOnline.map((line) => <p>{t(line)}</p>)}
+	</div>
+
+
+       <h3>オンライン応募の場合</h3>
+	<p><a class="btn-download" href={data.contest.entryFormUrl} target="_blank" data-href-field="contest.entryFormUrl">オンライン応募フォーム</a></p>
+
+
+        <h3>オフライン応募用紙ダウンロード</h3>
+	<p><a class="btn-download" href={data.contest.entryPdf} target="_blank" data-href-field="contest.entryPdf">応募用紙PDFダウンロード</a></p>
+
+	<div class="note">
+        <h3>応募先：郵送</h3>
+        {data.contest.mailingAddr.map((line) => <p>{t(line)}</p>)}
+	</div>
+
+	<div class="note">
+        <h3>出品料振込先</h3>
+        {data.contest.bankInfo.map((line) => <p>{t(line)}</p>)}
+	</div>
+
+        <h3><span data-field="contest.editionName">{data.contest.editionName}</span> CONTEST出展規約</h3>
+
+	{data.contest.rules.map((group) => (
+		<>
+		<p><strong>{group.heading}</strong></p>
+		{group.items.map((item) => <p>{t(item)}</p>)}
+		</>
+	))}
+
+    </div>
+</section>
+
+
+
+
+
+<Footer data={data} />
+            </section>
+        </main>
+
+        <!--footer(include)-->
+
+    </div>
+    <!--/#container-->
+
+    <!--ページの上部へ戻るボタン-->
+    <div class="pagetop"><a href="#"><i class="fas fa-angle-double-up"></i></a></div>
+
+    <!--開閉ブロック(include)-->
+    <!-- メニュー内容を修正する場合は、includeHTML/menubar.htmlを修正してください。 -->
+    <Menubar data={data} />
+
+    <!--開閉ボタン（ハンバーガーアイコン）-->
+    <div id="menubar_hdr_inner">
+        <div id="menubar_hdr">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!--jQueryの読み込み-->
+    <script is:inline src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!--lightbox用jsファイルの読み込み-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox-plus-jquery.min.js"></script>
+
+    <!--Swiper-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script is:inline src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!--スライドショー（slick）-->
+    <script is:inline src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script is:inline src="js/slick-thumbnail.js"></script>
+    <script is:inline src="js/slick.js"></script>
+
+    <!--パララックス（inview）-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/protonet-jquery.inview/1.1.2/jquery.inview.min.js"></script>
+    <script is:inline src="js/jquery.inview_set.js"></script>
+
+    <!--このテンプレート専用のスクリプト-->
+    <script is:inline src="js/main.js"></script>
+
+    <!--ロゴアニメーション-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/vivus/0.4.6/vivus.min.js"></script>
+    <script is:inline>
+        new Vivus('svg-logo', {
+            start: 'autostart',
+            type: 'scenario-sync',
+            duration: 150,
+            forceRender: false,
+        });
+    </script>
+
+
+    <DevBanner />
+</body>
+
+</html>

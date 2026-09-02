@@ -1,0 +1,18 @@
+---
+// 活動報告 (お知らせ) リスト
+// 旧 data-loader.js の data-news-list 展開をビルド時に行う。
+// 出力 DOM は旧展開結果と同一: <dt>日付<span>カテゴリ</span></dt><dd>本文</dd>
+const { news } = Astro.props;
+---
+<dl class="news" data-news-list>
+{news.map((item) => (
+    <>
+        <dt>{item.date}<span>{item.category}</span></dt>
+        {item.link ? (
+            <dd><a href={item.link}>{item.text}</a></dd>
+        ) : (
+            <dd>{item.text}</dd>
+        )}
+    </>
+))}
+</dl>

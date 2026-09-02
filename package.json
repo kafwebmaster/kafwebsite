@@ -1,0 +1,15 @@
+{
+  "name": "kadoma-artfes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KADOMA ART FES 公式サイト (Astro + microCMS)",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "node scripts/seed-microcms.mjs && node scripts/sync-cms-assets.mjs && astro build && node scripts/postbuild-redirects.mjs",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "7.1.6"
+  }
+}

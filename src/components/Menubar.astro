@@ -1,0 +1,47 @@
+---
+// 開閉メニュー (旧 includeHTML/menubar.html)
+// 旧 include.js は <div id="include-menubar"> の中身としてこの内容を挿入していた。
+// main.js が #include-menubar を開閉対象にしているため、wrapper div ごと出力して
+// DOM 構造を現行と一致させる。
+// 年度依存値はビルド時に差し込む (data-field 属性は対応関係の記録として残置)。
+//
+// base プロパティ: ルート直下のページは未指定 (= "" で従来どおりの相対パス)。
+// /archive/ 配下のページは base="/" を渡し、ルート絶対パスで解決させる。
+//
+// ギャラリー枠とアーカイブ項目 (docs/archive-feature-design.md 4-1):
+// - アーカイブ (editions-archive) が 0 件の間は現行どおり
+//   site-settings の gallery.latestPage / latestLabel を表示 (休眠状態。
+//   このときの出力は従来とバイト単位で一致させる)
+// - 1 件以上あれば、ギャラリー枠が最新大会の年度別ページに切り替わる
+//   (この場合は生成リンクであり、旧 data-*-field の記録属性は付けない)
+// - 「アーカイブ」項目は過去大会 (最新を除く) が 1 件以上あるときだけ出す。
+//   1 件しか無い状態では一覧が「準備中」になるだけなので、リンク自体を出さない
+//   (KAF5 のみ登録 = ギャラリー枠だけ切り替わり、アーカイブは KAF7 以降に出る)
+import { getArchiveSplit } from '../lib/content.js';
+const { data, base = '' } = Astro.props;
+const { latest, past } = await getArchiveSplit();
+---
+<div id="include-menubar">
+<nav>
+    <ul>
+        <li><a href={`${base}index.html`}>HOME</a></li>
+        <li><a href={`${base}kaf_info.html`}>KAFとは</a></li>
+        <li><a href={`${base}kaf_mmg.html`}>イベント開催情報</a></li>
+        {data.visibility.winnersPage && <li><a href={`${base}contest.html`}>KAFコンテスト<span data-field="siteText.winnersEditionShort">{data.siteText.winnersEditionShort}</span>受賞作品</a></li>}
+        <li><a href={`${base}media.html`}>メディア掲載情報</a></li>
+        <li><a href={`${base}contest_entry.html`}>KAFコンテスト作品募集(<span data-field="contest.statusLabel">{data.contest.statusLabel}</span>)</a></li>
+        {latest ? <Fragment><li><a href={`${base}archive/${latest.year}.html`}>{latest.shortName}イベント風景Photoギャラリー</a></li>
+        {past.length > 0 && <li><a href={`${base}archive.html`}>アーカイブ</a></li>}</Fragment> : <li><a href={`${base}${data.gallery.latestPage}`} data-href-field="gallery.latestPage" data-field="gallery.latestLabel">{data.gallery.latestLabel}</a></li>}
+        <li><a href={`${base}kaf_support.html`}>協賛・応援について</a></li>
+    </ul>
+</nav>
+
+<ul class="icons">
+<!--
+    <li><a href="#"><img src="images/logo-x.svg" alt="X"></a></li>
+    <li><a href="#"><i class="fab fa-line"></i></a></li>
+-->
+    <li><a href={data.social.youtube} data-href-field="social.youtube"><i class="fab fa-youtube"></i></a></li>
+    <li><a href={data.social.instagram} data-href-field="social.instagram"><i class="fab fa-instagram"></i></a></li>
+</ul>
+</div>

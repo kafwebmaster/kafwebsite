@@ -1,0 +1,27 @@
+---
+// フッター (旧 includeHTML/footer.html)
+// 旧 include.js の挿入先 <div id="include-footer"> ごと出力して DOM を一致させる。
+// 主催・後援の組織名はビルド時に差し込む。
+// 旧ファイルは主催名が「門真市文化芸術活動推進基本計画…」と誤っていた
+// (正: 門真市文化芸術推進基本計画…)。kaf_support.html の同種修正 (PR #10) と
+// 同じ扱いで、正名称をデータから差し込む。
+// <br class="sp"> の改行位置は現行表示を保つため「パイロットプロジェクト」の
+// 直前で分割する (該当語が無い場合は分割しない)。
+const { data, base = '' } = Astro.props;
+const host = data.organization.host;
+const splitAt = host.indexOf('パイロットプロジェクト');
+const hostBefore = splitAt > 0 ? host.slice(0, splitAt) : host;
+const hostAfter = splitAt > 0 ? host.slice(splitAt) : null;
+---
+<div id="include-footer">
+<section class="bg1">
+    <h2>【主催】</h2>
+    <h3>{hostBefore}{hostAfter && <br class="sp" />}{hostAfter}</h3>
+    <h3>{data.organization.coHost}</h3>
+    <h2>【後援】</h2>
+    <h3>{data.organization.support}</h3>
+</section>
+<footer>
+    <small>Copyright&copy; <a href={`${base}index.html`}>{host}</a> All Rights Reserved.</small>
+</footer>
+</div>

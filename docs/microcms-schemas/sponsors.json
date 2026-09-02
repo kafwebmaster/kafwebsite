@@ -1,0 +1,19 @@
+{
+  "apiFields": [
+    {
+      "fieldId": "name",
+      "name": "協賛者名",
+      "kind": "text",
+      "description": null,
+      "required": true
+    },
+    {
+      "fieldId": "order",
+      "name": "表示順",
+      "kind": "number",
+      "description": null,
+      "required": false
+    }
+  ],
+  "customFields": []
+}
