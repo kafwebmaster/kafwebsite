@@ -1,13 +1,53 @@
 # Cloudflare Pages 設定記録・移行手順
 
-最終更新: 2026-07-31
-目的: 移行前の設定を記録し、問題発生時に元の状態へ復旧できるようにする
+最終更新: 2026-09-12
+目的: 本番・検証それぞれの設定を記録し、問題発生時に復旧できるようにする
 
 ---
 
-## 1. 移行前の設定(2026-07-24 時点)
+## 0. 現在の設定(2026-09-02 の本番切替後)
 
-**この設定が移行前の正となる状態。復旧が必要な場合はこの値に戻すこと。**
+**2026-09-02 に本番プロジェクトを Astro ビルドへ切り替え、公開済み。現在の正はこの節。**
+
+### 本番プロジェクト `kafwebsite`(https://kadoma-artfes.jp/)
+
+| 項目 | 値 |
+|---|---|
+| Production branch | `main` |
+| Build command | `npm run build` |
+| Build output directory | `dist` |
+| 環境変数 `MICROCMS_SERVICE_DOMAIN` | `kadoma-artfes`(Text) |
+| 環境変数 `MICROCMS_API_KEY` | microCMS の GET 専用キー(**Secret**) |
+
+### 検証プロジェクト `kadoma-artfes-staging`(https://kadoma-artfes-staging.pages.dev/)
+
+| 項目 | 値 |
+|---|---|
+| Production branch | `develop` |
+| Build command / output | 本番と同一(`npm run build` / `dist`) |
+| 環境変数 | 本番と同一 + microCMS Webhook から自動再ビルド |
+
+### デプロイの流れ
+
+- develop へのマージ → 検証サイトが自動更新
+- main へのリリース PR のマージ → 本番が自動更新(2〜3 分)
+- CMS だけ更新して再ビルドしたいとき → Deployments → **Retry deployment**
+  (同一コミットでも CMS はビルド時に再取得される)
+
+### 緊急復旧(1 分)
+
+Deployments → 正常だったデプロイの「…」→ **Rollback to this deployment**。
+ビルドが失敗した場合は直前の成功デプロイが配信され続けるため、壊れた状態は公開されない。
+
+### 残タスク(任意)
+
+- microCMS の Webhook に本番の Deploy Hook を追加すると、CMS 更新が本番へも自動反映される
+
+---
+
+## 1. 移行前の設定(2026-07-24 時点・歴史的記録)
+
+**旧静的サイト時代の設定。旧サイト(`kadoma-artfes.jp/` フォルダ配信)へ完全に戻す場合のみ参照。**
 
 ### Build
 
