@@ -1,190 +1,100 @@
-# KADOMA ART FES 公式サイト リファクタリング方針
+# KADOMA ART FES 公式サイト 運用方針
 
 このドキュメントは、Claude Code がこのプロジェクトに関わる際に最初に参照すべき基本方針書です。
 作業を開始する前に必ず全文を読み、以下の制約と方針に従ってください。
 
+> 2026-09 改訂: Astro + microCMS + Cloudflare Pages への移行が**完了**し、本番公開済みです。
+> 移行前(素の HTML + data.json 計画)を前提とした旧版の内容は Git 履歴を参照してください。
+
 ## プロジェクト概要
 
 - **サイト名**: KADOMA ART FES 公式サイト
-- **URL**: https://kadoma-artfes.jp/
+- **URL**: https://kadoma-artfes.jp/ (本番) / https://kadoma-artfes-staging.pages.dev/ (確認用)
 - **主催**: 門真市文化芸術活動推進基本計画パイロットプロジェクト実行委員会
-- **性質**: 年1回開催のアートイベント公式サイト。年度ごとに開催日・大会番号・画像・募集情報などが更新される
-- **ホスティング**: ヘテムル(GMOペパボ)、FTPによる手動アップロード運用
-- **現在の大会**: KADOMA ART FES 5 (KAF5)、2026年3月7日〜8日開催
+- **現在の大会**: KADOMA ART FES 6 (KAF6)
+  - 会期: 2026年9月26日(土)〜10月25日(日)、森川ビル / 大和田南商店街 周辺
+  - コンテストなし(過去受賞者作品の展示)。サブイベント: ギャラリートーク、カドマアート・アートラウンジ
+- **並行運用中**: KADOMA ART FES 7 CONTEST 作品募集
+  - 受付: 2026年11月20日(金)〜2027年2月20日(土) / 展示: 2027年4月29日〜5月5日、京阪古川橋駅前周辺地域
 
 ## 技術スタック(現状)
 
-- 素の HTML5 + CSS3(プリプロセッサなし)
-- jQuery 3.6.0(CDN)
-- Slick Carousel 1.8.1、Lightbox2 2.10.0、Swiper 11、Vivus、jquery.inview(すべて CDN)
-- ビルドプロセスなし
-- 共通パーツは jQuery の `.load()` によるクライアントサイド include
-- 文字コード: UTF-8(BOM なし)
-- 改行コード: LF
+- **Astro 7.1.6** による静的ビルド (`build.format:'file'` で .html URL を維持、`compressHTML:false`)
+- **microCMS** (サービスID `kadoma-artfes`、無料プラン): site-settings / news / editions-archive / sponsors の 4 API
+- **Cloudflare Pages**:
+  - 本番プロジェクト `kafwebsite` … main ブランチ、`npm run build` → `dist/`
+  - 検証プロジェクト `kadoma-artfes-staging` … develop ブランチ、同設定
+  - どちらも環境変数 `MICROCMS_SERVICE_DOMAIN` / `MICROCMS_API_KEY`(Secret)を保持
+- フロントは移行前と同一の jQuery 3.6.0 + Slick + Lightbox2 + Swiper + Vivus + inview(すべて CDN)
+- 文字コード UTF-8(BOM なし)、改行 LF
 
-## 今回の作業の目的
+## データ管理の分担(重要)
 
-年度依存情報(開催日、大会番号、画像パス、募集状況など)を `data.json` に集約し、
-年度更新時に編集すべき箇所を 1 ファイルに集中させる。これにより:
+| 種類 | 置き場所 | 例 |
+|---|---|---|
+| 年度更新される値 | **microCMS**(`src/lib/content.js` の FIELD_MAP に対応表) | 大会名・開催日・締切・画像 |
+| 文章・構造化コンテンツ | **src/data/site.json** の JSON 専用キー(FIELD_MAP 外はパススルーで通る) | 募集要項の文面・規約・店舗一覧 |
+| 過去の記録 | ページに固定値で保持 | media.html の掲載記録、協賛の KAF5 実績 |
 
-- 年度更新作業の所要時間を「半日〜1日」から「10〜20分」に短縮する
-- 複数ファイルにまたがる更新漏れ(例: 過去に kaf_marche.html が 2024 年のまま放置された事故)を防ぐ
-- 将来的な静的サイトジェネレータ(Astro 等)への移行の下地を作る
+- CMS 未入力・取得失敗時は site.json へフォールバックする(ビルドは決して失敗しない設計)
+- 文中に CMS 値を差し込む場合は差込み記法 `{contest.entryDeadlineShort}` を使う(`fillFields()`)。
+  **日付等を文章に直書きしない**(CMS 更新に追従しなくなる事故が実際に起きた)
+- メディア(画像/PDF)はビルド前に `scripts/sync-cms-assets.mjs` がローカルへミラーする(転送量対策)。
+  **応募用紙 PDF は microCMS に置かず**(ファイルアップロードは有料) `public/KAF7entry.pdf` を Git 管理する
+- メールアドレスの使い分け: `contact.email`(渉外・協賛) / `contact.entryEmail`(作品応募。応募ページには現在非表示)
 
 ## 厳守すべき制約
 
-以下は **絶対に変更してはいけない** 項目です。指示があっても、これらを侵す場合は必ず確認を求めてください。
+1. **既存の CSS ファイル(public/css/style.css, sub-page.css, inview.css)には手を入れない**。
+   ページ固有の調整は各ページの `<style is:inline>` ブロックに追記する
+2. **既存のアニメーション処理(main.js, jquery.inview_set.js, slick*.js)には手を入れない**
+3. **見た目・レイアウトを指示なく変えない**。既存クラスの再利用を優先する
+4. **日本語テキストを機械的に言い換えない**。原文・確定した指示の文言を一字一句そのまま使う
+5. **UTF-8(BOM なし)・LF を維持する**
+6. **`kadoma-artfes.jp/` フォルダ(移行前の旧サイト一式)には触らない**(歴史的記録として残置)
+7. 未確定情報は【要確認】マーカー付きで掲載し、確定後に外す
+8. microCMS のフィールド ID は 20 文字以内。スキーマ変更は docs/microcms-schema.md と FIELD_MAP を必ず同期させる
 
-1. **リニューアルはしない**。既存の jQuery + 素の HTML 構成を維持する
-2. **ビルドプロセスを導入しない**。Node.js、npm、Webpack、Vite、Tailwind、React、Vue、Next.js、Astro 等の導入は今回のスコープ外
-3. **既存の CSS ファイル(css/style.css, css/sub-page.css, css/inview.css)には手を入れない**。見た目は一切変えない
-4. **既存のアニメーション処理(jquery.inview_set.js, slick.js, main.js)には手を入れない**
-5. **FTP アップロードでヘテムルに置く運用を前提とする**。デプロイ手段は変更しない
-6. **ファイル文字コードは UTF-8(BOM なし)、改行は LF を維持する**
-7. **既存の HTML の見た目・レイアウト・デザインを一切変えない**。変わるのは「ハードコードされた値が data-field 属性経由で差し込まれる」という裏の仕組みだけ
-8. **日本語テキストを機械的に翻訳・言い換えしない**。data.json への移植時は原文を一字一句そのままコピーする
+## ブランチ運用(ユーザーとの合意事項・厳守)
 
-## 実装方針
+1. **develop・main へ直接コミットしない**。必ず feature ブランチ → PR
+2. feature PR → **develop**(マージはユーザーが承認)→ ステージングで確認
+3. 本番反映は **develop → main のリリース PR**(マージはユーザー)。マージで自動デプロイされる
+4. マージ済み PR のブランチに追いコミットしない(新しいブランチ + 新しい PR にする)
+5. 内容変更にはビルド+テスト(`node scripts/test-content-mapping.mjs`)を通し、
+   規模の大きい変更は独立した監査(別エージェント等)で検証してから PR を出す
 
-### データ集約の方針
+## リポジトリ構成(要点)
 
-- `data.json` をルート(`kadoma-artfes.jp/data.json`)に配置
-- 現大会の情報のみを保持する(過去大会のアーカイブは Git 履歴に任せる)
-- スキーマは後述の「data.json スキーマ」セクションを参照
-- 日付の表記バリエーション(例: `2026年3月7日` と `2026年03月07日`)は統一せず、表記ごとに別キーで持つ
+- `src/pages/*.astro` … 全 11 ページ + `archive/[year].astro`(CMS 登録で自動生成)
+- `src/components/` … HeaderSub / Menubar / Footer / NewsList / HbpInfo / DevBanner(開発中バナー。
+  *.pages.dev と localhost のみ表示され、本番ドメインには出ない)
+- `src/lib/content.js` … データ取得層(FIELD_MAP・フォールバック・fillFields・アーカイブ正規化)
+- `scripts/` … seed-microcms(初期投入・使用済) / sync-cms-assets(メディアミラー) /
+  postbuild-redirects(旧URL転送 + 受賞作品ページの非公開 302) / test-content-mapping(テスト) / dom-compare(移行時の検証)
+- `public/` … CSS/JS/画像(無変更コピー)+ 応募用紙 PDF
+- 表示のオン/オフは `site.json` の `visibility` フラグ(受賞作品メニュー・メディアページ末尾の開催情報)
 
-### ローダの方針
+## ドキュメント
 
-- `js/data-loader.js` を新規作成
-- jQuery の `$.getJSON()` で `data.json` を取得
-- `data-field` 属性を持つ要素にテキストを差し込む
-- `data-src-field` 属性を持つ要素に src を差し込む
-- `data-href-field` 属性を持つ要素に href を差し込む
-- `data-news-list` 属性を持つ要素に news 配列を展開する
-- ドット区切りパス記法に対応(例: `data-field="event.dateRange"`)
+- `docs/update-guide.md` … **運営スタッフ向けの更新手順**(平易な日本語)
+- `docs/technical-design.md` … 移行時の技術設計
+- `docs/microcms-schema.md` … CMS スキーマとフィールド対応表(FIELD_MAP と同期必須)
+- `docs/cloudflare-settings.md` … Cloudflare 設定記録・復旧手順
+- `docs/archive-feature-design.md` … アーカイブ機能の設計(既知の課題: KAF5/KAF6 が同じ開催年 2026 で衝突する)
 
-### include.js の Promise 化
+## 直近の予定(2026-09 時点)
 
-- 既存の `js/include.js` を Promise 化し、すべての共通パーツの読み込み完了後に `includes:loaded` カスタムイベントを発火する
-- `data-loader.js` はこのイベントを待ってから data-field の差し込み処理を行う
-- これにより、共通パーツ(includeHTML/header.html など)内の data-field も正しく動作する
+| 時期 | 予定 | 主な作業 |
+|---|---|---|
+| 〜10月 | KAF7 向け CMS フィールド接続(JSON 専用キーの CMS 化) | 開発 |
+| 〜10月 | アーカイブの年衝突(KAF5/KAF6=2026)の解決 | 開発 |
+| 11/20 | KAF7 応募受付開始 | CMS: フォーム URL 入力・ステータス「募集中」 |
+| 11月 | KAF6 写真のアーカイブ登録 | CMS |
+| 2027/2/20 | KAF7 応募締切 → ステータス「募集終了」 | CMS |
 
-### 画像の整理方針
+## コミット・PR の書き方
 
-- 現在ルート `images/` 直下に散乱している大会関連画像を、`images/editions/kaf5/` のように **大会番号フォルダ + 固定ファイル名** で整理する
-- 固定ファイル名は以下の通り(スキーマと一致):
-  - `flyer_front.jpg` - フライヤー表
-  - `flyer_back.jpg` - フライヤー裏
-  - `flyer_full.jpg` - フライヤー全体
-  - `main_visual.jpg` - メインビジュアル
-  - `support_list.jpg` - 協賛一覧
-  - `web_banner.jpg` - Web バナー
-  - `entry_thumbnail.png` - 応募要項サムネイル
-- 共通画像(ロゴなど)は `images/common/` に隔離
-- **既存の画像ファイルは削除せず、新しい場所にコピーする**(参照を段階的に切り替えるため)
-
-## data.json スキーマ
-
-```json
-{
-  "edition": {
-    "slug": "kaf5",
-    "number": 5,
-    "displayName": "KADOMA ART FES 5",
-    "displayNameShort": "KAF5",
-    "displayNameCompact": "KADOMAARTFES5",
-    "fiscalYearLabel": "2025年度",
-    "eventYear": 2026,
-    "yearsRunning": 5
-  },
-  "event": {
-    "dateRange": "2026年3月7日 (土) - 3月8日 (日)",
-    "dateRangeLong": "2026年03月07日 (土) 〜 03月08日 (日)",
-    "time": "10:00 〜 16:00",
-    "timeShort": "10:00-16:00",
-    "venue": "大和田駅前広場 / 大和田南商店街 周辺",
-    "admission": "無料"
-  },
-  "contest": {
-    "status": "closed",
-    "statusLabel": "募集終了",
-    "entryDeadline": "2025年11月30日(日)",
-    "entryDeadlineShort": "2025年11月30日",
-    "exhibitionPeriod": "2026年3月7日 (土) 〜 3月8日 (日)",
-    "entryPdf": "KAF5entry.pdf"
-  },
-  "marche": {
-    "displayName": "カドマアート・マルシェ in 大和田 2026",
-    "dateRange": "2026年3月7日 (土) 〜 3月8日 (日)",
-    "time": "10:00 〜 16:00"
-  },
-  "images": {
-    "flyerFront": "images/editions/kaf5/flyer_front.jpg",
-    "flyerBack": "images/editions/kaf5/flyer_back.jpg",
-    "flyerFull": "images/editions/kaf5/flyer_full.jpg",
-    "mainVisual": "images/editions/kaf5/main_visual.jpg",
-    "supportList": "images/editions/kaf5/support_list.jpg",
-    "webBanner": "images/editions/kaf5/web_banner.jpg",
-    "entryThumbnail": "images/editions/kaf5/entry_thumbnail.png"
-  },
-  "gallery": {
-    "latestYear": 2024,
-    "latestPage": "2024gallery.html",
-    "latestLabel": "2024イベント風景Photoギャラリー"
-  },
-  "contact": {
-    "email": "kadoma.art.fes2021@gmail.com"
-  },
-  "organization": {
-    "host": "門真市文化芸術活動推進基本計画パイロットプロジェクト実行委員会",
-    "coHost": "門真市・NPO法人トイボックス",
-    "support": "京阪ホールディングス株式会社"
-  },
-  "social": {
-    "youtube": "https://www.youtube.com/@kadomaartfes",
-    "instagram": "https://www.instagram.com/pilot_kadoma/"
-  },
-  "news": [
-    {
-      "date": "2026/02/05",
-      "category": "メディア掲載情報",
-      "text": "アートフェス作品審査会にてご紹介いただきました",
-      "link": "media.html"
-    }
-  ]
-}
-```
-
-## 作業の進め方
-
-- **小さく刻むこと**。1 プロンプト 1 ファイル、あるいは 1 プロンプト 1 機能を原則とする
-- ファイル編集前には必ず差分を提示し、人間の承認を得てから書き込む
-- 複数ファイルにまたがる機械的な置換でも、最初の 1 ファイルで動作確認してから残りに展開する
-- 作業の具体的な順序は `docs/refactoring-plan.md` を参照
-- 各ステップで使う指示テンプレートは `docs/prompts.md` を参照
-- 不明な点があれば作業を進める前に必ず人間に確認する
-
-## 対象ファイル
-
-### 改修対象(優先順)
-1. `index.html` — トップページ
-2. `kaf_mmg.html` — メインイベント詳細
-3. `kaf_marche.html` — マルシェ情報(現状 2024 年のまま取り残されているので特に注意)
-4. `contest_entry.html` — コンテスト募集要項
-5. `kaf_support.html` — 協賛案内
-6. `includeHTML/menubar.html` — 共通ナビ(大会番号を含む文字列あり)
-
-### 改修対象外(触らない)
-- `contest.html`, `contest2024.html` — 受賞作品アーカイブ(年ごとに内容自体が変わる性質)
-- `2024gallery.html` — 過去のギャラリー(固定)
-- `welcome.html`, `check.html`, `test01.html`, `template.html` — テスト・テンプレート用
-- `ka5test/` フォルダ配下全体 — テスト環境のミラー
-- ルート直下の旧版ファイル群 — 旧バックアップ
-
-## 作業完了後の引き継ぎ
-
-すべての改修が完了したら、以下を必ず更新してください:
-
-- `docs/update-guide.md` に「次回の年度更新手順」を運営スタッフ向けに平易な日本語でまとめる
-- `CLAUDE.md` の「現在の大会」セクションを最新情報に合わせる
-- コミットメッセージは日本語で、何を・なぜ変更したかが分かるように書く
+- コミットメッセージは日本語で「何を・なぜ」が分かるように
+- PR には、変更内容・検証結果・ユーザー側で必要な CMS 操作を明記する
+- 判断に迷った表記・仕様は勝手に確定せず、PR に「判断した点」として明示する
