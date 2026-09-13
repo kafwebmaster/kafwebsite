@@ -9,7 +9,7 @@ import { mapSiteSettings, mapNews, mapSponsors, mapArchives, shortNameOf, toText
 
 const local = JSON.parse(fs.readFileSync('src/data/site.json', 'utf8'));
 
-// --- 1. site-settings: 全 45 フィールドを埋めたモック応答 ---
+// --- 1. site-settings: FIELD_MAP の全フィールドを埋めたモック応答 ---
 const RENAMES = {
     'edition.displayName': 'edition_name',
     'edition.displayNameShort': 'edition_nameShort',
@@ -128,11 +128,23 @@ assert.deepEqual(blank.contest.rules, local.contest.rules, '空文字 → ロー
 const bad = mapSiteSettings({ contest_rules: '１．見出しなしで始まる' }, local, {});
 assert.deepEqual(bad.contest.rules, local.contest.rules, '見出しなしの規約 → ローカル値');
 assert.equal(parseRules('１．見出しなし'), undefined);
-// site.json → テキストエリア → 配列 の往復で元に戻ること (投入スクリプトの正しさ)
-for (const [key, cmsId] of Object.entries({ eligibility: 'contest_eligibility', rules: 'contest_rules', mailingAddr: 'contest_mailingAddr' })) {
-    const round = mapSiteSettings({ [cmsId]: toTextArea(cmsId, local.contest[key]) }, local, {});
-    assert.deepEqual(round.contest[key], local.contest[key], `${key} の往復`);
+// site.json → テキストエリア → 配列 の往復で元に戻ること (投入スクリプトの正しさ)。
+// フォールバック側を汚染して渡し、「CMS 値が採用された結果」として一致することを保証する
+const polluted = JSON.parse(JSON.stringify(local));
+for (const key of Object.keys(polluted.contest)) if (Array.isArray(polluted.contest[key])) polluted.contest[key] = ['__X__'];
+polluted.mmg.contents = ['__X__'];
+for (const [section, fields] of Object.entries({ contest: ['intro','entryPeriodNotes','entryFeeNotes','eligibility','judging','awards','entryNotes','docNotes','docNotesOnline','rules','mailingAddr','bankInfo'], mmg: ['contents'] })) {
+    for (const key of fields) {
+        const cmsId = RENAMES[`${section}.${key}`] ?? `${section}_${key}`;
+        const round = mapSiteSettings({ [cmsId]: toTextArea(cmsId, local[section][key]) }, polluted, {});
+        assert.deepEqual(round[section][key], local[section][key], `${section}.${key} の往復 (CMS 値が採用されること)`);
+    }
 }
+// 文字列フィールドの空文字は「未入力」と同じくローカル値へ
+const emptyStr = mapSiteSettings({ contest_editionName: '', edition_name: '   ', site_introText: '' }, local, {});
+assert.equal(emptyStr.contest.editionName, local.contest.editionName, '空文字 → ローカル値');
+assert.equal(emptyStr.edition.displayName, local.edition.displayName, '空白のみ → ローカル値 (既存フィールドも同様)');
+assert.equal(emptyStr.siteText.intro, local.siteText.intro);
 console.log('OK 5b: テキストエリア → 配列/規約の変換、空・想定外はローカル値、往復一致');
 
 console.log('\n全テスト合格');

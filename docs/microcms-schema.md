@@ -260,11 +260,13 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
   必ず見出し行から書き始める(見出しなしで始まると想定外として site.json の値に戻る)
 - 文中に日付などを差し込みたいときは `{contest.entryDeadlineShort}` `{contest.deliveryPeriod}` の
   差込み記法が使える(`content.js` の `fillFields`)。日付を直書きしない
-- 「賞」を空欄にすると、募集ページの「賞」の枠ごと非表示になる
+- 空欄にした場合は「未入力」と同じ扱いで site.json の値に戻る(CMS から空表示にすることはできない)。
+  「賞」の枠を非表示にしたい場合は site.json の `contest.awards` を `[]` にする(Web 担当)
+- `site_introText` はテキストエリアだが 1 段落の文章として扱う(改行は表示に反映されない)
 
 | フィールドID | 表示名 | 種類 | site.json のキー | サイト上の表示箇所 |
 |---|---|---|---|---|
-| `site_introText` | 紹介文(トップ) | テキストエリア | siteText.intro | トップ・アートラウンジページの紹介文 |
+| `site_introText` | 紹介文(トップ) | テキストエリア(1段落・改行不可) | siteText.intro | トップ・アートラウンジページの紹介文 |
 | `site_mainEvent` | メインイベント名 | テキスト | siteText.mainEvent | 各ページの「メインイベント」 |
 | `event_contents` | 全体コンテンツ | テキストエリア(1行1項目) | mmg.contents | 開催情報・アートラウンジ・KAFとは |
 | `contest_editionName` | コンテスト大会名 | テキスト | contest.editionName | 募集ページ見出し |
@@ -279,7 +281,7 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 | `contest_feeNotes` | 出品費の注記 | テキストエリア(1行1項目) | contest.entryFeeNotes | 出品費 |
 | `contest_eligibility` | 参加資格 | テキストエリア(1行1項目) | contest.eligibility | 参加資格 |
 | `contest_judging` | 審査 | テキストエリア(1行1項目) | contest.judging | 審査 |
-| `contest_awards` | 賞 | テキストエリア(1行1項目) | contest.awards | 賞(空欄で非表示) |
+| `contest_awards` | 賞 | テキストエリア(1行1項目) | contest.awards | 賞 |
 | `contest_entryNotes` | 出品に関しての注意点 | テキストエリア(1行1項目) | contest.entryNotes | 出品に関しての注意点 |
 | `contest_docNotes` | 応募書類に関しての注意点 | テキストエリア(1行1項目) | contest.docNotes | 応募書類に関しての注意点 |
 | `contest_docNotesOnl` | オンライン申込の注意点 | テキストエリア(1行1項目) | contest.docNotesOnline | オンライン申込の場合 |
@@ -294,7 +296,9 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
    Cloudflare(ステージング)の環境変数に `SEED_MICROCMS=1` と `SEED_ONLY_MISSING=1` を追加し、
    API キーに一時的に PATCH 権限を付与 → Retry deployment → 完了後に両方を元に戻す。
    `--only-missing` により**未入力のフィールドだけ**に site.json の現在値が入り、
-   管理画面で更新済みの値(大会名・開催日など)は上書きされない
+   管理画面で更新済みの値(大会名・開催日など)は上書きされない。
+   ⚠️ 判定は公開済みの値で行うため、**実行前に未公開の下書きを残さない**こと
+   (下書きのみの値は「未入力」とみなされ、投入で公開値に置き換わる)
 
 ## 4. API③ `editions-archive`(リスト形式)【新機能】
 

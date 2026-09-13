@@ -330,7 +330,7 @@
       "fieldId": "site_introText",
       "name": "紹介文(トップ)",
       "kind": "textArea",
-      "description": "トップページ・アートラウンジページの紹介文",
+      "description": "トップページ・アートラウンジページの紹介文 (1 段落。改行は表示に反映されません)",
       "required": false
     },
     {
@@ -435,7 +435,7 @@
       "fieldId": "contest_awards",
       "name": "賞",
       "kind": "textArea",
-      "description": "複数行入力。1 行 = 1 項目として表示されます (空行は無視)。 空欄にすると「賞」の枠ごと非表示",
+      "description": "複数行入力。1 行 = 1 項目として表示されます (空行は無視)。空欄にするとサイト側の既定値に戻ります",
       "required": false
     },
     {

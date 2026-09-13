@@ -234,6 +234,10 @@ export function mapSiteSettings(cms, fallback, manifest = {}) {
                 v = isBlank(v) ? undefined : splitLines(v);
             } else if (RULES_FIELDS.has(cmsId)) {
                 v = isBlank(v) ? undefined : parseRules(v);
+            } else if (typeof v === 'string' && isBlank(v)) {
+                // 一度入力して消した場合などに空文字が返ることがある。
+                // 「空ならローカル値」を全フィールドで統一する (空見出しの表示を防ぐ)
+                v = undefined;
             }
             out[section][key] = v ?? fb; // CMS 未入力はローカル値で補完
         }

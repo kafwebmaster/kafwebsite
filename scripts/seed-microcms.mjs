@@ -106,6 +106,16 @@ console.log(`  sponsors: ${sponsorsToPost.length} 件`);
 
 if (PREVIEW && !YES) {
     console.log('\n--preview のため書き込みは行いません');
+    if (ONLY_MISSING) {
+        // 絞り込み結果だけは GET (読み取り) で確認できるようにする
+        try {
+            const current = await api('GET', 'site-settings');
+            const missing = Object.keys(settings).filter((id) => current?.[id] == null || (typeof current[id] === 'string' && current[id].trim() === ''));
+            console.log(`--only-missing で投入されるのは ${missing.length} 項目: ${missing.join(', ') || '(なし)'}`);
+        } catch (e) {
+            console.log(`(現在値の取得に失敗したため絞り込み結果は表示できません: ${e.message})`);
+        }
+    }
     console.log(JSON.stringify({ settings, news: newsToPost.slice(0, 2), sponsors: sponsorsToPost.slice(0, 2) }, null, 2).slice(0, 1500));
     process.exit(0);
 }
