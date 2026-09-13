@@ -58,6 +58,33 @@ export const FIELD_MAP = {
         deliveryPeriod: 'contest_delivery',
         entryPdf: 'contest_entryPdf',
         entryFormUrl: 'contest_entryFormUrl',
+        // --- KAF7 対応で追加 (募集要項の文面を管理画面から編集できるように) ---
+        editionName: 'contest_editionName',
+        venue: 'contest_venue',
+        entryFee: 'contest_entryFee',
+        entryStart: 'contest_entryStart',
+        organizer: 'contest_organizer',
+        exhibitIntro: 'contest_exhibIntro',
+        exhibitVenueNote: 'contest_exhibVenue',
+        intro: 'contest_intro',
+        entryPeriodNotes: 'contest_periodNotes',
+        entryFeeNotes: 'contest_feeNotes',
+        eligibility: 'contest_eligibility',
+        judging: 'contest_judging',
+        awards: 'contest_awards',
+        entryNotes: 'contest_entryNotes',
+        docNotes: 'contest_docNotes',
+        docNotesOnline: 'contest_docNotesOnl',
+        rules: 'contest_rules',
+        mailingAddr: 'contest_mailingAddr',
+        bankInfo: 'contest_bankInfo',
+    },
+    siteText: {
+        intro: 'site_introText',
+        mainEvent: 'site_mainEvent',
+    },
+    mmg: {
+        contents: 'event_contents',
     },
     marche: {
         displayName: 'marche_name',
@@ -99,6 +126,46 @@ export const FIELD_MAP = {
 // メディア系フィールド (値が { url } オブジェクトで返るもの)
 const MEDIA_SECTIONS = new Set(['images']);
 const FILE_FIELDS = new Set(['contest_entryPdf']);
+
+// テキストエリア (複数行) を「1 行 = 1 項目」の配列として扱うフィールド。
+// 管理画面では箇条書きを 1 行ずつ書くだけでよく、空行は無視される
+export const LIST_FIELDS = new Set([
+    'contest_intro', 'contest_periodNotes', 'contest_feeNotes', 'contest_eligibility',
+    'contest_judging', 'contest_awards', 'contest_entryNotes', 'contest_docNotes',
+    'contest_docNotesOnl', 'contest_mailingAddr', 'contest_bankInfo', 'event_contents',
+]);
+
+// 出展規約: テキストエリアの「◆」で始まる行を見出し、それ以外を条文として
+// [{ heading, items[] }] に組み立てる (site.json の rules と同じ形)
+export const RULES_FIELDS = new Set(['contest_rules']);
+
+const isBlank = (v) => v == null || String(v).trim() === '';
+export const splitLines = (v) => String(v).split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+
+export function parseRules(v) {
+    const sections = [];
+    for (const line of splitLines(v)) {
+        if (line.startsWith('◆')) {
+            sections.push({ heading: line, items: [] });
+        } else if (sections.length) {
+            sections[sections.length - 1].items.push(line);
+        } else {
+            // 先頭が見出しでない = 想定外の書き方。ローカル値へ戻す (呼び出し側で undefined 扱い)
+            console.warn('[content] contest_rules: 先頭行が「◆」で始まっていないためローカル値を使います');
+            return undefined;
+        }
+    }
+    return sections.length ? sections : undefined;
+}
+
+// 配列/規約を管理画面のテキストエリア表記へ戻す (投入スクリプトが使う)
+export function toTextArea(cmsId, value) {
+    if (RULES_FIELDS.has(cmsId)) {
+        return value.map((s) => [s.heading, ...s.items].join('\n')).join('\n\n');
+    }
+    if (LIST_FIELDS.has(cmsId)) return value.join('\n');
+    return value;
+}
 
 const env = () => ({
     domain: import.meta.env?.MICROCMS_SERVICE_DOMAIN ?? process.env.MICROCMS_SERVICE_DOMAIN,
@@ -163,6 +230,10 @@ export function mapSiteSettings(cms, fallback, manifest = {}) {
                 v = resolveMedia(v, manifest, fb);
             } else if (cmsId === 'contest_status') {
                 v = unwrapSelect(v);
+            } else if (LIST_FIELDS.has(cmsId)) {
+                v = isBlank(v) ? undefined : splitLines(v);
+            } else if (RULES_FIELDS.has(cmsId)) {
+                v = isBlank(v) ? undefined : parseRules(v);
             }
             out[section][key] = v ?? fb; // CMS 未入力はローカル値で補完
         }

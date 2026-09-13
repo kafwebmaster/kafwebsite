@@ -28,7 +28,7 @@
 //   - 通常のビルドでは何もしない (SEED_MICROCMS が無ければ即終了)
 import fs from 'node:fs';
 import path from 'node:path';
-import { FIELD_MAP } from '../src/lib/content.js';
+import { FIELD_MAP, toTextArea } from '../src/lib/content.js';
 
 const DOMAIN = process.env.MICROCMS_SERVICE_DOMAIN;
 // 投入専用キーがあればそれを、無ければビルド環境の読み取りキーを使う (方式A)
@@ -36,6 +36,11 @@ const KEY = process.env.MICROCMS_WRITE_KEY || process.env.MICROCMS_API_KEY;
 const SEED_FLAG = process.env.SEED_MICROCMS === '1';
 const PREVIEW = process.argv.includes('--preview');
 const YES = process.argv.includes('--yes') || SEED_FLAG;
+// --only-missing (または SEED_ONLY_MISSING=1): site-settings のうち CMS 側が未入力の
+// フィールドだけを投入する。フィールドを後から追加したときの初期値入れに使う。
+// 既に管理画面で更新済みの値 (大会名・開催日など) を site.json の古い値で
+// 上書きしてしまう事故を防ぐため、追加投入は必ずこのモードで行うこと。
+const ONLY_MISSING = process.argv.includes('--only-missing') || process.env.SEED_ONLY_MISSING === '1';
 
 // 通常のビルドでは何もしない。
 // build スクリプトの先頭に置かれているため、ここで確実に無害に抜けること。
@@ -77,7 +82,8 @@ for (const [section, fields] of Object.entries(FIELD_MAP)) {
         if (cmsId === 'contest_entryPdf') continue; // ファイルは手動アップロード
         const value = site[section]?.[key];
         if (value === undefined) continue;
-        settings[cmsId] = cmsId === 'contest_status' ? [value] : value;
+        // 配列・規約はテキストエリア表記 (1 行 1 項目 / ◆見出し) に直して投入する
+        settings[cmsId] = cmsId === 'contest_status' ? [value] : toTextArea(cmsId, value);
     }
 }
 
@@ -114,9 +120,23 @@ const results = [];
 //        管理画面で一度「下書き保存」されていないと "Content is not exists" になる)
 console.log('\n[1/3] site-settings を投入...');
 try {
-    await api('PATCH', 'site-settings', settings);
-    results.push(['site-settings', 'OK', `${Object.keys(settings).length} 項目`]);
-    console.log('  完了');
+    let payload = settings;
+    if (ONLY_MISSING) {
+        // 現在値を取得し、未入力 (null / undefined / 空文字) のフィールドだけに絞る
+        const current = await api('GET', 'site-settings');
+        payload = Object.fromEntries(Object.entries(settings).filter(([id]) => {
+            const cur = current?.[id];
+            return cur == null || (typeof cur === 'string' && cur.trim() === '');
+        }));
+        console.log(`  --only-missing: 未入力 ${Object.keys(payload).length} 項目のみ投入 (入力済み ${Object.keys(settings).length - Object.keys(payload).length} 項目は保持)`);
+    }
+    if (Object.keys(payload).length === 0) {
+        results.push(['site-settings', 'SKIP', '投入対象なし (すべて入力済み)']);
+    } else {
+        await api('PATCH', 'site-settings', payload);
+        results.push(['site-settings', 'OK', `${Object.keys(payload).length} 項目`]);
+        console.log('  完了');
+    }
 } catch (e) {
     results.push(['site-settings', 'FAIL', e.message]);
     console.warn(`  失敗: ${e.message}`);

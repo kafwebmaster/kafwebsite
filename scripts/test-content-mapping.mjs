@@ -5,7 +5,7 @@
 //        site.json と同じ入れ子構造に正しく復元されることを、実キー無しで保証する
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { mapSiteSettings, mapNews, mapSponsors, mapArchives, shortNameOf } from '../src/lib/content.js';
+import { mapSiteSettings, mapNews, mapSponsors, mapArchives, shortNameOf, toTextArea, parseRules } from '../src/lib/content.js';
 
 const local = JSON.parse(fs.readFileSync('src/data/site.json', 'utf8'));
 
@@ -22,6 +22,15 @@ const RENAMES = {
     'contest.deliveryPeriod': 'contest_delivery',
     'images.entryThumbnail': 'images_entryThumb',
     'marche.displayName': 'marche_name',
+    // KAF7 対応で追加したフィールド
+    'contest.entryPeriodNotes': 'contest_periodNotes',
+    'contest.entryFeeNotes': 'contest_feeNotes',
+    'contest.docNotesOnline': 'contest_docNotesOnl',
+    'contest.exhibitIntro': 'contest_exhibIntro',
+    'contest.exhibitVenueNote': 'contest_exhibVenue',
+    'siteText.intro': 'site_introText',
+    'siteText.mainEvent': 'site_mainEvent',
+    'mmg.contents': 'event_contents',
 };
 const mock = {};
 for (const [section, obj] of Object.entries(local)) {
@@ -34,7 +43,8 @@ for (const [section, obj] of Object.entries(local)) {
         } else if (cmsId === 'contest_status') {
             mock[cmsId] = [value]; // select は配列
         } else {
-            mock[cmsId] = value;
+            // 配列・規約は管理画面と同じテキストエリア表記 (1 行 1 項目 / ◆見出し) にして渡す
+            mock[cmsId] = toTextArea(cmsId, value);
         }
     }
 }
@@ -49,7 +59,7 @@ for (const [section, obj] of Object.entries(local)) {
     if (section === 'news' || section === 'sponsors' || section === 'images') continue;
     if (section === 'contest') {
         const { entryPdf, ...rest } = obj;
-        for (const k of Object.keys(rest)) assert.equal(mapped.contest[k], obj[k], `contest.${k}`);
+        for (const k of Object.keys(rest)) assert.deepEqual(mapped.contest[k], obj[k], `contest.${k}`);
         assert.equal(mapped.contest.entryPdf, '/cms-assets/contest_entryPdf.bin');
         continue;
     }
@@ -96,6 +106,34 @@ assert.deepEqual(mapped3.contest.eligibility, local.contest.eligibility, 'contes
 assert.equal(mapped3.contest.editionName, local.contest.editionName);
 assert.equal(mapped3.contest.entryFee, local.contest.entryFee);
 console.log('OK 5: FIELD_MAP に無いキー → site.json の値をパススルー');
+
+// --- 4-b. テキストエリア → 配列 / 規約の変換 (KAF7 で追加した CMS フィールド) ---
+const ta = mapSiteSettings({
+    contest_eligibility: '・一行目\n\n  ・二行目 (前後の空白は除く)  \r\n・三行目\n',
+    contest_rules: '◆出品に関して\n１．条文A\n２．条文B\n\n◆作品に関して\n３．条文C',
+    event_contents: '項目1\n項目2',
+}, local, {});
+assert.deepEqual(ta.contest.eligibility, ['・一行目', '・二行目 (前後の空白は除く)', '・三行目'], '空行を無視し前後空白を除いて 1 行 1 項目');
+assert.deepEqual(ta.contest.rules, [
+    { heading: '◆出品に関して', items: ['１．条文A', '２．条文B'] },
+    { heading: '◆作品に関して', items: ['３．条文C'] },
+], '◆ 行を見出しに規約を組み立てる');
+assert.deepEqual(ta.mmg.contents, ['項目1', '項目2']);
+assert.deepEqual(ta.contest.judging, local.contest.judging, '未入力の配列フィールドはローカル値');
+// 空文字・空白のみはローカル値へ
+const blank = mapSiteSettings({ contest_eligibility: '  \n ', contest_rules: '' }, local, {});
+assert.deepEqual(blank.contest.eligibility, local.contest.eligibility, '空白のみ → ローカル値');
+assert.deepEqual(blank.contest.rules, local.contest.rules, '空文字 → ローカル値');
+// 先頭が ◆ でない規約は想定外としてローカル値へ
+const bad = mapSiteSettings({ contest_rules: '１．見出しなしで始まる' }, local, {});
+assert.deepEqual(bad.contest.rules, local.contest.rules, '見出しなしの規約 → ローカル値');
+assert.equal(parseRules('１．見出しなし'), undefined);
+// site.json → テキストエリア → 配列 の往復で元に戻ること (投入スクリプトの正しさ)
+for (const [key, cmsId] of Object.entries({ eligibility: 'contest_eligibility', rules: 'contest_rules', mailingAddr: 'contest_mailingAddr' })) {
+    const round = mapSiteSettings({ [cmsId]: toTextArea(cmsId, local.contest[key]) }, local, {});
+    assert.deepEqual(round.contest[key], local.contest[key], `${key} の往復`);
+}
+console.log('OK 5b: テキストエリア → 配列/規約の変換、空・想定外はローカル値、往復一致');
 
 console.log('\n全テスト合格');
 

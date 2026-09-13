@@ -249,6 +249,53 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 
 ---
 
+### 3-7. 募集要項・文章フィールド(KAF7 対応で追加・2026-09-13)
+
+作品募集ページの文面と、トップ/開催情報の紹介文を**管理画面から編集できる**ようにするフィールド。
+未入力の間は `src/data/site.json` の値がそのまま表示される(既存の表示は変わらない)。
+
+**記入ルール(重要)**
+- 種類が「テキストエリア」のものは **1 行 = 1 項目**として表示される。空行・行頭行末の空白は無視
+- `contest_rules`(出展規約)だけは特別: **「◆」で始まる行が見出し**、それ以外が条文。
+  必ず見出し行から書き始める(見出しなしで始まると想定外として site.json の値に戻る)
+- 文中に日付などを差し込みたいときは `{contest.entryDeadlineShort}` `{contest.deliveryPeriod}` の
+  差込み記法が使える(`content.js` の `fillFields`)。日付を直書きしない
+- 「賞」を空欄にすると、募集ページの「賞」の枠ごと非表示になる
+
+| フィールドID | 表示名 | 種類 | site.json のキー | サイト上の表示箇所 |
+|---|---|---|---|---|
+| `site_introText` | 紹介文(トップ) | テキストエリア | siteText.intro | トップ・アートラウンジページの紹介文 |
+| `site_mainEvent` | メインイベント名 | テキスト | siteText.mainEvent | 各ページの「メインイベント」 |
+| `event_contents` | 全体コンテンツ | テキストエリア(1行1項目) | mmg.contents | 開催情報・アートラウンジ・KAFとは |
+| `contest_editionName` | コンテスト大会名 | テキスト | contest.editionName | 募集ページ見出し |
+| `contest_venue` | コンテスト展示場所(短) | テキスト | contest.venue | 開催要項 |
+| `contest_entryFee` | 出品料 | テキスト | contest.entryFee | 開催要項・出品費 |
+| `contest_entryStart` | 応募受付開始日 | テキスト | contest.entryStart | 募集期間・申込受付期間 |
+| `contest_organizer` | コンテスト主催表記 | テキスト | contest.organizer | 冒頭・開催要項 |
+| `contest_exhibIntro` | 作品展示について(導入文) | テキスト | contest.exhibitIntro | 作品展示について |
+| `contest_exhibVenue` | 展示場所(詳細) | テキスト | contest.exhibitVenueNote | 作品展示について |
+| `contest_intro` | 募集ページ紹介文 | テキストエリア(1行1項目) | contest.intro | ページ冒頭 |
+| `contest_periodNotes` | 申込受付期間の注記 | テキストエリア(1行1項目) | contest.entryPeriodNotes | 申込受付期間 |
+| `contest_feeNotes` | 出品費の注記 | テキストエリア(1行1項目) | contest.entryFeeNotes | 出品費 |
+| `contest_eligibility` | 参加資格 | テキストエリア(1行1項目) | contest.eligibility | 参加資格 |
+| `contest_judging` | 審査 | テキストエリア(1行1項目) | contest.judging | 審査 |
+| `contest_awards` | 賞 | テキストエリア(1行1項目) | contest.awards | 賞(空欄で非表示) |
+| `contest_entryNotes` | 出品に関しての注意点 | テキストエリア(1行1項目) | contest.entryNotes | 出品に関しての注意点 |
+| `contest_docNotes` | 応募書類に関しての注意点 | テキストエリア(1行1項目) | contest.docNotes | 応募書類に関しての注意点 |
+| `contest_docNotesOnl` | オンライン申込の注意点 | テキストエリア(1行1項目) | contest.docNotesOnline | オンライン申込の場合 |
+| `contest_rules` | 出展規約 | テキストエリア(◆見出し) | contest.rules | 出展規約 |
+| `contest_mailingAddr` | 応募先(郵送) | テキストエリア(1行1項目) | contest.mailingAddr | 応募先：郵送 |
+| `contest_bankInfo` | 出品料振込先 | テキストエリア(1行1項目) | contest.bankInfo | 出品料振込先 |
+
+**登録手順**
+1. microCMS → サイト設定 → API スキーマ で上記 22 フィールドを追加(全て「必須」オフ)。
+   `docs/microcms-schemas/site-settings.json` にも同じ定義を追記済み
+2. 初期値は投入スクリプトで自動投入できる(手入力不要):
+   Cloudflare(ステージング)の環境変数に `SEED_MICROCMS=1` と `SEED_ONLY_MISSING=1` を追加し、
+   API キーに一時的に PATCH 権限を付与 → Retry deployment → 完了後に両方を元に戻す。
+   `--only-missing` により**未入力のフィールドだけ**に site.json の現在値が入り、
+   管理画面で更新済みの値(大会名・開催日など)は上書きされない
+
 ## 4. API③ `editions-archive`(リスト形式)【新機能】
 
 過去大会を年度別ページとして自動生成するためのデータ。
@@ -354,6 +401,13 @@ PAJERO / （株）beleef / フジイハウス産業（株） / ぶらっと / �
   | contest.deliveryPeriod | `contest_delivery` |
   | images.entryThumbnail | `images_entryThumb` |
   | marche.displayName | `marche_name` |
+  | contest.entryPeriodNotes | `contest_periodNotes` |
+  | contest.entryFeeNotes | `contest_feeNotes` |
+  | contest.docNotesOnline | `contest_docNotesOnl` |
+  | contest.exhibitIntro | `contest_exhibIntro` |
+  | contest.exhibitVenueNote | `contest_exhibVenue` |
+  | siteText.intro | `site_introText` |
+  | mmg.contents | `event_contents` |
   ⚠️ `contest_deadline`(短い表記)と `contest_deadlineFull`(曜日付)の対応に注意
 - **日付を文字列で保持**しているのは、現行サイトの多様な表記(`2026年3月6日 (金)` /
   `2026年03月06日 (金)` 等)を 1 文字も変えずに再現するため
