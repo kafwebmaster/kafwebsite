@@ -19,17 +19,24 @@ import fs from 'node:fs';
 // - /archive/2026: アーカイブのキーが開催年だった時期の KAF5 の URL
 //   (KAF5/KAF6 が同じ 2026 年のため、キーを大会番号に変更した。旧 URL は本番メニューに
 //    載っていたので転送で救う)
+//   ただし /archive/{year}.html は「大会名から番号を導出できない大会」の URL としても
+//   生成されうる (content.js の代替規則)。_redirects は実ファイルより優先されるため、
+//   転送元のページが実在するビルドではその大会が到達不能になる。転送元が実在する場合は
+//   ルールを出力しない (unlessSourceExists)
 const LEGACY = [
     { from: '/2024gallery', slug: 'kaf4' },
-    { from: '/archive/2026', slug: 'kaf5' },
+    { from: '/archive/2026', slug: 'kaf5', unlessSourceExists: true },
 ];
 
 const lines = [];
-for (const { from, slug } of LEGACY) {
-    if (fs.existsSync(`dist/archive/${slug}.html`)) {
-        lines.push(`${from} /archive/${slug} 302`);
-        lines.push(`${from}.html /archive/${slug} 302`);
+for (const { from, slug, unlessSourceExists } of LEGACY) {
+    if (!fs.existsSync(`dist/archive/${slug}.html`)) continue;
+    if (unlessSourceExists && fs.existsSync(`dist${from}.html`)) {
+        console.warn(`[postbuild-redirects] ${from}.html が実在するため ${from} → /archive/${slug} の転送は出力しません`);
+        continue;
     }
+    lines.push(`${from} /archive/${slug} 302`);
+    lines.push(`${from}.html /archive/${slug} 302`);
 }
 
 // 受賞作品ページ (contest.html) の非公開化 (KAF6 対応)

@@ -209,6 +209,38 @@ const mixed = mapArchives([
 ]);
 assert.deepEqual(mixed.map(a => a.slug), ['2029', 'kaf5'], '番号が取れない大会は年が slug になり、年順で並ぶ');
 assert.equal(mixed[0].edition, null);
-console.log('OK 8: 同一開催年の 2 大会が共存 / 番号なし大会名は開催年キーで代替');
+// 番号の後ろに語が続く大会名は同じ大会 (KAF7 はコンテスト展示が本体)
+assert.equal(slugOf('KADOMA ART FES 7 CONTEST', 2027), 'kaf7');
+// 想定外の表記はすべて開催年に落ちる (運用ガイドの NG 例と対応)
+for (const bad of ['KAF6', '第6回 KADOMA ART FES', 'KADOMA ART FES ６', 'ＫＡＤＯＭＡ ART FES 6']) {
+    assert.equal(slugOf(bad, 2026), '2026', `NG 例「${bad}」は開催年で代替`);
+}
+// 極端な桁数でも slug は英数字のまま (Number 経由の指数表記にならない)
+assert.equal(slugOf('KADOMA ART FES 1000000000000000000000', 2030), 'kaf1000000000000000000000');
+// 同じ番号・別の年 = 番号の打ち間違い: 公開が新しい方が残り、警告に両方の情報が出る
+{
+    const warned = [];
+    const orig = console.warn; console.warn = (m) => warned.push(String(m));
+    const dup = mapArchives([
+        A(2026, 'KADOMA ART FES 5', 2, '2026-08-02T00:00:00Z'),
+        A(2027, 'KADOMA ART FES 5', 1, '2027-06-01T00:00:00Z'),   // 番号を直し忘れた KAF7 のつもり
+    ]);
+    console.warn = orig;
+    assert.deepEqual(dup.map(a => [a.slug, a.year]), [['kaf5', 2027]], '公開が新しい方を採用');
+    assert.ok(warned.some(m => m.includes('year=2026') && m.includes('year=2027') && m.includes('開催年が違う')), '両方の year と注意喚起が警告に含まれる');
+}
+// 番号が大きいのに年が古い = 開催年の入力ミスの可能性: 年順が優先されるが警告する
+{
+    const warned = [];
+    const orig = console.warn; console.warn = (m) => warned.push(String(m));
+    const odd = mapArchives([
+        A(2026, 'KADOMA ART FES 5', 2, '2026-08-02T00:00:00Z'),
+        A(2025, 'KADOMA ART FES 8', 1, '2026-09-01T00:00:00Z'),
+    ]);
+    console.warn = orig;
+    assert.deepEqual(odd.map(a => a.slug), ['kaf5', 'kaf8'], '最新判定は開催年が優先 (意図した挙動)');
+    assert.ok(warned.some(m => m.includes('順序が食い違って')), '食い違いを警告する');
+}
+console.log('OK 8: 同一開催年の 2 大会が共存 / 番号なし大会名は開催年キーで代替 / 重複・順序矛盾の警告');
 
 console.log('\n全テスト合格 (archives 含む)');
