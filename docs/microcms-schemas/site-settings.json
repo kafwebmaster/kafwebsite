@@ -257,6 +257,13 @@
       "required": false
     },
     {
+      "fieldId": "images_supportPoster",
+      "name": "協賛ポスター",
+      "kind": "media",
+      "description": "協賛・応援ページ最上部の画像。未登録の間はメインビジュアルが表示されます",
+      "required": false
+    },
+    {
       "fieldId": "gallery_latestPage",
       "name": "最新ギャラリーのリンク先",
       "kind": "text",
