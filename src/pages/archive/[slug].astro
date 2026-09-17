@@ -1,7 +1,8 @@
 ---
 import DevBanner from '../../components/DevBanner.astro';
-// 年度別アーカイブ詳細 (/archive/{year}.html)
+// 大会別アーカイブ詳細 (/archive/{slug}.html。slug は大会番号 "kaf5" など)
 // microCMS editions-archive の 1 件 = 1 ページ。
+// URL に開催年を使わないのは、同じ年に 2 大会 (KAF5/KAF6 = 2026) があるため。
 // 見た目は既存 2024gallery.html の構成 (h2 複合構造 + 画像グリッド + grayDisplay
 // モーダル) を踏襲する。設計: docs/archive-feature-design.md 4-3
 import HeaderSub from '../../components/HeaderSub.astro';
@@ -11,9 +12,10 @@ import { getSiteData, getArchives } from '../../lib/content.js';
 
 export async function getStaticPaths() {
     const archives = await getArchives();
-    // params は文字列必須 (数値だと GetStaticPathsInvalidRouteParam でビルド失敗)
+    // params は文字列必須 (数値だと GetStaticPathsInvalidRouteParam でビルド失敗)。
+    // slug は content.js 側で文字列として作られている ("kaf5" / 代替時は "2026")
     return archives.map((a) => ({
-        params: { year: String(a.year) },
+        params: { slug: a.slug },
         props: { archive: a },
     }));
 }

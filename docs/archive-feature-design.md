@@ -1,9 +1,13 @@
 # アーカイブ機能 設計書(第 3 週)
 
-作成日: 2026-08-02 / **v2**(敵対的レビュー + 事実検証の指摘を反映)
+作成日: 2026-08-02 / **v3**(2026-09-17: 大会の識別キーを開催年から大会番号に変更)
 関連: `docs/technical-design.md` / `docs/microcms-schema.md`(API③ editions-archive)
 
 > v2 の変更点は文中に反映済み。レビューで挙がった論点と裁定の全リストは 11 章。
+> **v3 の変更(12 章)**: KAF5(2026年3月)と KAF6(2026年9月)が同じ開催年のため、
+> 開催年をキー・URL にする v2 設計では KAF6 登録時に KAF5 が消える。
+> キーと URL を大会名から導出する大会番号(`kaf5`)に変更した。
+> 本文中の `/archive/{year}.html` は `/archive/{slug}.html` と読み替えること。
 
 ---
 
@@ -18,12 +22,12 @@
 4. 公開時(11 月)には **KAF5(2026)= 最新枠、KAF4(2024)= アーカイブ**が
    最初から揃った状態にする
 5. 年の表記は**開催年**(KAF5 = 2026。2025 は存在しない年になる)
-6. **表示ラベルは大会番号**(「KAF5イベント風景Photoギャラリー」)。
-   URL は開催年のまま (`/archive/2026.html`)。
+6. **表示ラベル・URL・識別キーは大会番号**(「KAF5イベント風景Photoギャラリー」、
+   `/archive/kaf5.html`)。*v3 で変更: v2 では URL は開催年だった。*
    同じ年に 2 大会ある場合 (KAF5 = 2026年3月 / KAF6 = 2026年9月) に
-   年では区別できないため、ラベルのみ大会番号を使う。
-   短縮名は大会名から導出する (`content.js` の `shortNameOf`)。
-   大会名が想定の形式でなければ開催年を使う
+   年では区別できないため。大会番号は大会名から導出する
+   (`content.js` の `editionNumberOf` / `shortNameOf` / `slugOf`)。
+   大会名が想定の形式でなければ開催年を使う(12 章)
 
 ## 2. URL 設計
 
@@ -45,8 +49,8 @@
 
 | フィールド | 用途 |
 |---|---|
-| `year`(数値・必須) | URL・並び順・「最新」の判定 |
-| `title`(必須) | 大会名(例: KADOMA ART FES 5) |
+| `year`(数値・必須) | 並び順の第一キー・「最新」の判定・一覧の年表示(v2 までは URL にも使用) |
+| `title`(必須) | 大会名(例: KADOMA ART FES 5)。**番号から識別キー・URL(`kaf5`)を導出**(v3) |
 | `dateRange` | 開催期間の表示 |
 | `description` | 紹介文 |
 | `heroImage` | 一覧カードと詳細ページの代表画像 |
@@ -62,9 +66,10 @@
 生データ = editions-archive 全件
 有効エントリ = 以下をすべて満たすもの
     ・year が正の整数 (小数・欠損は警告して除外)
-    ・year が重複していない (重複時は警告し、公開が新しい方を採用)
+    ・slug (大会番号 "kaf5"。導出不能なら開催年) が重複していない
+      (重複時は警告し、公開が新しい方を採用) ← v3: v2 では year の重複判定
     ・gallery に写真が 1 枚以上ある (写真ゼロの大会は「準備中」とみなし全体から除外)
-archives = 有効エントリを year 降順にソート
+archives = 有効エントリを year 降順 → 大会番号 降順 にソート
 latest   = archives[0]            (year 最大 = 最新大会)
 past     = archives.slice(1)      (アーカイブ一覧に載せる過去大会)
 ```
@@ -101,7 +106,7 @@ site-settings の仕組みをそのまま流用せず、以下のとおり拡張
 | 状態 | 「イベント風景Photoギャラリー」枠 | 「アーカイブ」項目 |
 |---|---|---|
 | **CMS にアーカイブ 0 件**(現在) | 現行どおり site-settings の `gallery.latestPage` / `latestLabel`(= 2024gallery.html) | **出さない** |
-| **1 件以上** | `/archive/{latest.year}.html` / `{latest.shortName}イベント風景Photoギャラリー` | 「アーカイブ」→ `/archive.html` を**過去大会が 2 件目以降のときだけ**追加 |
+| **1 件以上** | `/archive/{latest.slug}.html` / `{latest.shortName}イベント風景Photoギャラリー` | 「アーカイブ」→ `/archive.html` を**過去大会が 2 件目以降のときだけ**追加 |
 
 - **0 件のときは現行と同一の出力**になる(機能が「眠っている」状態)。
   検証は「dist の**バイト比較**(休眠ビルド vs 変更前ビルド)」で行う
@@ -128,9 +133,9 @@ site-settings の仕組みをそのまま流用せず、以下のとおり拡張
 - スクリプトセットは詳細ページと同一(6 章。ハンバーガーメニューに main.js が
   必須で、既知問題 F により Swiper CDN も揃える必要がある)
 
-### 4-3. 年度別詳細(/archive/[year].html)
+### 4-3. 大会別詳細(/archive/[slug].html)*(v3: 旧 [year])*
 
-- `getStaticPaths` で archives 全件からページ生成(params は `String(year)`)
+- `getStaticPaths` で archives 全件からページ生成(params は `slug`。文字列)
 - `<body class="home">` を付ける(既存サブページと同一。header.sub-page の
   スタイル前提)
 - 構成(既存 2024gallery.html の見た目を踏襲):
@@ -201,11 +206,12 @@ Swiper CDN を読まないページでは ReferenceError で後続処理
 | 段階 | CMS の状態 | サイトの見え方 |
 |---|---|---|
 | 今回のマージ直後 | アーカイブ 0 件 | **現行と完全一致**(機能は眠っている) |
-| KAF4(2024)登録 | 1 件 | メニュー最新枠 =「2024…」(/archive/2024.html)、アーカイブ項目出現(一覧は準備中表示)、2024gallery→301 |
-| KAF5(2026)登録 | 2 件 | メニュー最新枠 =「2026…」、アーカイブ一覧に 2024 |
-| 来年 KAF6(2027)登録 | 3 件 | 最新枠 = 2027、一覧に 2026・2024(**手作業ゼロ**) |
+| KAF4(2024)登録 | 1 件 | メニュー最新枠 =「KAF4…」(/archive/kaf4.html)、2024gallery→302 |
+| KAF5(2026)登録 | 2 件 | メニュー最新枠 =「KAF5…」、アーカイブ項目出現、一覧に KAF4 |
+| KAF6(2026)登録 | 3 件 | 最新枠 = KAF6、一覧に KAF5・KAF4(**手作業ゼロ**。同年でも衝突しない: v3) |
 
 推奨登録順: **KAF4 → KAF5**(先に 2026 を入れても壊れないが、上記の順が自然)。
+実際の運用は KAF5 を先に登録した(2026-09)。KAF4 は未登録。
 
 ## 9. テスト計画
 
@@ -214,7 +220,7 @@ Swiper CDN を読まないページでは ReferenceError で後続処理
    + dom-compare 全 10 ページ一致
 2. **フィクスチャテスト**(`ARCHIVES_FIXTURE` でネットワーク無しビルド):
    - 2 件(2024/2026・写真あり)で: `/archive.html` に 2024 のみ /
-     `/archive/2024.html` `/archive/2026.html` 生成 /
+     `/archive/kaf4.html` `/archive/kaf5.html` 生成(v3。v2 では年の URL)/
      メニューが「KAF5イベント風景Photoギャラリー」 /
      新ページ内のローカル参照が全て絶対パス / `_redirects` に 302 ルール 2 行
    - 1 件のみで: 一覧が「準備中」+ noindex
@@ -256,3 +262,28 @@ Swiper CDN を読まないページでは ReferenceError で後続処理
 | 低 | 休眠 /archive.html の誤インデックス | 4-2: 休眠時のみ noindex |
 | 低 | 同名ファイルの上書き | 3-3: アセット ID をファイル名に含める |
 | 低 | CLAUDE.md が旧構成(ヘテムル/FTP)のまま | 本機能のスコープ外。第 4 週の文書更新タスクに送る |
+
+## 12. v3: 識別キーを大会番号に変更(2026-09-17)
+
+**問題**: 要件 5・6 は「年 = 大会」を前提にしていたが、KAF5 = 2026年3月、KAF6 = 2026年9月 で
+同じ開催年に 2 大会が存在する。v2 の実装は `year` をキー(重複判定・URL・最新判定)に
+していたため、KAF6 を登録すると「year 重複 → 公開が新しい方を採用」で **KAF5 が消える**。
+
+**変更**(ユーザー承認済み。CMS のスキーマ・既存データは変更しない):
+
+| 項目 | v2 | v3 |
+|---|---|---|
+| 識別キー(重複判定) | `year` | `slug` = 大会番号(大会名 `KADOMA ART FES N` から導出、`kaf5`) |
+| URL | `/archive/{year}.html` | `/archive/{slug}.html`(`/archive/kaf5.html`) |
+| 並び順・最新判定 | year 降順 | year 降順 → 大会番号 降順(同年は番号が大きい方が新しい) |
+| 番号が導出できない大会名 | (短縮名のみ年で代替) | 警告のうえ **開催年を slug に代替**(`/archive/2029.html`)。他の大会と共存し、消えない |
+| 旧 URL | — | `/archive/2026` → `/archive/kaf5` を 302(7 章と同じ仕組み。転送先が実在し、**かつ転送元 `/archive/2026.html` が生成されていない**ときだけ。番号を導出できない 2026 年の大会が代替 URL として同じパスを使うため) |
+| 重複・矛盾の警告 | year 重複のみ | slug 重複は採用/除外の両方(year・title・publishedAt)をログに出し、年が違えば入力ミスとして注意喚起。番号と年の順序が食い違う場合も警告 |
+| 大会名の接尾辞 | — | 「KADOMA ART FES 7 CONTEST」は KAF7 と同じ大会(部分一致を意図的に維持。KAF7 はコンテスト展示が本体) |
+| 画像ミラーの保存先 | `cms-assets/archive/{year}/` | 変更なし(ファイル名にアセット ID を含むため同年 2 大会でも衝突しない) |
+
+- `content.js`: `editionNumberOf` / `slugOf` を追加、`mapArchives` の戻り値に `slug` / `edition` を追加
+- ページ: `archive/[year].astro` → `archive/[slug].astro`。Menubar / archive.astro のリンクも slug に
+- 運用: 大会名は必ず「KADOMA ART FES N」の形式で登録する(`docs/update-guide.md` 2-6)
+- 検証: 休眠ビルド(0 件)は v2 とバイト一致。同年 2 大会のフィクスチャで
+  `kaf6` が最新枠、`kaf5` が一覧に降りることをテスト(test-content-mapping OK 8 + フィクスチャビルド)

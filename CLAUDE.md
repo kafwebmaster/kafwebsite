@@ -66,7 +66,7 @@
 
 ## リポジトリ構成(要点)
 
-- `src/pages/*.astro` … 全 11 ページ + `archive/[year].astro`(CMS 登録で自動生成)
+- `src/pages/*.astro` … 全 11 ページ + `archive/[slug].astro`(CMS 登録で自動生成。slug は大会番号 `kaf5`)
 - `src/components/` … HeaderSub / Menubar / Footer / NewsList / HbpInfo / DevBanner(開発中バナー。
   *.pages.dev と localhost のみ表示され、本番ドメインには出ない)
 - `src/lib/content.js` … データ取得層(FIELD_MAP・フォールバック・fillFields・アーカイブ正規化)
@@ -81,14 +81,15 @@
 - `docs/technical-design.md` … 移行時の技術設計
 - `docs/microcms-schema.md` … CMS スキーマとフィールド対応表(FIELD_MAP と同期必須)
 - `docs/cloudflare-settings.md` … Cloudflare 設定記録・復旧手順
-- `docs/archive-feature-design.md` … アーカイブ機能の設計(既知の課題: KAF5/KAF6 が同じ開催年 2026 で衝突する)
+- `docs/archive-feature-design.md` … アーカイブ機能の設計(大会の識別キーは大会名から導出する大会番号。
+  同じ開催年に 2 大会あっても衝突しない)
 
 ## 直近の予定(2026-09 時点)
 
 | 時期 | 予定 | 主な作業 |
 |---|---|---|
-| 〜10月 | KAF7 向け CMS フィールド接続(JSON 専用キーの CMS 化) | 開発 |
-| 〜10月 | アーカイブの年衝突(KAF5/KAF6=2026)の解決 | 開発 |
+| 済 | KAF7 向け CMS フィールド接続(20 フィールド・初期値投入済み。本番反映は次回リリース) | 開発 |
+| 済 | アーカイブの年衝突(KAF5/KAF6=2026)の解決(大会番号キー化) | 開発 |
 | 11/20 | KAF7 応募受付開始 | CMS: フォーム URL 入力・ステータス「募集中」 |
 | 11月 | KAF6 写真のアーカイブ登録 | CMS |
 | 2027/2/20 | KAF7 応募締切 → ステータス「募集終了」 | CMS |

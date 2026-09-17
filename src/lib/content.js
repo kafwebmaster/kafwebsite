@@ -316,21 +316,40 @@ export async function getSiteData() {
 // - year が正の整数でないものは警告して除外
 // - gallery (写真) が空のものは「準備中」とみなし除外
 //   (翌年大会の先行登録で空ギャラリーが最新枠を奪う事故の防止)
-// - year 重複は警告し、公開が新しい方 (publishedAt 降順で先勝ち) を採用
-// - year 降順に整列して返す
-// 表示用の短縮名 (「KAF5」など) を大会名から導出する。
-// 同じ年に 2 大会ある場合 (KAF5=2026年3月 / KAF6=2026年9月) に
-// 「2026イベント風景Photoギャラリー」では区別できないため、
-// メニューと詳細ページの見出しはこの短縮名を使う。
-// 大会名が想定の形式でなければ開催年を使う (表示が空にならないように)。
-export const shortNameOf = (title, year) => {
-    const m = String(title ?? '').match(/KADOMA\s*ART\s*FES\s*0*(\d+)/i);
-    return m ? `KAF${m[1]}` : String(year);
+// - 大会の識別キー (slug) は大会番号 (「kaf5」)。同じ開催年に 2 大会ある
+//   (KAF5=2026年3月 / KAF6=2026年9月) ため、開催年はキーにできない。
+//   大会番号は大会名「KADOMA ART FES N」から導出し、導出できなければ開催年で代替する
+// - slug 重複は警告し、公開が新しい方 (publishedAt 降順で先勝ち) を採用
+// - 開催年 降順 → 大会番号 降順 に整列して返す (同年なら番号の大きい方が新しい)
+//
+// 大会名から大会番号 (半角数字の文字列。先頭ゼロは除く) を取り出す。想定外の表記なら null。
+// 番号の後ろに語が続いてもよい (「KADOMA ART FES 7 CONTEST」= KAF7。
+// KAF7 はコンテスト展示そのものが本体なので同じ大会として扱う)
+const editionDigitsOf = (title) => {
+    const m = String(title ?? '').match(/KADOMA\s*ART\s*FES\s*(\d+)/i);
+    return m ? (m[1].replace(/^0+/, '') || '0') : null;
 };
+
+// 大会番号 (数値)。並び順の判定に使う。想定外の表記なら null
+export const editionNumberOf = (title) => {
+    const d = editionDigitsOf(title);
+    return d == null ? null : Number(d);
+};
+
+// 表示用の短縮名 (「KAF5」など)。メニューと詳細ページの見出しに使う。
+// 大会名が想定の形式でなければ開催年を使う (表示が空にならないように)。
+// 数字は文字列のまま連結する (Number 経由だと極端な桁数で指数表記になり slug が壊れる)
+export const shortNameOf = (title, year) => {
+    const d = editionDigitsOf(title);
+    return d != null ? `KAF${d}` : String(year);
+};
+
+// URL 用の識別子 (/archive/{slug}.html)。「kaf5」、導出できなければ「2026」
+export const slugOf = (title, year) => shortNameOf(title, year).toLowerCase();
 
 export function mapArchives(contents, manifest = {}) {
     const seen = new Map();
-    // publishedAt 降順で処理し、重複 year は最初 (=公開が新しい方) を採用
+    // publishedAt 降順で処理し、重複 slug は最初 (=公開が新しい方) を採用
     const byNewest = [...contents].sort((a, b) =>
         String(b.publishedAt ?? '').localeCompare(String(a.publishedAt ?? '')));
     for (const item of byNewest) {
@@ -344,21 +363,46 @@ export function mapArchives(contents, manifest = {}) {
             console.warn(`[content] editions-archive: 写真が未登録のため準備中として除外します (year=${year}, title=${item.title})`);
             continue;
         }
-        if (seen.has(year)) {
-            console.warn(`[content] editions-archive: year=${year} が重複しています。公開が新しい方を採用します`);
+        const edition = editionNumberOf(item.title);
+        if (edition == null) {
+            console.warn(`[content] editions-archive: 大会名から大会番号を導出できないため開催年をキーにします (year=${year}, title=${item.title})`);
+        }
+        const slug = slugOf(item.title, year);
+        if (seen.has(slug)) {
+            // 同じ大会番号が 2 件 = 大会名の番号の打ち間違い (前回の登録を複製して番号を
+            // 直し忘れる等) の可能性が高い。どちらが残りどちらが消えたかをログで特定できるようにする
+            const kept = seen.get(slug);
+            console.warn(`[content] editions-archive: ${slug} が重複しています。公開が新しい方を採用します`
+                + ` (採用: year=${kept.year} title=${kept.title} publishedAt=${kept.publishedAt}`
+                + ` / 除外: year=${year} title=${item.title} publishedAt=${item.publishedAt ?? ''})`
+                + (kept.year !== year ? ' ⚠️ 開催年が違うのに同じ大会番号です。大会名の番号を確認してください' : ''));
             continue;
         }
-        seen.set(year, {
+        seen.set(slug, {
+            slug,
             year,
+            edition,
             title: item.title ?? '',
             shortName: shortNameOf(item.title, year),
             dateRange: item.dateRange ?? '',
             description: item.description ?? '',
             heroImage: resolveMedia(item.heroImage, manifest, null),
             gallery: gallery.map((g) => resolveMedia(g, manifest, null)).filter(Boolean),
+            publishedAt: item.publishedAt ?? '',
         });
     }
-    return [...seen.values()].sort((a, b) => b.year - a.year);
+    // 開催年が第一キー (番号を導出できない大会も年で並べられるように)。同年なら番号の大きい方が新しい
+    const sorted = [...seen.values()].sort((a, b) => (b.year - a.year) || ((b.edition ?? 0) - (a.edition ?? 0)));
+    // 年の順と番号の順が食い違う (番号が大きいのに年が古い) データは入力ミスの可能性が高いので警告する。
+    // 最新枠は年で決まるため、黙って「番号の小さい方が最新」になるのを防ぐ
+    const numbered = sorted.filter((a) => a.edition != null);
+    for (let i = 1; i < numbered.length; i++) {
+        if (numbered[i].edition > numbered[i - 1].edition) {
+            console.warn(`[content] editions-archive: 大会番号と開催年の順序が食い違っています`
+                + ` (${numbered[i].slug} year=${numbered[i].year} が ${numbered[i - 1].slug} year=${numbered[i - 1].year} より古い扱い)。開催年を確認してください`);
+        }
+    }
+    return sorted;
 }
 
 const loadLocalArchives = () => {

@@ -102,7 +102,7 @@ kafwebsite/
 │       ├── kaf_support.astro
 │       └── archive/            # 新機能(第 3 週)
 │           ├── index.astro     # → /archive.html 相当(要 URL 設計確認)
-│           └── [year].astro    # → /archive/2024.html 等
+│           └── [slug].astro    # → /archive/kaf4.html 等 (slug は大会番号)
 ├── public/                 # ビルド時に dist/ へそのままコピーされる静的資産
 │   ├── css/  (style.css / sub-page.css / inview.css — 無変更コピー)
 │   ├── js/   (main.js / slick.js / slick-thumbnail.js / jquery.inview_set.js)

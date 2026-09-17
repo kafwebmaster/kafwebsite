@@ -1,6 +1,6 @@
 // 旧ギャラリー URL のリダイレクト生成 (ビルド後に実行)
 //
-// dist/archive/2024.html が実際に存在するビルドのときだけ、
+// 転送先 (dist/archive/{slug}.html) が実際に存在するビルドのときだけ、
 // dist/_redirects に旧 URL → 新 URL の 302 を出力する。
 //
 // 設計判断 (docs/archive-feature-design.md 7 章):
@@ -14,17 +14,29 @@
 // - 既存の _redirects there には追記 (上書きしない)
 import fs from 'node:fs';
 
-// 旧 URL → アーカイブ年 の対応 (今後、年別の旧ページを増やす場合はここに追記)
+// 旧 URL → アーカイブ詳細ページの slug (大会番号) の対応
+// - /2024gallery: 移行前からある KAF4 の固定ページ (KAF4 をアーカイブ登録したら転送)
+// - /archive/2026: アーカイブのキーが開催年だった時期の KAF5 の URL
+//   (KAF5/KAF6 が同じ 2026 年のため、キーを大会番号に変更した。旧 URL は本番メニューに
+//    載っていたので転送で救う)
+//   ただし /archive/{year}.html は「大会名から番号を導出できない大会」の URL としても
+//   生成されうる (content.js の代替規則)。_redirects は実ファイルより優先されるため、
+//   転送元のページが実在するビルドではその大会が到達不能になる。転送元が実在する場合は
+//   ルールを出力しない (unlessSourceExists)
 const LEGACY = [
-    { from: '/2024gallery', year: 2024 },
+    { from: '/2024gallery', slug: 'kaf4' },
+    { from: '/archive/2026', slug: 'kaf5', unlessSourceExists: true },
 ];
 
 const lines = [];
-for (const { from, year } of LEGACY) {
-    if (fs.existsSync(`dist/archive/${year}.html`)) {
-        lines.push(`${from} /archive/${year} 302`);
-        lines.push(`${from}.html /archive/${year} 302`);
+for (const { from, slug, unlessSourceExists } of LEGACY) {
+    if (!fs.existsSync(`dist/archive/${slug}.html`)) continue;
+    if (unlessSourceExists && fs.existsSync(`dist${from}.html`)) {
+        console.warn(`[postbuild-redirects] ${from}.html が実在するため ${from} → /archive/${slug} の転送は出力しません`);
+        continue;
     }
+    lines.push(`${from} /archive/${slug} 302`);
+    lines.push(`${from}.html /archive/${slug} 302`);
 }
 
 // 受賞作品ページ (contest.html) の非公開化 (KAF6 対応)
