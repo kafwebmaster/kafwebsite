@@ -257,6 +257,13 @@
       "required": false
     },
     {
+      "fieldId": "images_supportPoster",
+      "name": "協賛ポスター",
+      "kind": "media",
+      "description": "協賛・応援ページ最上部の画像。未登録の間はメインビジュアルが表示されます",
+      "required": false
+    },
+    {
       "fieldId": "gallery_latestPage",
       "name": "最新ギャラリーのリンク先",
       "kind": "text",
@@ -356,9 +363,9 @@
     },
     {
       "fieldId": "contest_venue",
-      "name": "コンテスト展示場所(短)",
+      "name": "コンテスト展示場所",
       "kind": "text",
-      "description": "開催要項の「展示場所」",
+      "description": "開催要項の「展示場所」と「作品展示について」の【展示場所】(2 箇所に同じ値が出ます)",
       "required": false
     },
     {
@@ -376,24 +383,10 @@
       "required": false
     },
     {
-      "fieldId": "contest_organizer",
-      "name": "コンテスト主催表記",
-      "kind": "text",
-      "description": "募集ページの主催欄",
-      "required": false
-    },
-    {
       "fieldId": "contest_exhibIntro",
       "name": "作品展示について(導入文)",
       "kind": "text",
       "description": "「本コンテスト一次審査通過作品は…展示を行います。」",
-      "required": false
-    },
-    {
-      "fieldId": "contest_exhibVenue",
-      "name": "展示場所(詳細)",
-      "kind": "text",
-      "description": "作品展示についての【展示場所】",
       "required": false
     },
     {

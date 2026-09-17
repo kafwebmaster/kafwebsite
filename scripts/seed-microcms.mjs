@@ -142,6 +142,26 @@ try {
     }
     if (Object.keys(payload).length === 0) {
         results.push(['site-settings', 'SKIP', '投入対象なし (すべて入力済み)']);
+    } else if (ONLY_MISSING) {
+        // 追加投入は 1 項目ずつ書き込む。まとめて送ると、管理画面で作り忘れた/打ち間違えた
+        // フィールドが 1 つあるだけで全件失敗し、どれが原因か分からなくなるため。
+        // 失敗したフィールド ID をログに名指しして、手入力の確認に使えるようにする
+        const ok = [], ng = [];
+        for (const [id, value] of Object.entries(payload)) {
+            try {
+                await api('PATCH', 'site-settings', { [id]: value });
+                ok.push(id);
+                console.log(`  OK   ${id}`);
+            } catch (e) {
+                ng.push(id);
+                const reason = /not exists|not found|存在しない|invalid/i.test(e.message)
+                    ? 'フィールドが見つかりません → 管理画面のフィールド ID を確認してください'
+                    : e.message;
+                console.warn(`  FAIL ${id}: ${reason}`);
+            }
+        }
+        results.push(['site-settings', ng.length ? 'FAIL' : 'OK',
+            `${ok.length} 項目 OK` + (ng.length ? ` / ${ng.length} 項目 FAIL (${ng.join(', ')})` : '')]);
     } else {
         await api('PATCH', 'site-settings', payload);
         results.push(['site-settings', 'OK', `${Object.keys(payload).length} 項目`]);

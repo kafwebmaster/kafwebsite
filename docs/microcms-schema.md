@@ -260,6 +260,9 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
   必ず見出し行から書き始める(見出しなしで始まると想定外として site.json の値に戻る)
 - 文中に日付などを差し込みたいときは `{contest.entryDeadlineShort}` `{contest.deliveryPeriod}` の
   差込み記法が使える(`content.js` の `fillFields`)。日付を直書きしない
+- 主催表記 (`contest.organizer`) はほぼ変わらないため CMS 化せず site.json で管理する(変更は Web 担当へ)
+- 展示場所は既存の `contest_venue` 1 つで、開催要項の「展示場所」と「作品展示について」の
+  【展示場所】の 2 箇所に同じ値を表示する(片方だけ古くなる事故を防ぐため専用フィールドは作らない)
 - 空欄にした場合は「未入力」と同じ扱いで site.json の値に戻る(CMS から空表示にすることはできない)。
   「賞」の枠を非表示にしたい場合は site.json の `contest.awards` を `[]` にする(Web 担当)
 - `site_introText` はテキストエリアだが 1 段落の文章として扱う(改行は表示に反映されない)
@@ -270,12 +273,10 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 | `site_mainEvent` | メインイベント名 | テキスト | siteText.mainEvent | 各ページの「メインイベント」 |
 | `event_contents` | 全体コンテンツ | テキストエリア(1行1項目) | mmg.contents | 開催情報・アートラウンジ・KAFとは |
 | `contest_editionName` | コンテスト大会名 | テキスト | contest.editionName | 募集ページ見出し |
-| `contest_venue` | コンテスト展示場所(短) | テキスト | contest.venue | 開催要項 |
+| `contest_venue` | コンテスト展示場所 | テキスト | contest.venue | 開催要項「展示場所」/ 作品展示について【展示場所】(2 箇所に同じ値) |
 | `contest_entryFee` | 出品料 | テキスト | contest.entryFee | 開催要項・出品費 |
 | `contest_entryStart` | 応募受付開始日 | テキスト | contest.entryStart | 募集期間・申込受付期間 |
-| `contest_organizer` | コンテスト主催表記 | テキスト | contest.organizer | 冒頭・開催要項 |
 | `contest_exhibIntro` | 作品展示について(導入文) | テキスト | contest.exhibitIntro | 作品展示について |
-| `contest_exhibVenue` | 展示場所(詳細) | テキスト | contest.exhibitVenueNote | 作品展示について |
 | `contest_intro` | 募集ページ紹介文 | テキストエリア(1行1項目) | contest.intro | ページ冒頭 |
 | `contest_periodNotes` | 申込受付期間の注記 | テキストエリア(1行1項目) | contest.entryPeriodNotes | 申込受付期間 |
 | `contest_feeNotes` | 出品費の注記 | テキストエリア(1行1項目) | contest.entryFeeNotes | 出品費 |
@@ -290,8 +291,21 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 | `contest_bankInfo` | 出品料振込先 | テキストエリア(1行1項目) | contest.bankInfo | 出品料振込先 |
 
 **登録手順**
-1. microCMS → サイト設定 → API スキーマ で上記 22 フィールドを追加(全て「必須」オフ)。
-   `docs/microcms-schemas/site-settings.json` にも同じ定義を追記済み
+
+フィールドの追加には 2 通りある。**⚠️ スキーマのインポートは「置き換え」**のため、
+現在の定義がファイル側に揃っていないとフィールドが消える(実際に管理画面で手動追加された
+`images_supportPoster` がファイル側に無く、消失する状態になっていた。2026-09-17 に修正済み)。
+
+**方法 a: スキーマをインポートする(速い・要注意)**
+1. microCMS → サイト設定 → API 設定 → スキーマ → **エクスポート**して現在の定義を保存(バックアップ)
+2. そのエクスポート結果と `docs/microcms-schemas/site-settings.json`(全 66 フィールド)の
+   フィールド ID を突き合わせ、**ファイル側に無い項目が無いこと**を確認する
+3. 問題なければ同ファイルを**インポート**
+4. 画像・ファイル系が正しい型で作られたか管理画面で目視確認
+
+**方法 b: 管理画面で 22 個を手で追加する(確実・20〜30 分)**
+- 上の表の「フィールドID / 表示名 / 種類」をそのまま入力。**必須はすべてオフ**
+- ID は 1 文字でも違うとサイトに反映されないため、コピーして貼り付ける
 2. 初期値は投入スクリプトで自動投入できる(手入力不要):
    Cloudflare(ステージング)の環境変数に `SEED_MICROCMS=1` と `SEED_ONLY_MISSING=1` を追加し、
    API キーに一時的に PATCH 権限を付与 → Retry deployment → 完了後に両方を元に戻す。
@@ -409,7 +423,6 @@ PAJERO / （株）beleef / フジイハウス産業（株） / ぶらっと / �
   | contest.entryFeeNotes | `contest_feeNotes` |
   | contest.docNotesOnline | `contest_docNotesOnl` |
   | contest.exhibitIntro | `contest_exhibIntro` |
-  | contest.exhibitVenueNote | `contest_exhibVenue` |
   | siteText.intro | `site_introText` |
   | mmg.contents | `event_contents` |
   ⚠️ `contest_deadline`(短い表記)と `contest_deadlineFull`(曜日付)の対応に注意

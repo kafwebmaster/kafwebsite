@@ -27,7 +27,6 @@ const RENAMES = {
     'contest.entryFeeNotes': 'contest_feeNotes',
     'contest.docNotesOnline': 'contest_docNotesOnl',
     'contest.exhibitIntro': 'contest_exhibIntro',
-    'contest.exhibitVenueNote': 'contest_exhibVenue',
     'siteText.intro': 'site_introText',
     'siteText.mainEvent': 'site_mainEvent',
     'mmg.contents': 'event_contents',
