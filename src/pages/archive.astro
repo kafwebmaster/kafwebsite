@@ -48,7 +48,7 @@ const dormant = past.length === 0;
 {past.length > 0 ? (
                 <div class="archive-list">
 {past.map((a) => (
-                    <a class="archive-card" href={`/archive/${a.year}.html`}>
+                    <a class="archive-card" href={`/archive/${a.slug}.html`}>
                         {a.heroImage && <img src={a.heroImage} alt={a.title}>}
                         <div class="archive-card-body">
                             <div class="archive-card-year">{a.year}</div>

@@ -5,7 +5,7 @@
 //        site.json と同じ入れ子構造に正しく復元されることを、実キー無しで保証する
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { mapSiteSettings, mapNews, mapSponsors, mapArchives, shortNameOf, toTextArea, parseRules } from '../src/lib/content.js';
+import { mapSiteSettings, mapNews, mapSponsors, mapArchives, shortNameOf, slugOf, editionNumberOf, toTextArea, parseRules } from '../src/lib/content.js';
 
 const local = JSON.parse(fs.readFileSync('src/data/site.json', 'utf8'));
 
@@ -160,13 +160,13 @@ const A = (year, title, galleryCount, publishedAt, extra = {}) => ({
 const rawArchives = [
     A(2024, 'KADOMA ART FES 4', 3, '2026-08-01T00:00:00Z'),
     A(2026, 'KADOMA ART FES 5', 2, '2026-08-02T00:00:00Z'),
-    A(2027, 'KADOMA ART FES 6', 0, '2026-08-03T00:00:00Z'),          // 写真ゼロ → 除外
-    A(2024, '重複の古い方', 5, '2025-01-01T00:00:00Z'),               // year 重複 (古い) → 除外
+    A(2027, 'KADOMA ART FES 7', 0, '2026-08-03T00:00:00Z'),          // 写真ゼロ → 除外
+    A(2024, 'KADOMA ART FES 4', 5, '2025-01-01T00:00:00Z'),          // 同じ大会番号の重複 (古い) → 除外
     A(2026.5, '小数year', 2, '2026-08-01T00:00:00Z'),                 // 非整数 → 除外
 ];
 const mappedA = mapArchives(rawArchives);
 assert.deepEqual(mappedA.map(a => a.year), [2026, 2024], 'year 降順・無効エントリ除外');
-assert.equal(mappedA[1].title, 'KADOMA ART FES 4', '重複は公開が新しい方を採用');
+assert.equal(mappedA[1].gallery.length, 3, '重複は公開が新しい方を採用');
 assert.equal(mappedA[0].gallery.length, 2);
 assert.ok(mappedA[0].heroImage.startsWith('https://'), 'マニフェスト無しでは CMS URL のまま');
 // マニフェスト解決
@@ -175,7 +175,7 @@ const mappedA2 = mapArchives(rawArchives, aManifest);
 assert.equal(mappedA2[0].heroImage, '/cms-assets/archive/2026/hero.jpg');
 console.log('OK 6: archives → 降順ソート / 写真ゼロ・重複・非整数の除外 / マニフェスト解決');
 
-// --- 5. 表示用の短縮名 (メニューの「KAF5イベント風景Photoギャラリー」) ---
+// --- 5. 表示用の短縮名 (メニューの「KAF5イベント風景Photoギャラリー」) と URL 用 slug ---
 assert.equal(shortNameOf('KADOMA ART FES 5', 2026), 'KAF5');
 assert.equal(shortNameOf('KADOMA ART FES 6', 2026), 'KAF6');
 assert.equal(shortNameOf('KADOMA ART FES 10', 2031), 'KAF10');
@@ -184,6 +184,31 @@ assert.equal(shortNameOf('kadoma art fes 8', 2028), 'KAF8', '小文字でも導�
 assert.equal(shortNameOf('門真アートフェス', 2029), '2029', '想定外の表記は開催年で代替する');
 assert.equal(shortNameOf(undefined, 2030), '2030', '大会名が無い場合も開催年で代替する');
 assert.equal(mappedA[0].shortName, 'KAF5', 'mapArchives が shortName を持つ');
-console.log('OK 7: 短縮名の導出 → 大会名から KAF◯ / 想定外は開催年で代替');
+assert.equal(editionNumberOf('KADOMA ART FES 05'), 5, '先頭ゼロは無視');
+assert.equal(editionNumberOf('門真アートフェス'), null);
+assert.equal(slugOf('KADOMA ART FES 5', 2026), 'kaf5', 'slug は小文字');
+assert.equal(slugOf('門真アートフェス', 2029), '2029', '想定外の表記は開催年が slug');
+assert.equal(mappedA[0].slug, 'kaf5');
+assert.equal(mappedA[0].edition, 5);
+console.log('OK 7: 短縮名・slug の導出 → 大会名から KAF◯ / 想定外は開催年で代替');
+
+// --- 6. 同じ開催年に 2 大会 (KAF5 = 2026年3月 / KAF6 = 2026年9月) ---
+// 開催年キーでは片方が消えていた事故の再発防止。キーは大会番号で、年はソートと表示にのみ使う
+const sameYear = mapArchives([
+    A(2026, 'KADOMA ART FES 5', 2, '2026-08-02T00:00:00Z'),
+    A(2026, 'KADOMA ART FES 6', 4, '2026-11-10T00:00:00Z'),
+    A(2024, 'KADOMA ART FES 4', 3, '2026-08-01T00:00:00Z'),
+]);
+assert.deepEqual(sameYear.map(a => a.slug), ['kaf6', 'kaf5', 'kaf4'], '同年の 2 大会が両方残り、番号の大きい方が最新');
+assert.deepEqual(sameYear.map(a => a.year), [2026, 2026, 2024]);
+assert.equal(sameYear[0].shortName, 'KAF6', '最新枠は KAF6');
+// 想定外の大会名は開催年で代替し、他の大会と共存する (消えない)
+const mixed = mapArchives([
+    A(2026, 'KADOMA ART FES 5', 2, '2026-08-02T00:00:00Z'),
+    A(2029, '門真アートフェス', 1, '2029-12-01T00:00:00Z'),
+]);
+assert.deepEqual(mixed.map(a => a.slug), ['2029', 'kaf5'], '番号が取れない大会は年が slug になり、年順で並ぶ');
+assert.equal(mixed[0].edition, null);
+console.log('OK 8: 同一開催年の 2 大会が共存 / 番号なし大会名は開催年キーで代替');
 
 console.log('\n全テスト合格 (archives 含む)');

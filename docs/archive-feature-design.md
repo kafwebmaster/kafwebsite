@@ -1,9 +1,13 @@
 # アーカイブ機能 設計書(第 3 週)
 
-作成日: 2026-08-02 / **v2**(敵対的レビュー + 事実検証の指摘を反映)
+作成日: 2026-08-02 / **v3**(2026-09-17: 大会の識別キーを開催年から大会番号に変更)
 関連: `docs/technical-design.md` / `docs/microcms-schema.md`(API③ editions-archive)
 
 > v2 の変更点は文中に反映済み。レビューで挙がった論点と裁定の全リストは 11 章。
+> **v3 の変更(12 章)**: KAF5(2026年3月)と KAF6(2026年9月)が同じ開催年のため、
+> 開催年をキー・URL にする v2 設計では KAF6 登録時に KAF5 が消える。
+> キーと URL を大会名から導出する大会番号(`kaf5`)に変更した。
+> 本文中の `/archive/{year}.html` は `/archive/{slug}.html` と読み替えること。
 
 ---
 
@@ -256,3 +260,26 @@ Swiper CDN を読まないページでは ReferenceError で後続処理
 | 低 | 休眠 /archive.html の誤インデックス | 4-2: 休眠時のみ noindex |
 | 低 | 同名ファイルの上書き | 3-3: アセット ID をファイル名に含める |
 | 低 | CLAUDE.md が旧構成(ヘテムル/FTP)のまま | 本機能のスコープ外。第 4 週の文書更新タスクに送る |
+
+## 12. v3: 識別キーを大会番号に変更(2026-09-17)
+
+**問題**: 要件 5・6 は「年 = 大会」を前提にしていたが、KAF5 = 2026年3月、KAF6 = 2026年9月 で
+同じ開催年に 2 大会が存在する。v2 の実装は `year` をキー(重複判定・URL・最新判定)に
+していたため、KAF6 を登録すると「year 重複 → 公開が新しい方を採用」で **KAF5 が消える**。
+
+**変更**(ユーザー承認済み。CMS のスキーマ・既存データは変更しない):
+
+| 項目 | v2 | v3 |
+|---|---|---|
+| 識別キー(重複判定) | `year` | `slug` = 大会番号(大会名 `KADOMA ART FES N` から導出、`kaf5`) |
+| URL | `/archive/{year}.html` | `/archive/{slug}.html`(`/archive/kaf5.html`) |
+| 並び順・最新判定 | year 降順 | year 降順 → 大会番号 降順(同年は番号が大きい方が新しい) |
+| 番号が導出できない大会名 | (短縮名のみ年で代替) | 警告のうえ **開催年を slug に代替**(`/archive/2029.html`)。他の大会と共存し、消えない |
+| 旧 URL | — | `/archive/2026` → `/archive/kaf5` を 302(7 章と同じ仕組み。転送先が実在するときだけ) |
+| 画像ミラーの保存先 | `cms-assets/archive/{year}/` | 変更なし(ファイル名にアセット ID を含むため同年 2 大会でも衝突しない) |
+
+- `content.js`: `editionNumberOf` / `slugOf` を追加、`mapArchives` の戻り値に `slug` / `edition` を追加
+- ページ: `archive/[year].astro` → `archive/[slug].astro`。Menubar / archive.astro のリンクも slug に
+- 運用: 大会名は必ず「KADOMA ART FES N」の形式で登録する(`docs/update-guide.md` 2-6)
+- 検証: 休眠ビルド(0 件)は v2 とバイト一致。同年 2 大会のフィクスチャで
+  `kaf6` が最新枠、`kaf5` が一覧に降りることをテスト(test-content-mapping OK 8 + フィクスチャビルド)

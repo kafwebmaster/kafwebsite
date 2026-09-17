@@ -316,21 +316,31 @@ export async function getSiteData() {
 // - year が正の整数でないものは警告して除外
 // - gallery (写真) が空のものは「準備中」とみなし除外
 //   (翌年大会の先行登録で空ギャラリーが最新枠を奪う事故の防止)
-// - year 重複は警告し、公開が新しい方 (publishedAt 降順で先勝ち) を採用
-// - year 降順に整列して返す
-// 表示用の短縮名 (「KAF5」など) を大会名から導出する。
-// 同じ年に 2 大会ある場合 (KAF5=2026年3月 / KAF6=2026年9月) に
-// 「2026イベント風景Photoギャラリー」では区別できないため、
-// メニューと詳細ページの見出しはこの短縮名を使う。
+// - 大会の識別キー (slug) は大会番号 (「kaf5」)。同じ開催年に 2 大会ある
+//   (KAF5=2026年3月 / KAF6=2026年9月) ため、開催年はキーにできない。
+//   大会番号は大会名「KADOMA ART FES N」から導出し、導出できなければ開催年で代替する
+// - slug 重複は警告し、公開が新しい方 (publishedAt 降順で先勝ち) を採用
+// - 開催年 降順 → 大会番号 降順 に整列して返す (同年なら番号の大きい方が新しい)
+//
+// 大会名から大会番号を導出する。想定外の表記なら null
+export const editionNumberOf = (title) => {
+    const m = String(title ?? '').match(/KADOMA\s*ART\s*FES\s*0*(\d+)/i);
+    return m ? Number(m[1]) : null;
+};
+
+// 表示用の短縮名 (「KAF5」など)。メニューと詳細ページの見出しに使う。
 // 大会名が想定の形式でなければ開催年を使う (表示が空にならないように)。
 export const shortNameOf = (title, year) => {
-    const m = String(title ?? '').match(/KADOMA\s*ART\s*FES\s*0*(\d+)/i);
-    return m ? `KAF${m[1]}` : String(year);
+    const n = editionNumberOf(title);
+    return n != null ? `KAF${n}` : String(year);
 };
+
+// URL 用の識別子 (/archive/{slug}.html)。「kaf5」、導出できなければ「2026」
+export const slugOf = (title, year) => shortNameOf(title, year).toLowerCase();
 
 export function mapArchives(contents, manifest = {}) {
     const seen = new Map();
-    // publishedAt 降順で処理し、重複 year は最初 (=公開が新しい方) を採用
+    // publishedAt 降順で処理し、重複 slug は最初 (=公開が新しい方) を採用
     const byNewest = [...contents].sort((a, b) =>
         String(b.publishedAt ?? '').localeCompare(String(a.publishedAt ?? '')));
     for (const item of byNewest) {
@@ -344,12 +354,19 @@ export function mapArchives(contents, manifest = {}) {
             console.warn(`[content] editions-archive: 写真が未登録のため準備中として除外します (year=${year}, title=${item.title})`);
             continue;
         }
-        if (seen.has(year)) {
-            console.warn(`[content] editions-archive: year=${year} が重複しています。公開が新しい方を採用します`);
+        const edition = editionNumberOf(item.title);
+        if (edition == null) {
+            console.warn(`[content] editions-archive: 大会名から大会番号を導出できないため開催年をキーにします (year=${year}, title=${item.title})`);
+        }
+        const slug = slugOf(item.title, year);
+        if (seen.has(slug)) {
+            console.warn(`[content] editions-archive: ${slug} が重複しています。公開が新しい方を採用します`);
             continue;
         }
-        seen.set(year, {
+        seen.set(slug, {
+            slug,
             year,
+            edition,
             title: item.title ?? '',
             shortName: shortNameOf(item.title, year),
             dateRange: item.dateRange ?? '',
@@ -358,7 +375,7 @@ export function mapArchives(contents, manifest = {}) {
             gallery: gallery.map((g) => resolveMedia(g, manifest, null)).filter(Boolean),
         });
     }
-    return [...seen.values()].sort((a, b) => b.year - a.year);
+    return [...seen.values()].sort((a, b) => (b.year - a.year) || ((b.edition ?? 0) - (a.edition ?? 0)));
 }
 
 const loadLocalArchives = () => {
