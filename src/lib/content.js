@@ -59,8 +59,8 @@ export const FIELD_MAP = {
         entryPdf: 'contest_entryPdf',
         entryFormUrl: 'contest_entryFormUrl',
         // --- KAF7 対応で追加 (募集要項の文面を管理画面から編集できるように) ---
-        // organizer / exhibitVenueNote は既存フィールドと情報が重複するため CMS 化せず
-        // site.json で管理する (二重管理による食い違いを避ける)
+        // organizer はほぼ変わらないため CMS 化せず site.json で管理する。
+        // 展示場所は既存の venue (contest_venue) 1 つを 2 箇所で表示する (二重管理による食い違いを避ける)
         editionName: 'contest_editionName',
         venue: 'contest_venue',
         entryFee: 'contest_entryFee',
