@@ -383,24 +383,10 @@
       "required": false
     },
     {
-      "fieldId": "contest_organizer",
-      "name": "コンテスト主催表記",
-      "kind": "text",
-      "description": "募集ページの主催欄",
-      "required": false
-    },
-    {
       "fieldId": "contest_exhibIntro",
       "name": "作品展示について(導入文)",
       "kind": "text",
       "description": "「本コンテスト一次審査通過作品は…展示を行います。」",
-      "required": false
-    },
-    {
-      "fieldId": "contest_exhibVenue",
-      "name": "展示場所(詳細)",
-      "kind": "text",
-      "description": "作品展示についての【展示場所】",
       "required": false
     },
     {
