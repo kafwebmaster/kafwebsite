@@ -260,8 +260,9 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
   必ず見出し行から書き始める(見出しなしで始まると想定外として site.json の値に戻る)
 - 文中に日付などを差し込みたいときは `{contest.entryDeadlineShort}` `{contest.deliveryPeriod}` の
   差込み記法が使える(`content.js` の `fillFields`)。日付を直書きしない
-- 主催表記 (`contest.organizer`) と展示場所詳細 (`contest.exhibitVenueNote`) は既存フィールドと
-  情報が重複するため CMS 化せず site.json で管理する(変更は Web 担当へ)
+- 主催表記 (`contest.organizer`) はほぼ変わらないため CMS 化せず site.json で管理する(変更は Web 担当へ)
+- 展示場所は既存の `contest_venue` 1 つで、開催要項の「展示場所」と「作品展示について」の
+  【展示場所】の 2 箇所に同じ値を表示する(片方だけ古くなる事故を防ぐため専用フィールドは作らない)
 - 空欄にした場合は「未入力」と同じ扱いで site.json の値に戻る(CMS から空表示にすることはできない)。
   「賞」の枠を非表示にしたい場合は site.json の `contest.awards` を `[]` にする(Web 担当)
 - `site_introText` はテキストエリアだが 1 段落の文章として扱う(改行は表示に反映されない)
@@ -272,7 +273,7 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 | `site_mainEvent` | メインイベント名 | テキスト | siteText.mainEvent | 各ページの「メインイベント」 |
 | `event_contents` | 全体コンテンツ | テキストエリア(1行1項目) | mmg.contents | 開催情報・アートラウンジ・KAFとは |
 | `contest_editionName` | コンテスト大会名 | テキスト | contest.editionName | 募集ページ見出し |
-| `contest_venue` | コンテスト展示場所(短) | テキスト | contest.venue | 開催要項 |
+| `contest_venue` | コンテスト展示場所 | テキスト | contest.venue | 開催要項「展示場所」/ 作品展示について【展示場所】(2 箇所に同じ値) |
 | `contest_entryFee` | 出品料 | テキスト | contest.entryFee | 開催要項・出品費 |
 | `contest_entryStart` | 応募受付開始日 | テキスト | contest.entryStart | 募集期間・申込受付期間 |
 | `contest_exhibIntro` | 作品展示について(導入文) | テキスト | contest.exhibitIntro | 作品展示について |
@@ -422,7 +423,7 @@ PAJERO / （株）beleef / フジイハウス産業（株） / ぶらっと / �
   | contest.entryFeeNotes | `contest_feeNotes` |
   | contest.docNotesOnline | `contest_docNotesOnl` |
   | contest.exhibitIntro | `contest_exhibIntro` |
-  | contest.exhibitVenueNote   | siteText.intro | `site_introText` |
+  | siteText.intro | `site_introText` |
   | mmg.contents | `event_contents` |
   ⚠️ `contest_deadline`(短い表記)と `contest_deadlineFull`(曜日付)の対応に注意
 - **日付を文字列で保持**しているのは、現行サイトの多様な表記(`2026年3月6日 (金)` /
