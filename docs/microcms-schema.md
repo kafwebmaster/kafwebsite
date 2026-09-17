@@ -260,6 +260,8 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
   必ず見出し行から書き始める(見出しなしで始まると想定外として site.json の値に戻る)
 - 文中に日付などを差し込みたいときは `{contest.entryDeadlineShort}` `{contest.deliveryPeriod}` の
   差込み記法が使える(`content.js` の `fillFields`)。日付を直書きしない
+- 主催表記 (`contest.organizer`) と展示場所詳細 (`contest.exhibitVenueNote`) は既存フィールドと
+  情報が重複するため CMS 化せず site.json で管理する(変更は Web 担当へ)
 - 空欄にした場合は「未入力」と同じ扱いで site.json の値に戻る(CMS から空表示にすることはできない)。
   「賞」の枠を非表示にしたい場合は site.json の `contest.awards` を `[]` にする(Web 担当)
 - `site_introText` はテキストエリアだが 1 段落の文章として扱う(改行は表示に反映されない)
@@ -273,9 +275,7 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 | `contest_venue` | コンテスト展示場所(短) | テキスト | contest.venue | 開催要項 |
 | `contest_entryFee` | 出品料 | テキスト | contest.entryFee | 開催要項・出品費 |
 | `contest_entryStart` | 応募受付開始日 | テキスト | contest.entryStart | 募集期間・申込受付期間 |
-| `contest_organizer` | コンテスト主催表記 | テキスト | contest.organizer | 冒頭・開催要項 |
 | `contest_exhibIntro` | 作品展示について(導入文) | テキスト | contest.exhibitIntro | 作品展示について |
-| `contest_exhibVenue` | 展示場所(詳細) | テキスト | contest.exhibitVenueNote | 作品展示について |
 | `contest_intro` | 募集ページ紹介文 | テキストエリア(1行1項目) | contest.intro | ページ冒頭 |
 | `contest_periodNotes` | 申込受付期間の注記 | テキストエリア(1行1項目) | contest.entryPeriodNotes | 申込受付期間 |
 | `contest_feeNotes` | 出品費の注記 | テキストエリア(1行1項目) | contest.entryFeeNotes | 出品費 |
@@ -297,7 +297,7 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 
 **方法 a: スキーマをインポートする(速い・要注意)**
 1. microCMS → サイト設定 → API 設定 → スキーマ → **エクスポート**して現在の定義を保存(バックアップ)
-2. そのエクスポート結果と `docs/microcms-schemas/site-settings.json`(全 68 フィールド)の
+2. そのエクスポート結果と `docs/microcms-schemas/site-settings.json`(全 66 フィールド)の
    フィールド ID を突き合わせ、**ファイル側に無い項目が無いこと**を確認する
 3. 問題なければ同ファイルを**インポート**
 4. 画像・ファイル系が正しい型で作られたか管理画面で目視確認
@@ -422,8 +422,7 @@ PAJERO / （株）beleef / フジイハウス産業（株） / ぶらっと / �
   | contest.entryFeeNotes | `contest_feeNotes` |
   | contest.docNotesOnline | `contest_docNotesOnl` |
   | contest.exhibitIntro | `contest_exhibIntro` |
-  | contest.exhibitVenueNote | `contest_exhibVenue` |
-  | siteText.intro | `site_introText` |
+  | contest.exhibitVenueNote   | siteText.intro | `site_introText` |
   | mmg.contents | `event_contents` |
   ⚠️ `contest_deadline`(短い表記)と `contest_deadlineFull`(曜日付)の対応に注意
 - **日付を文字列で保持**しているのは、現行サイトの多様な表記(`2026年3月6日 (金)` /
