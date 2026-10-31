@@ -8,7 +8,7 @@ import DevBanner from '../../components/DevBanner.astro';
 import HeaderSub from '../../components/HeaderSub.astro';
 import Menubar from '../../components/Menubar.astro';
 import Footer from '../../components/Footer.astro';
-import { getSiteData, getArchives } from '../../lib/content.js';
+import { getSiteData, getArchives, getArchiveIndex } from '../../lib/content.js';
 
 export async function getStaticPaths() {
     const archives = await getArchives();
@@ -22,6 +22,8 @@ export async function getStaticPaths() {
 
 const data = await getSiteData();
 const { archive } = Astro.props;
+// 同じ大会のコンテスト受賞作品ページ (site.json の contests 台帳にあれば) への相互リンク
+const contest = (await getArchiveIndex()).bySlug[archive.slug]?.contest ?? null;
 ---
 <!DOCTYPE html>
 <html lang="ja">
@@ -50,6 +52,8 @@ const { archive } = Astro.props;
                 </h2>
                 <p>{archive.title}{archive.dateRange && ` (${archive.dateRange})`}</p>
                 {archive.description && <p>{archive.description}</p>}
+	<dd><a href="/archive.html">ARCHIVE：アーカイブ一覧へ</a></dd>
+	{contest && <dd><a href={contest.page}>{contest.contestTitle}</a></dd>}
                 {archive.heroImage && (
                 <div class="logo-container">
                     <img src={archive.heroImage} alt={archive.title}>

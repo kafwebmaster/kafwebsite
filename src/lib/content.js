@@ -243,9 +243,12 @@ export function mapSiteSettings(cms, fallback, manifest = {}) {
         }
     }
     // FIELD_MAP に無いセクション・キーは site.json の値をそのまま通す
-    // (news / sponsors などの配列セクションは別処理のため対象外)
+    // (news / sponsors は CMS の別 API で置き換えるため対象外。
+    //  contests のような JSON 専用の配列セクションはそのまま通す)
     for (const [section, obj] of Object.entries(fallback)) {
-        if (Array.isArray(obj) || typeof obj !== 'object' || obj === null) continue;
+        if (section === 'news' || section === 'sponsors') continue;
+        if (typeof obj !== 'object' || obj === null) continue;
+        if (Array.isArray(obj)) { out[section] ??= obj; continue; }
         out[section] ??= {};
         for (const [key, value] of Object.entries(obj)) {
             if (!(key in out[section])) out[section][key] = value;
@@ -451,5 +454,47 @@ export async function getArchiveSplit() {
         archives,
         latest: archives[0] ?? null,
         past: archives.slice(1),
+    };
+}
+
+// ===== 大会別アーカイブ索引 (イベント風景 + コンテスト受賞作品) =====
+//
+// アーカイブ一覧は「大会 (年号) が親、その中にコンテスト受賞作品 / イベント風景」の形。
+// 2 つの情報源を大会番号 (slug: "kaf5") で突き合わせて 1 つの索引にする。
+//   - イベント風景: microCMS editions-archive (写真あり = 有効。上の mapArchives と同じ)
+//   - コンテスト受賞作品: site.json の contests 台帳 (静的ページ /contest/{slug}.html)
+// 片方にしかない大会も索引に載る (2024 は受賞作品のみ、KAF6 は写真のみ、など)。
+// 年・大会名は CMS の値を優先し、無ければ台帳の値を使う。
+// 「最新」はメニューの訴求枠 = CMS の最新大会 (写真あり) で、一覧には載せない (重複を避ける)。
+export function mergeEditions(archives, contests = []) {
+    const map = new Map();
+    for (const a of archives) {
+        map.set(a.slug, { slug: a.slug, year: a.year, edition: a.edition, title: a.title, shortName: a.shortName, event: a, contest: null });
+    }
+    for (const c of contests) {
+        if (!c?.slug || !c.page) continue;
+        const cur = map.get(c.slug);
+        if (cur) {
+            cur.contest = c;
+        } else {
+            const year = Number(c.year);
+            map.set(c.slug, {
+                slug: c.slug, year, edition: editionNumberOf(c.title),
+                title: c.title ?? c.slug, shortName: shortNameOf(c.title, year), event: null, contest: c,
+            });
+        }
+    }
+    return [...map.values()].sort((a, b) => (b.year - a.year) || ((b.edition ?? 0) - (a.edition ?? 0)));
+}
+
+export async function getArchiveIndex() {
+    const [archives, site] = await Promise.all([getArchives(), getSiteData()]);
+    const editions = mergeEditions(archives, site.contests ?? []);
+    const latest = archives[0] ?? null;
+    return {
+        editions,
+        latest,
+        past: editions.filter((e) => e.slug !== latest?.slug),
+        bySlug: Object.fromEntries(editions.map((e) => [e.slug, e])),
     };
 }

@@ -18,9 +18,12 @@
 // - 「アーカイブ」項目は過去大会 (最新を除く) が 1 件以上あるときだけ出す。
 //   1 件しか無い状態では一覧が「準備中」になるだけなので、リンク自体を出さない
 //   (KAF5 のみ登録 = ギャラリー枠だけ切り替わり、アーカイブは KAF7 以降に出る)
-import { getArchiveSplit } from '../lib/content.js';
+// - 「アーカイブ」項目は、最新大会を除く大会 (イベント風景 or コンテスト受賞作品のどちらかがある)
+//   が 1 件以上あるときに出す (getArchiveIndex)。コンテスト受賞作品ページは
+//   このアーカイブ一覧からのみ辿る (専用メニュー項目は KAF6 対応時に廃止)
+import { getArchiveIndex } from '../lib/content.js';
 const { data, base = '' } = Astro.props;
-const { latest, past } = await getArchiveSplit();
+const { latest, past } = await getArchiveIndex();
 ---
 <div id="include-menubar">
 <nav>
@@ -28,11 +31,10 @@ const { latest, past } = await getArchiveSplit();
         <li><a href={`${base}index.html`}>HOME</a></li>
         <li><a href={`${base}kaf_info.html`}>KAFとは</a></li>
         <li><a href={`${base}kaf_mmg.html`}>イベント開催情報</a></li>
-        {data.visibility.winnersPage && <li><a href={`${base}contest.html`}>KAFコンテスト<span data-field="siteText.winnersEditionShort">{data.siteText.winnersEditionShort}</span>受賞作品</a></li>}
         <li><a href={`${base}media.html`}>メディア掲載情報</a></li>
         <li><a href={`${base}contest_entry.html`}>KAFコンテスト作品募集(<span data-field="contest.statusLabel">{data.contest.statusLabel}</span>)</a></li>
-        {latest ? <Fragment><li><a href={`${base}archive/${latest.slug}.html`}>{latest.shortName}イベント風景Photoギャラリー</a></li>
-        {past.length > 0 && <li><a href={`${base}archive.html`}>アーカイブ</a></li>}</Fragment> : <li><a href={`${base}${data.gallery.latestPage}`} data-href-field="gallery.latestPage" data-field="gallery.latestLabel">{data.gallery.latestLabel}</a></li>}
+        {latest ? <li><a href={`${base}archive/${latest.slug}.html`}>{latest.shortName}イベント風景Photoギャラリー</a></li> : <li><a href={`${base}${data.gallery.latestPage}`} data-href-field="gallery.latestPage" data-field="gallery.latestLabel">{data.gallery.latestLabel}</a></li>}
+        {past.length > 0 && <li><a href={`${base}archive.html`}>アーカイブ</a></li>}
         <li><a href={`${base}kaf_support.html`}>協賛・応援について</a></li>
     </ul>
 </nav>

@@ -5,7 +5,7 @@
 //        site.json と同じ入れ子構造に正しく復元されることを、実キー無しで保証する
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { mapSiteSettings, mapNews, mapSponsors, mapArchives, shortNameOf, slugOf, editionNumberOf, toTextArea, parseRules } from '../src/lib/content.js';
+import { mapSiteSettings, mapNews, mapSponsors, mapArchives, mergeEditions, shortNameOf, slugOf, editionNumberOf, toTextArea, parseRules } from '../src/lib/content.js';
 
 const local = JSON.parse(fs.readFileSync('src/data/site.json', 'utf8'));
 
@@ -242,5 +242,33 @@ assert.equal(slugOf('KADOMA ART FES 1000000000000000000000', 2030), 'kaf10000000
     assert.ok(warned.some(m => m.includes('順序が食い違って')), '食い違いを警告する');
 }
 console.log('OK 8: 同一開催年の 2 大会が共存 / 番号なし大会名は開催年キーで代替 / 重複・順序矛盾の警告');
+
+// --- 7. 大会別アーカイブ索引 (イベント風景 + コンテスト受賞作品の突き合わせ) ---
+const contests = [
+    { slug: 'kaf5', year: 2026, title: 'KADOMA ART FES 5', contestTitle: 'KAF5 受賞作品', page: '/contest/kaf5.html' },
+    { slug: 'kaf4', year: 2024, title: 'KADOMA ART FES 4', contestTitle: '2024 受賞作品', page: '/contest/kaf4.html' },
+    { slug: '', year: 2020, title: '壊れた行', page: '' },   // slug/page が無い行は無視
+];
+const idxArchives = mapArchives([
+    A(2026, 'KADOMA ART FES 6', 3, '2026-11-10T00:00:00Z'),
+    A(2026, 'KADOMA ART FES 5', 2, '2026-08-02T00:00:00Z'),
+]);
+const merged = mergeEditions(idxArchives, contests);
+assert.deepEqual(merged.map(e => e.slug), ['kaf6', 'kaf5', 'kaf4'], '年降順→番号降順。片方にしかない大会も載る');
+assert.equal(merged[0].contest, null, 'KAF6 はコンテストなし');
+assert.ok(merged[0].event, 'KAF6 はイベント風景あり');
+assert.ok(merged[1].event && merged[1].contest, 'KAF5 は両方');
+assert.equal(merged[2].event, null, '2024 はイベント風景なし (写真未登録)');
+assert.equal(merged[2].contest.page, '/contest/kaf4.html');
+assert.equal(merged[2].shortName, 'KAF4', '台帳だけの大会も短縮名を導出');
+assert.equal(merged[1].title, 'KADOMA ART FES 5', 'CMS の大会名を優先');
+// 最新 (CMS の写真あり最新) は一覧から除く。台帳のみの大会は最新にならない
+const latest = idxArchives[0];
+const past = merged.filter(e => e.slug !== latest.slug);
+assert.deepEqual(past.map(e => e.slug), ['kaf5', 'kaf4']);
+// 台帳のみ (CMS 0 件) でも一覧が成立する (休眠にならない)
+const onlyContests = mergeEditions([], contests);
+assert.deepEqual(onlyContests.map(e => e.slug), ['kaf5', 'kaf4']);
+console.log('OK 9: 大会別アーカイブ索引 → CMS と contests 台帳の突き合わせ / 片方のみの大会 / 最新除外');
 
 console.log('\n全テスト合格 (archives 含む)');
