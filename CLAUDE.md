@@ -72,7 +72,7 @@
   *.pages.dev と localhost のみ表示され、本番ドメインには出ない)
 - `src/lib/content.js` … データ取得層(FIELD_MAP・フォールバック・fillFields・アーカイブ正規化)
 - `scripts/` … seed-microcms(初期投入・使用済) / sync-cms-assets(メディアミラー) /
-  postbuild-redirects(旧URL転送 + 受賞作品ページの非公開 302) / test-content-mapping(テスト) / dom-compare(移行時の検証)
+  postbuild-redirects(旧 URL → 新 URL の 302。/2024gallery, /archive/2026, /contest, /contest2024) / test-content-mapping(テスト) / dom-compare(移行時の検証)
 - `public/` … CSS/JS/画像(無変更コピー)+ 応募用紙 PDF
 - 表示のオン/オフは `site.json` の `visibility` フラグ(メディアページ末尾の開催情報)
 - アーカイブは「大会(年号)が親、その中にコンテスト受賞作品 / イベント風景」の構成

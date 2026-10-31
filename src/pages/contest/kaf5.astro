@@ -5,8 +5,11 @@ import Menubar from '../../components/Menubar.astro';
 import Footer from '../../components/Footer.astro';
 import { getSiteData, getArchiveIndex } from '../../lib/content.js';
 const data = await getSiteData();
+// このページの大会番号 (slug) は URL から導出する (/contest/kaf5.html → kaf5)。
+// ページを複製して次の大会を作るとき、書き換え忘れで別大会にリンクする事故を防ぐ。
 // アーカイブ索引からこの大会のイベント風景ページ (あれば) を引く (相互リンク用)
-const edition = (await getArchiveIndex()).bySlug['kaf5'];
+const slug = Astro.url.pathname.replace(/^.*\//, '').replace(/\.html$/, '');
+const edition = (await getArchiveIndex()).bySlug[slug];
 const eventPage = edition?.event ? `/archive/${edition.event.slug}.html` : null;
 ---
 <!DOCTYPE html>

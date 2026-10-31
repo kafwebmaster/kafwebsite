@@ -471,16 +471,31 @@ export function mergeEditions(archives, contests = []) {
     for (const a of archives) {
         map.set(a.slug, { slug: a.slug, year: a.year, edition: a.edition, title: a.title, shortName: a.shortName, event: a, contest: null });
     }
+    const seenContest = new Set();
     for (const c of contests) {
-        if (!c?.slug || !c.page) continue;
-        const cur = map.get(c.slug);
+        // 台帳の行は mapArchives と同じ水準で検査する (不正な行は警告して除外)
+        if (!c?.slug || !c.page) {
+            console.warn(`[content] contests: slug または page が無い行を無視します (${JSON.stringify(c)})`);
+            continue;
+        }
+        const slug = String(c.slug).toLowerCase();   // CMS 側の slug (小文字) と確実に結合する
+        const year = Number(c.year);
+        if (!Number.isInteger(year) || year <= 0) {
+            console.warn(`[content] contests: year が正の整数ではないため無視します (slug=${slug}, year=${c.year})`);
+            continue;
+        }
+        if (seenContest.has(slug)) {
+            console.warn(`[content] contests: slug=${slug} が重複しています。先に書かれた行を採用します`);
+            continue;
+        }
+        seenContest.add(slug);
+        const cur = map.get(slug);
         if (cur) {
-            cur.contest = c;
+            cur.contest = { ...c, slug };
         } else {
-            const year = Number(c.year);
-            map.set(c.slug, {
-                slug: c.slug, year, edition: editionNumberOf(c.title),
-                title: c.title ?? c.slug, shortName: shortNameOf(c.title, year), event: null, contest: c,
+            map.set(slug, {
+                slug, year, edition: editionNumberOf(c.title),
+                title: c.title ?? slug, shortName: shortNameOf(c.title, year), event: null, contest: { ...c, slug },
             });
         }
     }

@@ -52,14 +52,14 @@ const dormant = past.length === 0;
                 <div class="archive-list">
 {past.map((e) => (
                     <div class="archive-card">
-                        {(e.event?.heroImage || e.contest?.thumb) && <img src={e.event?.heroImage || e.contest.thumb} alt={e.title}>}
+                        {(e.event?.heroImage || e.contest?.thumb) && <img src={e.event?.heroImage || e.contest.thumb} alt="">}
                         <div class="archive-card-body">
                             <div class="archive-card-year">{e.year}</div>
                             <div class="archive-card-title">{e.title}</div>
                             {e.event?.dateRange && <div class="archive-card-date">{e.event.dateRange}</div>}
                             <div class="archive-card-links">
-                                {e.contest && <a class="archive-btn" href={e.contest.page}>コンテスト受賞作品</a>}
-                                {e.event && <a class="archive-btn" href={`/archive/${e.event.slug}.html`}>イベント風景Photoギャラリー</a>}
+                                {e.contest && <a class="archive-btn" href={e.contest.page} aria-label={`${e.shortName} コンテスト受賞作品`}>コンテスト受賞作品</a>}
+                                {e.event && <a class="archive-btn" href={`/archive/${e.event.slug}.html`} aria-label={`${e.shortName} イベント風景Photoギャラリー`}>イベント風景Photoギャラリー</a>}
                             </div>
                         </div>
                     </div>

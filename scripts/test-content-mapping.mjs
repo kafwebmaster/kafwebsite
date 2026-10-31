@@ -269,6 +269,34 @@ assert.deepEqual(past.map(e => e.slug), ['kaf5', 'kaf4']);
 // 台帳のみ (CMS 0 件) でも一覧が成立する (休眠にならない)
 const onlyContests = mergeEditions([], contests);
 assert.deepEqual(onlyContests.map(e => e.slug), ['kaf5', 'kaf4']);
-console.log('OK 9: 大会別アーカイブ索引 → CMS と contests 台帳の突き合わせ / 片方のみの大会 / 最新除外');
+// 最新大会 (写真あり) に受賞作品があっても、一覧からは大会ごと除かれる (意図した挙動を固定。
+// その大会の受賞作品はイベント風景ページ内の相互リンクからのみ辿れる)
+{
+    const m = mergeEditions(mapArchives([A(2026, 'KADOMA ART FES 5', 2, '2026-08-02T00:00:00Z')]), contests);
+    const lt = m[0];
+    assert.equal(lt.slug, 'kaf5'); assert.ok(lt.contest, '最新 KAF5 には受賞作品がある');
+    assert.deepEqual(m.filter(e => e.slug !== lt.slug).map(e => e.slug), ['kaf4'], '一覧は KAF4 のみ');
+}
+// 台帳の不正な行: slug の大文字は小文字に正規化して CMS と結合、year 非数値・slug 重複は警告して除外
+{
+    const warned = [];
+    const orig = console.warn; console.warn = (m) => warned.push(String(m));
+    const m = mergeEditions(idxArchives, [
+        { slug: 'KAF5', year: 2026, title: 'KADOMA ART FES 5', page: '/contest/kaf5.html' },
+        { slug: 'kaf5', year: 2026, title: '重複', page: '/contest/dup.html' },
+        { slug: 'kaf3', year: 'abc', title: 'KADOMA ART FES 3', page: '/contest/kaf3.html' },
+    ]);
+    console.warn = orig;
+    assert.deepEqual(m.map(e => e.slug), ['kaf6', 'kaf5'], '大文字 slug は kaf5 に結合され、不正行は除外');
+    assert.equal(m[1].contest.page, '/contest/kaf5.html', '重複は先の行を採用');
+    assert.ok(warned.some(w => w.includes('重複')) && warned.some(w => w.includes('year が正の整数')), '警告が出る');
+}
+// site.json の台帳: page に対応するページと thumb の実ファイルが存在する (追加時の置き忘れ防止)
+for (const c of local.contests) {
+    assert.ok(fs.existsSync(`src/pages/contest/${c.slug}.astro`), `contests: ${c.slug} のページ src/pages/contest/${c.slug}.astro が無い`);
+    assert.equal(c.page, `/contest/${c.slug}.html`, `contests: ${c.slug} の page は /contest/${c.slug}.html のはず`);
+    if (c.thumb) assert.ok(fs.existsSync(`public${c.thumb}`), `contests: ${c.slug} の thumb ${c.thumb} が無い`);
+}
+console.log('OK 9: 大会別アーカイブ索引 → CMS と contests 台帳の突き合わせ / 片方のみの大会 / 最新除外 / 台帳の検査');
 
 console.log('\n全テスト合格 (archives 含む)');

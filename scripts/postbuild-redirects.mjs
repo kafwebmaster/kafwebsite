@@ -24,13 +24,13 @@ import fs from 'node:fs';
 //   転送元のページが実在するビルドではその大会が到達不能になる。転送元が実在する場合は
 //   ルールを出力しない (unlessSourceExists)
 // - /contest, /contest2024: 受賞作品ページを /contest/{slug}.html に移設した (アーカイブを
-//   「大会 → コンテスト / イベント風景」の構成にしたため)。旧 /contest (KAF5 受賞作品) は
-//   アーカイブ一覧へ、旧 /contest2024 は /contest/kaf4 へ転送する
+//   「大会 → コンテスト / イベント風景」の構成にしたため)。旧 URL の中身と 1 対 1 で対応する
+//   新 URL へ送る (旧 /contest = KAF5 受賞作品 → /contest/kaf5、旧 /contest2024 → /contest/kaf4)
 const LEGACY = [
     { from: '/2024gallery', to: '/archive/kaf4' },
     { from: '/archive/2026', to: '/archive/kaf5', unlessSourceExists: true },
     { from: '/contest2024', to: '/contest/kaf4' },
-    { from: '/contest', to: '/archive' },
+    { from: '/contest', to: '/contest/kaf5' },
 ];
 
 const lines = [];

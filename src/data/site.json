@@ -304,7 +304,7 @@
       "title": "KADOMA ART FES 5",
       "contestTitle": "KADOMA ART FES CONTEST KAF5 受賞作品",
       "page": "/contest/kaf5.html",
-      "thumb": "/images/contest/KAF5_contest_01.jpg"
+      "thumb": "/images/contest/thumbs/kaf5.jpg"
     },
     {
       "slug": "kaf4",
@@ -312,7 +312,7 @@
       "title": "KADOMA ART FES 4",
       "contestTitle": "KADOMA ART FES CONTEST 2024 受賞作品",
       "page": "/contest/kaf4.html",
-      "thumb": "/images/contest/27odash.jpg"
+      "thumb": "/images/contest/thumbs/kaf4.jpg"
     }
   ],
   "support": {
