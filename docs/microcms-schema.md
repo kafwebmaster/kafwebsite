@@ -104,7 +104,7 @@ microCMS には **API スキーマの JSON インポート機能**があり、�
 | `date` | 日付 | テキストフィールド | ✅ | 表示どおりの文字列。例: `2026/02/05` |
 | `category` | カテゴリ | セレクトフィールド | ✅ | 選択肢: `イベント` / `コンテスト` / `メディア掲載情報` |
 | `text` | 本文 | テキストフィールド | ✅ | 一覧に表示される文章 |
-| `link` | リンク先 | テキストフィールド | | 空欄可。例: `contest.html`(空ならリンクなしで表示) |
+| `link` | リンク先 | テキストフィールド | | 空欄可。例: `contest/kaf5.html`(空ならリンクなしで表示) |
 
 > 日付を「日時フィールド」ではなく文字列にしているのは、現行表記(`2026/02/05`)を
 > そのまま維持するため。
@@ -121,7 +121,7 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 | date | category | text | link |
 |---|---|---|---|
 | 2026/02/05 | メディア掲載情報 | アートフェス作品審査会にてご紹介いただきました！ | media.html |
-| 2026/02/05 | コンテスト | KADOMA ART FES CONTEST KAF5受賞作品を発表しました | contest.html |
+| 2026/02/05 | コンテスト | KADOMA ART FES CONTEST KAF5受賞作品を発表しました | contest/kaf5.html(旧 contest.html) |
 | 2026/01/25 | イベント | KADOMA ART FES 5 イベント情報を更新いたしました。 | contest_entry.html |
 | 2025/12/01 | コンテスト | KADOMA ART FES 5 CONTESTの応募が終了しました。たくさんの応募ありがとうございました。 | contest_entry.html |
 | 2025/10/20 | コンテスト | KADOMA ART FES 5 CONTESTの応募締め切り日が変更になりました | contest_entry.html |
@@ -289,6 +289,7 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 | `contest_rules` | 出展規約 | テキストエリア(◆見出し) | contest.rules | 出展規約 |
 | `contest_mailingAddr` | 応募先(郵送) | テキストエリア(1行1項目) | contest.mailingAddr | 応募先：郵送 |
 | `contest_bankInfo` | 出品料振込先 | テキストエリア(1行1項目) | contest.bankInfo | 出品料振込先 |
+| `contest_winnersMenu` | 受賞作品メニューの表示 | 真偽値 | contest.winnersMenu | メニューの「KAF◯コンテスト受賞作品」(訴求枠)。**コンテストを開催した大会の期間中だけオン**。オフの間、その大会の受賞作品はアーカイブ側に載る。現在大会(大会名(正式))の受賞作品ページが無い場合はオンにしても出ない(2026-11-01 追加) |
 
 **登録手順**
 
@@ -364,7 +365,7 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 | └ `image` | 作品画像 | 画像 |
 
 > 初期データとして KAF4(2024)を 1 件登録する(素材は既存の `2024gallery.html` /
-> `contest2024.html` から流用可能)。KAF1〜3 の遡及はオプション(別途見積)。
+> `src/pages/contest/kaf4.astro`(旧 contest2024.html)から流用可能)。KAF1〜3 の遡及はオプション(別途見積)。
 
 ---
 

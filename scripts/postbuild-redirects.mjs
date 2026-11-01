@@ -23,32 +23,25 @@ import fs from 'node:fs';
 //   生成されうる (content.js の代替規則)。_redirects は実ファイルより優先されるため、
 //   転送元のページが実在するビルドではその大会が到達不能になる。転送元が実在する場合は
 //   ルールを出力しない (unlessSourceExists)
+// - /contest, /contest2024: 受賞作品ページを /contest/{slug}.html に移設した (アーカイブを
+//   「大会 → コンテスト / イベント風景」の構成にしたため)。旧 URL の中身と 1 対 1 で対応する
+//   新 URL へ送る (旧 /contest = KAF5 受賞作品 → /contest/kaf5、旧 /contest2024 → /contest/kaf4)
 const LEGACY = [
-    { from: '/2024gallery', slug: 'kaf4' },
-    { from: '/archive/2026', slug: 'kaf5', unlessSourceExists: true },
+    { from: '/2024gallery', to: '/archive/kaf4' },
+    { from: '/archive/2026', to: '/archive/kaf5', unlessSourceExists: true },
+    { from: '/contest2024', to: '/contest/kaf4' },
+    { from: '/contest', to: '/contest/kaf5' },
 ];
 
 const lines = [];
-for (const { from, slug, unlessSourceExists } of LEGACY) {
-    if (!fs.existsSync(`dist/archive/${slug}.html`)) continue;
+for (const { from, to, unlessSourceExists } of LEGACY) {
+    if (!fs.existsSync(`dist${to}.html`)) continue;   // 転送先が実在するビルドのときだけ
     if (unlessSourceExists && fs.existsSync(`dist${from}.html`)) {
-        console.warn(`[postbuild-redirects] ${from}.html が実在するため ${from} → /archive/${slug} の転送は出力しません`);
+        console.warn(`[postbuild-redirects] ${from}.html が実在するため ${from} → ${to} の転送は出力しません`);
         continue;
     }
-    lines.push(`${from} /archive/${slug} 302`);
-    lines.push(`${from}.html /archive/${slug} 302`);
-}
-
-// 受賞作品ページ (contest.html) の非公開化 (KAF6 対応)
-// site.json の visibility.winnersPage が false の間はトップへ 302 し、
-// 直接アクセスも不能にする (メニュー非表示は Menubar.astro 側の同じフラグで連動)。
-// ページ自体は削除せずビルドに含めたままなので、フラグを true に戻せば即復活する。
-// Cloudflare Pages の _redirects は静的ファイルより優先されるため、
-// dist/contest.html が存在していてもリダイレクトが有効になる。
-const visibility = JSON.parse(fs.readFileSync('src/data/site.json', 'utf8')).visibility ?? {};
-if (visibility.winnersPage === false) {
-    lines.push('/contest / 302');
-    lines.push('/contest.html / 302');
+    lines.push(`${from} ${to} 302`);
+    lines.push(`${from}.html ${to} 302`);
 }
 
 if (lines.length === 0) {

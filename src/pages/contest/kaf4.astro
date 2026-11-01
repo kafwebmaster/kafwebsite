@@ -1,10 +1,16 @@
 ---
-import DevBanner from '../components/DevBanner.astro';
-import HeaderSub from '../components/HeaderSub.astro';
-import Menubar from '../components/Menubar.astro';
-import Footer from '../components/Footer.astro';
-import { getSiteData } from '../lib/content.js';
+import DevBanner from '../../components/DevBanner.astro';
+import HeaderSub from '../../components/HeaderSub.astro';
+import Menubar from '../../components/Menubar.astro';
+import Footer from '../../components/Footer.astro';
+import { getSiteData, getArchiveIndex } from '../../lib/content.js';
 const data = await getSiteData();
+// このページの大会番号 (slug) は URL から導出する (/contest/kaf5.html → kaf5)。
+// ページを複製して次の大会を作るとき、書き換え忘れで別大会にリンクする事故を防ぐ。
+// アーカイブ索引からこの大会のイベント風景ページ (あれば) を引く (相互リンク用)
+const slug = Astro.url.pathname.replace(/^.*\//, '').replace(/\.html$/, '');
+const edition = (await getArchiveIndex()).bySlug[slug];
+const eventPage = edition?.event ? `/archive/${edition.event.slug}.html` : null;
 ---
 <!DOCTYPE html>
 <html lang="ja">
@@ -14,8 +20,8 @@ const data = await getSiteData();
     <title>KADOMA ART FES - 門真のまちをアートで染めよう</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="大和田・古川橋駅前で行われる門真最大級アートイベントKADOMA ART FES">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/sub-page.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/sub-page.css">
  <style is:inline>
         body {
             font-family: Arial, sans-serif;
@@ -131,7 +137,7 @@ const data = await getSiteData();
     <div id="container">
 
         <!-- header(include) -->
-        <HeaderSub />
+        <HeaderSub base="/" />
 
         <main>
             <section class="bg1">
@@ -141,87 +147,88 @@ const data = await getSiteData();
                     <span class="hosoku fade-in-text sp">Contest</span><span class="hosoku fade-in-text sp">Award</span>
                     <span class="blur">コンテスト受賞作品一覧</span>
                 </h2>
-
+	<dd><a href="/archive.html">ARCHIVE：アーカイブ一覧へ</a></dd>
+	{eventPage && <dd><a href={eventPage}>{edition.shortName}イベント風景Photoギャラリー</a></dd>}
                 <p></p>
             </section>
             <section class="bg2">
                 <span class="hosoku">KADOMA ART FES CONTEST 2024受賞作品発表</span>
 			<h2>審査委員長賞（海洋堂 宮脇修一）</h2>
 			<div class="award-entry">
-			    <a href="images/contest/27odash.jpg" data-lightbox="award" data-title="審査委員長賞">
-			        <img src="images/contest/27odash.jpg" alt="27 ODAsh. /SUNNY ROOTS">
+			    <a href="/images/contest/27odash.jpg" data-lightbox="award" data-title="審査委員長賞">
+			        <img src="/images/contest/27odash.jpg" alt="27 ODAsh. /SUNNY ROOTS">
 			    </a>
 			    <p>ODAsh. / SUNNY ROOTS</p>
 			</div>    
 
 			<h2>門真市長賞</h2>
 			<div class="award-entry">
-			    <a href="images/contest/71kaminotaketoshi.jpg" data-lightbox="award" data-title="門真市長賞">
-			        <img src="images/contest/71kaminotaketoshi.jpg" alt="71 かみのたけとし　/　通天閣">
+			    <a href="/images/contest/71kaminotaketoshi.jpg" data-lightbox="award" data-title="門真市長賞">
+			        <img src="/images/contest/71kaminotaketoshi.jpg" alt="71 かみのたけとし　/　通天閣">
 			    </a>
 			    <p>かみのたけとし　/　通天閣</p>
 			</div>    
 
 			<h2>藤岡幸夫賞</h2>
 			<div class="award-entry">
-			    <a href="images/contest/10rimi.jpg" data-lightbox="award" data-title="藤岡幸夫賞5">
-			        <img src="images/contest/10rimi.jpg" alt="10 Rimi　/　SPG/RS-5">
+			    <a href="/images/contest/10rimi.jpg" data-lightbox="award" data-title="藤岡幸夫賞5">
+			        <img src="/images/contest/10rimi.jpg" alt="10 Rimi　/　SPG/RS-5">
 			    </a>
 			    <p>Rimi　/　SPG/RS-5</p>
 			</div>    
 
 			<h2>広瀬香美賞</h2>
 			<div class="award-entry">
-			    <a href="images/contest/47asagiriyuu.jpg" data-lightbox="award" data-title="広瀬香美賞">
-			        <img src="images/contest/47asagiriyuu.jpg" alt="47 諒霧ゆう　/　太陽と夜">
+			    <a href="/images/contest/47asagiriyuu.jpg" data-lightbox="award" data-title="広瀬香美賞">
+			        <img src="/images/contest/47asagiriyuu.jpg" alt="47 諒霧ゆう　/　太陽と夜">
 			    </a>
 			    <p>諒霧ゆう　/　太陽と夜</p>
 			</div>    
 
 			<h2>タイガー魔法瓶賞</h2>
 			<div class="award-entry">
-			    <a href="images/contest/60nakanechieko.jpg" data-lightbox="award" data-title="タイガー魔法瓶賞">
-			        <img src="images/contest/60nakanechieko.jpg" alt="60 中根ちえこ　/　4294967296-2024">
+			    <a href="/images/contest/60nakanechieko.jpg" data-lightbox="award" data-title="タイガー魔法瓶賞">
+			        <img src="/images/contest/60nakanechieko.jpg" alt="60 中根ちえこ　/　4294967296-2024">
 			    </a>
 			    <p>中根ちえこ　/　4294967296-2024</p>
 			</div>    
 
 			<h2>門真ロータリー賞</h2>
 			<div class="award-entry">
-			    <a href="images/contest/53akane.jpg" data-lightbox="award" data-title="門真ロータリー賞">
-			        <img src="images/contest/53akane.jpg" alt="53 緋音（akane）　/　Hoichi">
+			    <a href="/images/contest/53akane.jpg" data-lightbox="award" data-title="門真ロータリー賞">
+			        <img src="/images/contest/53akane.jpg" alt="53 緋音（akane）　/　Hoichi">
 			    </a>
 			    <p>緋音（akane）　/　Hoichi</p>
 			</div>    
 
 			<h2>中村工務店賞</h2>
 			<div class="award-entry">
-			    <a href="images/contest/22hokaridaiki.jpg" data-lightbox="award" data-title="中村工務店賞">
-			        <img src="images/contest/22hokaridaiki.jpg" alt="22 保苅大希　/　鳥の問題">
+			    <a href="/images/contest/22hokaridaiki.jpg" data-lightbox="award" data-title="中村工務店賞">
+			        <img src="/images/contest/22hokaridaiki.jpg" alt="22 保苅大希　/　鳥の問題">
 			    </a>
 			    <p>保苅大希　/　鳥の問題</p>
 			</div>    
 
 			<h2>ルミエールホール賞</h2>
 			<div class="award-entry">
-			    <a href="images/contest/8nameuihyeon.jpg" data-lightbox="award" data-title="ルミエールホール賞">
-			        <img src="images/contest/8nameuihyeon.jpg" alt="8 NAM EUIHYEON　/　その時間に咲くお花">
+			    <a href="/images/contest/8nameuihyeon.jpg" data-lightbox="award" data-title="ルミエールホール賞">
+			        <img src="/images/contest/8nameuihyeon.jpg" alt="8 NAM EUIHYEON　/　その時間に咲くお花">
 			    </a>
 			    <p>NAM EUIHYEON　/　その時間に咲くお花</p>
 			</div>    
 
 			<h2>実行委員長賞</h2>
 			<div class="award-entry">
-			    <a href="images/contest/54ishibashimei.jpg" data-lightbox="award" data-title="実行委員長賞">
-			        <img src="images/contest/54ishibashimei.jpg" alt="54 石橋萌衣　/　羊たちの休息">
+			    <a href="/images/contest/54ishibashimei.jpg" data-lightbox="award" data-title="実行委員長賞">
+			        <img src="/images/contest/54ishibashimei.jpg" alt="54 石橋萌衣　/　羊たちの休息">
 			    </a>
 			    <p>石橋萌衣　/　羊たちの休息</p>
 			</div>    
 
 			<h2>実行委員会賞</h2>
 			<div class="award-entry">
-			    <a href="images/contest/57tsurishurusuizokukan.jpg" data-lightbox="award" data-title="実行委員会賞">
-			        <img src="images/contest/57tsurishurusuizokukan.jpg" alt="57 tsurishuru水族館　/　①ウミガメ②バショウカジキ③コブダイ">
+			    <a href="/images/contest/57tsurishurusuizokukan.jpg" data-lightbox="award" data-title="実行委員会賞">
+			        <img src="/images/contest/57tsurishurusuizokukan.jpg" alt="57 tsurishuru水族館　/　①ウミガメ②バショウカジキ③コブダイ">
 			    </a>
 			    <p>tsurishuru水族館　/　①ウミガメ②バショウカジキ③コブダイ</p>
 			</div>  
@@ -231,7 +238,7 @@ const data = await getSiteData();
   <span class="hosoku">審査員メッセージ/プロフィール</span>
 		<div class="left-align">
 			<div class="profile-section">
-				 <img src="images/contest/miyawaki.jpg" alt="審査委員長　宮脇　修一">
+				 <img src="/images/contest/miyawaki.jpg" alt="審査委員長　宮脇　修一">
 				<h3>審査委員長　宮脇　修一(みやわき　しゅういち)</h3>
 				<p>1957年・大阪府出身</p>
 				<p>　（株）海洋堂　取締役専務兼、日本最大の造形イベント「ワンダーフェスティバル」実行委員長。</p>
@@ -244,7 +251,7 @@ const data = await getSiteData();
 				<p>また、大阪芸術大学キャラクター造形学科教授としては「キャラの立っているもの」が嬉しゅうございますので、こちらも基準に選ばせていただきました。</p>
 			</div>
 			<div class="profile-section">
-				 <img src="images/contest/miyamotokazutaka.jpg" alt="門真市長　宮本一孝">
+				 <img src="/images/contest/miyamotokazutaka.jpg" alt="門真市長　宮本一孝">
 				<h3>門真市長　宮本一孝(みやもと　かずたか)</h3>
 				<p>「KADOMA ART FES 2024」のご盛会を心よりお慶び申し上げます。</p>
 				<p>平素より市政の各般、とりわけ文化芸術の振興・推進に多大なるご支援・ご協力を賜り、厚く御礼申し上げます。</p>
@@ -256,7 +263,7 @@ const data = await getSiteData();
 				<p>　門真市長　宮本　一孝</p>
 			</div>
 			<div class="profile-section">
-				 <img src="images/contest/fujiojayukio.jpg" alt="藤岡　幸夫">
+				 <img src="/images/contest/fujiojayukio.jpg" alt="藤岡　幸夫">
 				<h3>藤岡　幸夫(ふじおか　さちお)</h3>
 				<p>藤岡幸夫プロフィール</p>
 				<p>英国王立ノーザン音大指揮科卒業。サー･チャールズ･グローヴス記念奨学賞を特例で受賞。1994年ロンドン《プロムス》にBBCフィルを指揮してデビュー以降、数多くの海外オーケストラに客演。首席指揮者を務める関西フィルとは2025年が26年目のシーズン、2025年4月から総監督にも就任。2019年からは東京シティ･フィル首席客演指揮者を兼任。指揮･司会として関西フィルと出演中のBSテレ東『エンター･ザ･ミュージック』（毎週土曜朝8:30）は放送11年目。2002年渡邉曉雄音楽基金音楽賞受賞。24年1月より門真市ふるさと大使(愛称：門真情熱大使)。</p>
@@ -264,7 +271,7 @@ const data = await getSiteData();
 				<p>写真家クレジット　　©SHIN YAMAGISHI</p>
 			</div>
 			<div class="profile-section">
-				 <img src="images/contest/Kohmihirose.jpg" alt="広瀬香美">
+				 <img src="/images/contest/Kohmihirose.jpg" alt="広瀬香美">
 				<h3>広瀬香美（ひろせ こうみ）</h3>
 				<p>Profile</p>
 				<p>幼少期から音楽の英才教育を受け、作曲家を志し、音楽科のある福岡女学院中学校へ入学。</p>
@@ -290,7 +297,7 @@ const data = await getSiteData();
 
 			</div>
 			<div class="profile-section">
-				 <img src="images/contest/nakamura.jpg" alt="中村工務店">
+				 <img src="/images/contest/nakamura.jpg" alt="中村工務店">
 				<h3>中村工務店</h3>
 			</div>
 <hr>
@@ -329,37 +336,6 @@ const data = await getSiteData();
  </section>
 </div> 
             </section>
-            <section class="course gallery" id="course">
-                <div class="container">
-                    <div class="course-wrapper">
-                        <div class="course-item">
-                            <img src="images_gallery/2024photo/KAF2024_10.jpg" alt="画像その１" class="course-item-img">
-                        </div>
-                        <div class="course-item">
-                            <img src="images_gallery/2024photo/KAF2024_11.jpg" alt="画像その２" class="course-item-img">
-                        </div>
-                        <div class="course-item">
-                            <img src="images_gallery/2024photo/KAF2024_13.jpg" alt="画像その３" class="course-item-img">
-                        </div>
-                        <div class="course-item">
-                            <img src="images_gallery/2024photo/KAF2024_07.jpg" alt="画像その４" class="course-item-img">
-                        </div>
-                        <div class="course-item">
-                            <img src="images_gallery/2024photo/KAF2024_03.jpg" alt="画像その１" class="course-item-img">
-                        </div>
-                        <div class="course-item">
-                            <img src="images_gallery/2024photo/KAF2024_28.jpg" alt="画像その２" class="course-item-img">
-                        </div>
-                        <div class="course-item">
-                            <img src="images_gallery/2024photo/KAF2024_27.jpg" alt="画像その３" class="course-item-img">
-                        </div>
-                        <div class="course-item">
-                            <img src="images_gallery/2024photo/KAF2024_26.jpg" alt="画像その４" class="course-item-img">
-                        </div>
-
-                        </div>
-                    </div>
-            </section>
         </main>
     </div>
     <!--/#container-->
@@ -367,14 +343,14 @@ const data = await getSiteData();
                 <div id="grayDisplay"></div>
 
         <!--footer(include)-->
-        <Footer data={data} />
+        <Footer data={data} base="/" />
 
     <!--ページの上部へ戻るボタン-->
     <div class="pagetop"><a href="#"><i class="fas fa-angle-double-up"></i></a></div>
 
     <!--開閉ブロック(include)-->
     <!-- メニュー内容を修正する場合は、includeHTML/menubar.htmlを修正してください。 -->
-    <Menubar data={data} />
+    <Menubar data={data} base="/" />
 
     <!--開閉ボタン（ハンバーガーアイコン）-->
     <div id="menubar_hdr_inner">
@@ -395,15 +371,15 @@ const data = await getSiteData();
 
     <!--スライドショー（slick）-->
     <script is:inline src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-    <script is:inline src="js/slick-thumbnail.js"></script>
-    <script is:inline src="js/slick.js"></script>
+    <script is:inline src="/js/slick-thumbnail.js"></script>
+    <script is:inline src="/js/slick.js"></script>
 
     <!--パララックス（inview）-->
     <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/protonet-jquery.inview/1.1.2/jquery.inview.min.js"></script>
-    <script is:inline src="js/jquery.inview_set.js"></script>
+    <script is:inline src="/js/jquery.inview_set.js"></script>
 
     <!--このテンプレート専用のスクリプト-->
-    <script is:inline src="js/main.js"></script>
+    <script is:inline src="/js/main.js"></script>
 
     <!--ロゴアニメーション-->
     <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/vivus/0.4.6/vivus.min.js"></script>

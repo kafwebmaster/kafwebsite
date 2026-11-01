@@ -66,3 +66,36 @@
     text-align: center;
     padding: 3rem 5%;
 }
+
+/* 大会カード内の「コンテスト受賞作品」「イベント風景」ボタン
+   (カード自体はリンクではなく、ボタンだけがリンク) */
+.archive-card .archive-card-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.archive-card .archive-btn {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    color: var(--primary-color);
+    background-color: #fff;
+    text-align: center;
+    text-decoration: none;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.archive-card .archive-btn:hover {
+    color: #fff;
+    background-color: var(--primary-color);
+}
+
+/* v4: カード自体はリンクではないので、カードの浮き上がり (hover) は無効にする */
+.archive-card:hover {
+    transform: none;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}

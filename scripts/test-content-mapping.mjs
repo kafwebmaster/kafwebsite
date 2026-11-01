@@ -5,7 +5,7 @@
 //        site.json と同じ入れ子構造に正しく復元されることを、実キー無しで保証する
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { mapSiteSettings, mapNews, mapSponsors, mapArchives, shortNameOf, slugOf, editionNumberOf, toTextArea, parseRules } from '../src/lib/content.js';
+import { mapSiteSettings, mapNews, mapSponsors, mapArchives, mergeEditions, splitArchiveIndex, shortNameOf, slugOf, editionNumberOf, toTextArea, parseRules } from '../src/lib/content.js';
 
 const local = JSON.parse(fs.readFileSync('src/data/site.json', 'utf8'));
 
@@ -242,5 +242,94 @@ assert.equal(slugOf('KADOMA ART FES 1000000000000000000000', 2030), 'kaf10000000
     assert.ok(warned.some(m => m.includes('順序が食い違って')), '食い違いを警告する');
 }
 console.log('OK 8: 同一開催年の 2 大会が共存 / 番号なし大会名は開催年キーで代替 / 重複・順序矛盾の警告');
+
+// --- 7. 大会別アーカイブ索引 (イベント風景 + コンテスト受賞作品の突き合わせ) ---
+const contests = [
+    { slug: 'kaf5', year: 2026, title: 'KADOMA ART FES 5', contestTitle: 'KAF5 受賞作品', page: '/contest/kaf5.html' },
+    { slug: 'kaf4', year: 2024, title: 'KADOMA ART FES 4', contestTitle: '2024 受賞作品', page: '/contest/kaf4.html' },
+    { slug: '', year: 2020, title: '壊れた行', page: '' },   // slug/page が無い行は無視
+];
+const idxArchives = mapArchives([
+    A(2026, 'KADOMA ART FES 6', 3, '2026-11-10T00:00:00Z'),
+    A(2026, 'KADOMA ART FES 5', 2, '2026-08-02T00:00:00Z'),
+]);
+const merged = mergeEditions(idxArchives, contests);
+assert.deepEqual(merged.map(e => e.slug), ['kaf6', 'kaf5', 'kaf4'], '年降順→番号降順。片方にしかない大会も載る');
+assert.equal(merged[0].contest, null, 'KAF6 はコンテストなし');
+assert.ok(merged[0].event, 'KAF6 はイベント風景あり');
+assert.ok(merged[1].event && merged[1].contest, 'KAF5 は両方');
+assert.equal(merged[2].event, null, '2024 はイベント風景なし (写真未登録)');
+assert.equal(merged[2].contest.page, '/contest/kaf4.html');
+assert.equal(merged[2].shortName, 'KAF4', '台帳だけの大会も短縮名を導出');
+assert.equal(merged[1].title, 'KADOMA ART FES 5', 'CMS の大会名を優先');
+// 最新 (CMS の写真あり最新) は一覧から除く。台帳のみの大会は最新にならない
+const latest = idxArchives[0];
+const past = merged.filter(e => e.slug !== latest.slug);
+assert.deepEqual(past.map(e => e.slug), ['kaf5', 'kaf4']);
+// 台帳のみ (CMS 0 件) でも一覧が成立する (休眠にならない)
+const onlyContests = mergeEditions([], contests);
+assert.deepEqual(onlyContests.map(e => e.slug), ['kaf5', 'kaf4']);
+// 最新大会 (写真あり) に受賞作品があっても、一覧からは大会ごと除かれる (意図した挙動を固定。
+// その大会の受賞作品はイベント風景ページ内の相互リンクからのみ辿れる)
+{
+    const m = mergeEditions(mapArchives([A(2026, 'KADOMA ART FES 5', 2, '2026-08-02T00:00:00Z')]), contests);
+    const lt = m[0];
+    assert.equal(lt.slug, 'kaf5'); assert.ok(lt.contest, '最新 KAF5 には受賞作品がある');
+    assert.deepEqual(m.filter(e => e.slug !== lt.slug).map(e => e.slug), ['kaf4'], '一覧は KAF4 のみ');
+}
+// 台帳の不正な行: slug の大文字は小文字に正規化して CMS と結合、year 非数値・slug 重複は警告して除外
+{
+    const warned = [];
+    const orig = console.warn; console.warn = (m) => warned.push(String(m));
+    const m = mergeEditions(idxArchives, [
+        { slug: 'KAF5', year: 2026, title: 'KADOMA ART FES 5', page: '/contest/kaf5.html' },
+        { slug: 'kaf5', year: 2026, title: '重複', page: '/contest/dup.html' },
+        { slug: 'kaf3', year: 'abc', title: 'KADOMA ART FES 3', page: '/contest/kaf3.html' },
+    ]);
+    console.warn = orig;
+    assert.deepEqual(m.map(e => e.slug), ['kaf6', 'kaf5'], '大文字 slug は kaf5 に結合され、不正行は除外');
+    assert.equal(m[1].contest.page, '/contest/kaf5.html', '重複は先の行を採用');
+    assert.ok(warned.some(w => w.includes('重複')) && warned.some(w => w.includes('year が正の整数')), '警告が出る');
+}
+// site.json の台帳: page に対応するページと thumb の実ファイルが存在する (追加時の置き忘れ防止)
+for (const c of local.contests) {
+    assert.ok(fs.existsSync(`src/pages/contest/${c.slug}.astro`), `contests: ${c.slug} のページ src/pages/contest/${c.slug}.astro が無い`);
+    assert.equal(c.page, `/contest/${c.slug}.html`, `contests: ${c.slug} の page は /contest/${c.slug}.html のはず`);
+    if (c.thumb) assert.ok(fs.existsSync(`public${c.thumb}`), `contests: ${c.slug} の thumb ${c.thumb} が無い`);
+}
+console.log('OK 9: 大会別アーカイブ索引 → CMS と contests 台帳の突き合わせ / 片方のみの大会 / 最新除外 / 台帳の検査');
+
+// --- 8. 訴求枠とアーカイブ一覧の振り分け (splitArchiveIndex) ---
+{
+    const eds = mergeEditions(mapArchives([A(2026, 'KADOMA ART FES 5', 2, '2026-08-02T00:00:00Z')]), contests);
+    const lt = eds[0];
+    // KAF6 期 (コンテストなし・メニューオフ・写真は KAF5 のみ): KAF5 の写真は訴求枠、受賞作品は一覧に残る
+    let r = splitArchiveIndex(eds, lt, { edition: { displayName: 'KADOMA ART FES 6', eventYear: 2026 }, contest: { winnersMenu: false } });
+    assert.equal(r.featuredContest, null);
+    assert.deepEqual(r.past.map(e => [e.slug, !!e.contest, !!e.event]), [['kaf5', true, false], ['kaf4', true, false]], 'KAF5 は受賞作品タイルだけで一覧に載る');
+    // メニューをオンにしても現在大会 (KAF6) に受賞作品が無ければ出さない (警告のみ)
+    const warned = []; const orig = console.warn; console.warn = (m) => warned.push(String(m));
+    r = splitArchiveIndex(eds, lt, { edition: { displayName: 'KADOMA ART FES 6', eventYear: 2026 }, contest: { winnersMenu: true } });
+    console.warn = orig;
+    assert.equal(r.featuredContest, null); assert.ok(warned.some(w => w.includes('contest_winnersMenu')));
+    // KAF7 期 (コンテストあり・メニューオン): KAF7 の受賞作品は訴求枠、一覧からは除く。写真が入れば写真も訴求枠
+    const eds7 = mergeEditions(mapArchives([
+        A(2027, 'KADOMA ART FES 7', 3, '2027-05-10T00:00:00Z'),
+        A(2026, 'KADOMA ART FES 6', 2, '2026-11-10T00:00:00Z'),
+        A(2026, 'KADOMA ART FES 5', 2, '2026-08-02T00:00:00Z'),
+    ]), [...contests, { slug: 'kaf7', year: 2027, title: 'KADOMA ART FES 7', page: '/contest/kaf7.html' }]);
+    r = splitArchiveIndex(eds7, eds7[0], { edition: { displayName: 'KADOMA ART FES 7', eventYear: 2027 }, contest: { winnersMenu: true } });
+    assert.equal(r.featuredContest.slug, 'kaf7');
+    assert.deepEqual(r.past.map(e => [e.slug, !!e.contest, !!e.event]), [['kaf6', false, true], ['kaf5', true, true], ['kaf4', true, false]], 'KAF7 は両方とも訴求枠なので一覧に出ない');
+    // 写真がまだ無い KAF7 (受賞作品だけ先に公開): 受賞作品は訴求枠、写真の訴求枠は KAF6 のまま
+    const eds7b = mergeEditions(mapArchives([A(2026, 'KADOMA ART FES 6', 2, '2026-11-10T00:00:00Z')]), [...contests, { slug: 'kaf7', year: 2027, title: 'KADOMA ART FES 7', page: '/contest/kaf7.html' }]);
+    r = splitArchiveIndex(eds7b, eds7b.find(e => e.event), { edition: { displayName: 'KADOMA ART FES 7', eventYear: 2027 }, contest: { winnersMenu: true } });
+    assert.equal(r.featuredContest.slug, 'kaf7'); assert.equal(r.latest.slug, 'kaf6');
+    assert.deepEqual(r.past.map(e => e.slug), ['kaf5', 'kaf4'], 'KAF7 (受賞作品のみ・訴求枠) と KAF6 (写真のみ・訴求枠) は一覧に出ない');
+    // CMS 0 件: 写真の訴求枠なし、一覧は台帳のみ
+    r = splitArchiveIndex(mergeEditions([], contests), null, { edition: { displayName: 'KADOMA ART FES 6', eventYear: 2026 }, contest: { winnersMenu: false } });
+    assert.deepEqual(r.past.map(e => e.slug), ['kaf5', 'kaf4']);
+}
+console.log('OK 10: 訴求枠 (写真の最新大会 / 受賞作品メニュー) とアーカイブ一覧の振り分け');
 
 console.log('\n全テスト合格 (archives 含む)');
