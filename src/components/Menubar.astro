@@ -21,6 +21,9 @@
 import { getArchiveIndex } from '../lib/content.js';
 const { data, base = '' } = Astro.props;
 const { latest, past } = await getArchiveIndex();
+// 案 B: 「コンテスト受賞作品」「イベント風景」の 2 項目で分岐し、その中に大会 (年号) を並べる
+const contestEditions = past.filter((e) => e.contest);
+const eventEditions = past.filter((e) => e.event);
 ---
 <div id="include-menubar">
 <style is:inline>
@@ -36,7 +39,7 @@ const { latest, past } = await getArchiveIndex();
 #include-menubar .archive-editions summary { font-size: 0.95em; }
 #include-menubar .archive-editions summary::before { content: "＋ "; opacity: 0.7; }
 #include-menubar .archive-editions details[open] > summary::before { content: "－ "; }
-#include-menubar .archive-edition-year { display: inline-block; min-width: 3.2em; margin-right: 0.5em; font-weight: bold; color: var(--primary-color, #d05a4a); }
+#include-menubar .archive-edition-year { display: inline-block; margin-right: 0.4em; font-weight: bold; color: var(--primary-color, #d05a4a); }
 #include-menubar .archive-tiles { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; padding: 4px 10px 16px; }
 #include-menubar .archive-tile { width: 180px; max-width: 42vw; padding: 0; color: inherit; }
 #include-menubar .archive-tile img, #include-menubar .archive-tile-noimg { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 6px; background: rgba(255,255,255,0.12); }
@@ -56,23 +59,32 @@ const { latest, past } = await getArchiveIndex();
             <details>
                 <summary>アーカイブ</summary>
                 <ul class="archive-editions">
-{past.map((e) => (
-                    <li>
+                    {contestEditions.length > 0 && <li>
                         <details>
-                            <summary><span class="archive-edition-year">{e.year}</span>{e.title}</summary>
+                            <summary>コンテスト受賞作品</summary>
                             <div class="archive-tiles">
-                                {e.contest && <a class="archive-tile" href={`${base}${e.contest.page.replace(/^\//, '')}`}>
+{contestEditions.map((e) => (
+                                <a class="archive-tile" href={`${base}${e.contest.page.replace(/^\//, '')}`}>
                                     {e.contest.thumb ? <img src={e.contest.thumb} alt="" loading="lazy"> : <span class="archive-tile-noimg"></span>}
-                                    <span class="archive-tile-label">コンテスト受賞作品</span>
-                                </a>}
-                                {e.event && <a class="archive-tile" href={`${base}archive/${e.event.slug}.html`}>
-                                    {(e.event.heroImage || e.event.gallery[0]) ? <img src={e.event.heroImage || e.event.gallery[0]} alt="" loading="lazy"> : <span class="archive-tile-noimg"></span>}
-                                    <span class="archive-tile-label">イベント風景Photoギャラリー</span>
-                                </a>}
+                                    <span class="archive-tile-label"><span class="archive-edition-year">{e.year}</span>{e.title}</span>
+                                </a>
+))}
                             </div>
                         </details>
-                    </li>
+                    </li>}
+                    {eventEditions.length > 0 && <li>
+                        <details>
+                            <summary>イベント風景Photoギャラリー</summary>
+                            <div class="archive-tiles">
+{eventEditions.map((e) => (
+                                <a class="archive-tile" href={`${base}archive/${e.event.slug}.html`}>
+                                    {(e.event.heroImage || e.event.gallery[0]) ? <img src={e.event.heroImage || e.event.gallery[0]} alt="" loading="lazy"> : <span class="archive-tile-noimg"></span>}
+                                    <span class="archive-tile-label"><span class="archive-edition-year">{e.year}</span>{e.title}</span>
+                                </a>
 ))}
+                            </div>
+                        </details>
+                    </li>}
                     <li><a class="archive-menu-all" href={`${base}archive.html`}>アーカイブ一覧ページへ</a></li>
                 </ul>
             </details>
