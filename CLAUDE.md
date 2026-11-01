@@ -77,7 +77,7 @@
 - 表示のオン/オフは `site.json` の `visibility` フラグ(メディアページ末尾の開催情報)
 - アーカイブは「大会(年号)が親、その中にコンテスト受賞作品 / イベント風景」の構成
   (`/archive.html` 一覧 → `/contest/kafN.html` / `/archive/kafN.html`)。最新大会はメニューの訴求枠のみで一覧には載せない。
-  メニューの「アーカイブ」は `<details>` のサブメニュー(大会 → 画像タイル)。スタイルは Menubar.astro 内の inline style。
+  メニューの入口は「アーカイブ：コンテスト受賞作品」(`/archive_contest.html`)と「アーカイブ：イベント風景」(`/archive.html`)の 2 項目(案 C)。
   受賞作品ページを増やすときは `contests` 台帳に 1 行追加 + ページ作成(KAF7 以降は JSON 化を予定: docs/archive-feature-design.md 13 章)
 
 ## ドキュメント

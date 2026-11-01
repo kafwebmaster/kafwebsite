@@ -52,7 +52,7 @@ const contest = (await getArchiveIndex()).bySlug[archive.slug]?.contest ?? null;
                 </h2>
                 <p>{archive.title}{archive.dateRange && ` (${archive.dateRange})`}</p>
                 {archive.description && <p>{archive.description}</p>}
-	<dd><a href="/archive.html">ARCHIVE：アーカイブ一覧へ</a></dd>
+	<dd><a href="/archive.html">ARCHIVE：イベント風景一覧へ</a></dd>
 	{contest && <dd><a href={contest.page}>{contest.contestTitle}</a></dd>}
                 {archive.heroImage && (
                 <div class="logo-container">
