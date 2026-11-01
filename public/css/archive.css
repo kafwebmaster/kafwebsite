@@ -94,8 +94,3 @@
     background-color: var(--primary-color);
 }
 
-/* v4: カード自体はリンクではないので、カードの浮き上がり (hover) は無効にする */
-.archive-card:hover {
-    transform: none;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-}

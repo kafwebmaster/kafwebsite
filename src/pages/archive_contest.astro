@@ -1,0 +1,129 @@
+---
+import DevBanner from '../components/DevBanner.astro';
+// コンテスト受賞作品アーカイブ一覧 (/archive_contest.html)。archive.astro (イベント風景) と対になるページ
+// 大会 (年号) ごとのカードを新しい順に並べ、カードの中に「コンテスト受賞作品」「イベント風景」の
+// ボタンを (あるものだけ) 出す。最新大会 (メニューの訴求枠) は載せない。
+// 大会の索引は CMS (イベント風景) と site.json の contests 台帳 (受賞作品) の突き合わせ
+// (content.js getArchiveIndex)。
+// 有効エントリが 0 件の間は「準備中」+ noindex で生成する (休眠状態)。
+// 設計: docs/archive-feature-design.md 4-2 / 13 章
+import HeaderSub from '../components/HeaderSub.astro';
+import Menubar from '../components/Menubar.astro';
+import Footer from '../components/Footer.astro';
+import { getSiteData, getArchiveIndex } from '../lib/content.js';
+const data = await getSiteData();
+const { past } = await getArchiveIndex();
+const contests = past.filter((e) => e.contest);   // 案 C: 受賞作品ページを持つ過去大会だけ
+// 過去大会が 0 件の間はメニューからリンクされない (Menubar.astro 参照) ため、
+// 休眠時と同様に noindex にする (準備中ページの誤インデックス防止)
+const dormant = contests.length === 0;
+---
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>コンテスト受賞作品アーカイブ【KADOMA ART FES - 門真のまちをアートで染めよう】</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="KADOMA ART FES 歴代コンテスト受賞作品のアーカイブ">
+    {dormant && <meta name="robots" content="noindex">}
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/sub-page.css">
+    <link rel="stylesheet" href="/css/archive.css">
+</head>
+<body class="home">
+    <div id="container">
+
+        <!-- header(include) -->
+        <HeaderSub base="/" />
+
+        <main>
+
+            <section class="bg1">
+                <h2 class="h2-right">
+                    <span class="hosoku fade-in-text pc">KADOMA ART FES CONTEST ARCHIVE</span>
+                    <span class="hosoku fade-in-text sp">ARCHIVE</span>
+                    <span class="blur"><br class="sp">コンテスト受賞作品アーカイブ</span>
+                </h2>
+                <p>歴代の KADOMA ART FES CONTEST 受賞作品です。大会を選んでください。</p>
+            </section>
+
+            <section class="bg2">
+{contests.length > 0 ? (
+                <div class="archive-list">
+{contests.map((e) => (
+                    <a class="archive-card" href={e.contest.page}>
+                        {e.contest.thumb && <img src={e.contest.thumb} alt="">}
+                        <div class="archive-card-body">
+                            <div class="archive-card-year">{e.year}</div>
+                            <div class="archive-card-title">{e.title}</div>
+                            <div class="archive-card-date">{e.contest.contestTitle}</div>
+                        </div>
+                    </a>
+))}
+                </div>
+) : (
+                <div class="archive-empty">
+                    <p>アーカイブは準備中です。</p>
+                </div>
+)}
+            </section>
+
+        </main>
+
+        <!--フッター-->
+        <Footer data={data} base="/" />
+
+    </div>
+    <!--/#container-->
+
+    <!--ページの上部へ戻るボタン-->
+    <div class="pagetop"><a href="#"><i class="fas fa-angle-double-up"></i></a></div>
+
+    <!--開閉ブロック-->
+    <Menubar data={data} base="/" />
+
+    <!--開閉ボタン（ハンバーガーアイコン）-->
+    <div id="menubar_hdr_inner">
+        <div id="menubar_hdr">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!--jQueryの読み込み-->
+    <script is:inline src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!--lightbox用jsファイルの読み込み-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.10.0/js/lightbox-plus-jquery.min.js"></script>
+
+    <!--Swiper-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script is:inline src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!--スライドショー（slick）-->
+    <script is:inline src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script is:inline src="/js/slick-thumbnail.js"></script>
+    <script is:inline src="/js/slick.js"></script>
+
+    <!--パララックス（inview）-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/protonet-jquery.inview/1.1.2/jquery.inview.min.js"></script>
+    <script is:inline src="/js/jquery.inview_set.js"></script>
+
+    <!--このテンプレート専用のスクリプト-->
+    <script is:inline src="/js/main.js"></script>
+
+    <!--ロゴアニメーション-->
+    <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/vivus/0.4.6/vivus.min.js"></script>
+    <script is:inline>
+        new Vivus('svg-logo', {
+            start: 'autostart',
+            type: 'scenario-sync',
+            duration: 150,
+            forceRender: false,
+        });
+    </script>
+
+    <DevBanner />
+</body>
+
+</html>
