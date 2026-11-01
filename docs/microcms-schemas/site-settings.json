@@ -472,6 +472,13 @@
       "kind": "textArea",
       "description": "複数行入力。1 行 = 1 項目として表示されます (空行は無視)。",
       "required": false
+    },
+    {
+      "fieldId": "contest_winnersMenu",
+      "name": "受賞作品メニューの表示",
+      "kind": "boolean",
+      "description": "オンにすると、メニューに「KAF◯コンテスト受賞作品」(現在大会の受賞作品ページ) が出ます。コンテストを開催した大会の期間中だけオン。オフの間、その大会の受賞作品はアーカイブ側に載ります。",
+      "required": false
     }
   ],
   "customFields": []

@@ -20,7 +20,8 @@
 //   このアーカイブ一覧からのみ辿る (専用メニュー項目は KAF6 対応時に廃止)
 import { getArchiveIndex } from '../lib/content.js';
 const { data, base = '' } = Astro.props;
-const { latest, past } = await getArchiveIndex();
+// featuredContest: CMS の「受賞作品メニュー」がオンのとき、現在大会の受賞作品ページを訴求枠として出す
+const { latest, featuredContest, past } = await getArchiveIndex();
 ---
 <div id="include-menubar">
 <style is:inline>
@@ -52,6 +53,7 @@ const { latest, past } = await getArchiveIndex();
         <li><a href={`${base}media.html`}>メディア掲載情報</a></li>
         <li><a href={`${base}contest_entry.html`}>KAFコンテスト作品募集(<span data-field="contest.statusLabel">{data.contest.statusLabel}</span>)</a></li>
         {latest ? <li><a href={`${base}archive/${latest.slug}.html`}>{latest.shortName}イベント風景Photoギャラリー</a></li> : <li><a href={`${base}${data.gallery.latestPage}`} data-href-field="gallery.latestPage" data-field="gallery.latestLabel">{data.gallery.latestLabel}</a></li>}
+        {featuredContest && <li><a href={`${base}${featuredContest.contest.page.replace(/^\//, '')}`}>{featuredContest.shortName}コンテスト受賞作品</a></li>}
         {past.length > 0 && <li class="archive-menu">
             <details>
                 <summary>アーカイブ</summary>

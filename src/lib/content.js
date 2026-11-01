@@ -78,6 +78,9 @@ export const FIELD_MAP = {
         rules: 'contest_rules',
         mailingAddr: 'contest_mailingAddr',
         bankInfo: 'contest_bankInfo',
+        // 「{大会}コンテスト受賞作品」メニュー (訴求枠) の表示 (真偽値)。
+        // コンテストを開催した大会の期間中だけオンにする。オフの間はその大会の受賞作品もアーカイブ側に載る
+        winnersMenu: 'contest_winnersMenu',
     },
     siteText: {
         intro: 'site_introText',
@@ -502,14 +505,37 @@ export function mergeEditions(archives, contests = []) {
     return [...map.values()].sort((a, b) => (b.year - a.year) || ((b.edition ?? 0) - (a.edition ?? 0)));
 }
 
+// 訴求枠とアーカイブ一覧の振り分け (純粋関数。テスト対象)
+//   - イベント風景の訴求枠 (latest): 写真がある最新大会。メニュー「KAF◯イベント風景Photoギャラリー」
+//   - コンテスト受賞作品の訴求枠 (featuredContest): CMS の contest_winnersMenu がオンで、
+//     現在大会 (edition_name から導出) の受賞作品ページが台帳にあるとき。メニュー「KAF◯コンテスト受賞作品」。
+//     コンテストが無い大会 (KAF6) ではオフにしておく → 前回 (KAF5) の受賞作品はアーカイブ側に載る
+//   - 一覧 (past): 訴求枠に出ているタイルを除いたもの。タイルが残らない大会は載せない (重複させない)
+export function splitArchiveIndex(editions, latest, site = {}) {
+    const currentSlug = site.edition?.displayName ? slugOf(site.edition.displayName, site.edition.eventYear) : null;
+    let featuredContest = null;
+    if (site.contest?.winnersMenu) {
+        const cur = editions.find((e) => e.slug === currentSlug);
+        if (cur?.contest) featuredContest = cur;
+        else console.warn(`[content] contest_winnersMenu がオンですが、現在大会 (${currentSlug}) の受賞作品ページが contests 台帳にありません。メニューには出しません`);
+    }
+    const past = editions
+        .map((e) => ({
+            ...e,
+            contest: e.slug === featuredContest?.slug ? null : e.contest,
+            event: e.slug === latest?.slug ? null : e.event,
+        }))
+        .filter((e) => e.contest || e.event);
+    return { latest, featuredContest, past };
+}
+
 export async function getArchiveIndex() {
     const [archives, site] = await Promise.all([getArchives(), getSiteData()]);
     const editions = mergeEditions(archives, site.contests ?? []);
     const latest = archives[0] ?? null;
     return {
         editions,
-        latest,
-        past: editions.filter((e) => e.slug !== latest?.slug),
+        ...splitArchiveIndex(editions, latest, site),
         bySlug: Object.fromEntries(editions.map((e) => [e.slug, e])),
     };
 }
