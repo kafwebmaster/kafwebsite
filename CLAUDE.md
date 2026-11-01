@@ -76,7 +76,8 @@
 - `public/` … CSS/JS/画像(無変更コピー)+ 応募用紙 PDF
 - 表示のオン/オフは `site.json` の `visibility` フラグ(メディアページ末尾の開催情報)
 - アーカイブは「大会(年号)が親、その中にコンテスト受賞作品 / イベント風景」の構成
-  (`/archive.html` 一覧 → `/contest/kafN.html` / `/archive/kafN.html`)。最新大会はメニューの訴求枠のみで一覧には載せない。
+  (`/archive.html` 一覧 → `/contest/kafN.html` / `/archive/kafN.html`)。メニューの訴求枠は「写真がある最新大会のイベント風景」と
+  「CMS `contest_winnersMenu` がオンのときの現在大会の受賞作品」。一覧は訴求枠に出ているタイルを除いたもの(`splitArchiveIndex`)。
   メニューの入口は「アーカイブ：コンテスト受賞作品」(`/archive_contest.html`)と「アーカイブ：イベント風景」(`/archive.html`)の 2 項目(案 C)。
   受賞作品ページを増やすときは `contests` 台帳に 1 行追加 + ページ作成(KAF7 以降は JSON 化を予定: docs/archive-feature-design.md 13 章)
 

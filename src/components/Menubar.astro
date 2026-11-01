@@ -20,7 +20,8 @@
 //   その種別があるときだけ出す (getArchiveIndex)
 import { getArchiveIndex } from '../lib/content.js';
 const { data, base = '' } = Astro.props;
-const { latest, past } = await getArchiveIndex();
+// featuredContest: CMS の「受賞作品メニュー」がオンのとき、現在大会の受賞作品ページを訴求枠として出す
+const { latest, featuredContest, past } = await getArchiveIndex();
 // 案 C: 入口は「コンテスト受賞作品」「イベント風景」の 2 項目。それぞれの一覧ページを挟んで各ページへ
 const contestEditions = past.filter((e) => e.contest);
 const eventEditions = past.filter((e) => e.event);
@@ -34,6 +35,7 @@ const eventEditions = past.filter((e) => e.event);
         <li><a href={`${base}media.html`}>メディア掲載情報</a></li>
         <li><a href={`${base}contest_entry.html`}>KAFコンテスト作品募集(<span data-field="contest.statusLabel">{data.contest.statusLabel}</span>)</a></li>
         {latest ? <li><a href={`${base}archive/${latest.slug}.html`}>{latest.shortName}イベント風景Photoギャラリー</a></li> : <li><a href={`${base}${data.gallery.latestPage}`} data-href-field="gallery.latestPage" data-field="gallery.latestLabel">{data.gallery.latestLabel}</a></li>}
+        {featuredContest && <li><a href={`${base}${featuredContest.contest.page.replace(/^\//, '')}`}>{featuredContest.shortName}コンテスト受賞作品</a></li>}
         {contestEditions.length > 0 && <li><a href={`${base}archive_contest.html`}>アーカイブ：コンテスト受賞作品</a></li>}
         {eventEditions.length > 0 && <li><a href={`${base}archive.html`}>アーカイブ：イベント風景</a></li>}
         <li><a href={`${base}kaf_support.html`}>協賛・応援について</a></li>
