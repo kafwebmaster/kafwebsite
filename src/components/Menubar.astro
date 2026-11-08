@@ -15,8 +15,8 @@
 // - 1 件以上あれば、ギャラリー枠が最新大会の詳細ページ (/archive/{slug}.html、
 //   slug は大会番号 "kaf5" など) に切り替わる
 //   (この場合は生成リンクであり、旧 data-*-field の記録属性は付けない)
-// - アーカイブの入口は「アーカイブ：コンテスト受賞作品」(/archive_contest.html) と
-//   「アーカイブ：イベント風景」(/archive.html) の 2 項目。それぞれ、最新大会を除く大会に
+// - アーカイブの入口は「過去のコンテスト受賞作品」(/archive_contest.html) と
+//   「過去のイベント風景Photoギャラリー」(/archive.html) の 2 項目 (案 C・2026-11-08 文言確定)。それぞれ、最新大会を除く大会に
 //   その種別があるときだけ出す (getArchiveIndex)
 import { getArchiveIndex } from '../lib/content.js';
 const { data, base = '' } = Astro.props;
@@ -36,8 +36,8 @@ const eventEditions = past.filter((e) => e.event);
         <li><a href={`${base}contest_entry.html`}>KAFコンテスト作品募集(<span data-field="contest.statusLabel">{data.contest.statusLabel}</span>)</a></li>
         {latest ? <li><a href={`${base}archive/${latest.slug}.html`}>{latest.shortName}イベント風景Photoギャラリー</a></li> : <li><a href={`${base}${data.gallery.latestPage}`} data-href-field="gallery.latestPage" data-field="gallery.latestLabel">{data.gallery.latestLabel}</a></li>}
         {featuredContest && <li><a href={`${base}${featuredContest.contest.page.replace(/^\//, '')}`}>{featuredContest.shortName}コンテスト受賞作品</a></li>}
-        {contestEditions.length > 0 && <li><a href={`${base}archive_contest.html`}>アーカイブ：コンテスト受賞作品</a></li>}
-        {eventEditions.length > 0 && <li><a href={`${base}archive.html`}>アーカイブ：イベント風景</a></li>}
+        {contestEditions.length > 0 && <li><a href={`${base}archive_contest.html`}>過去のコンテスト受賞作品</a></li>}
+        {eventEditions.length > 0 && <li><a href={`${base}archive.html`}>過去のイベント風景Photoギャラリー</a></li>}
         <li><a href={`${base}kaf_support.html`}>協賛・応援について</a></li>
     </ul>
 </nav>
