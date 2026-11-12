@@ -66,14 +66,20 @@
 
 ## リポジトリ構成(要点)
 
-- `src/pages/*.astro` … 全 11 ページ + `archive/[slug].astro`(CMS 登録で自動生成。slug は大会番号 `kaf5`)
+- `src/pages/*.astro` … 全 10 ページ + `archive/[slug].astro`(イベント風景。CMS 登録で自動生成。slug は大会番号 `kaf5`)
+  + `contest/kaf5.astro` `contest/kaf4.astro`(コンテスト受賞作品。静的ページ。大会の台帳は `site.json` の `contests`)
 - `src/components/` … HeaderSub / Menubar / Footer / NewsList / HbpInfo / DevBanner(開発中バナー。
   *.pages.dev と localhost のみ表示され、本番ドメインには出ない)
 - `src/lib/content.js` … データ取得層(FIELD_MAP・フォールバック・fillFields・アーカイブ正規化)
 - `scripts/` … seed-microcms(初期投入・使用済) / sync-cms-assets(メディアミラー) /
-  postbuild-redirects(旧URL転送 + 受賞作品ページの非公開 302) / test-content-mapping(テスト) / dom-compare(移行時の検証)
+  postbuild-redirects(旧 URL → 新 URL の 302。/2024gallery, /archive/2026, /contest, /contest2024) / test-content-mapping(テスト) / dom-compare(移行時の検証)
 - `public/` … CSS/JS/画像(無変更コピー)+ 応募用紙 PDF
-- 表示のオン/オフは `site.json` の `visibility` フラグ(受賞作品メニュー・メディアページ末尾の開催情報)
+- 表示のオン/オフは `site.json` の `visibility` フラグ(メディアページ末尾の開催情報)
+- アーカイブは「大会(年号)が親、その中にコンテスト受賞作品 / イベント風景」の構成
+  (`/archive.html` 一覧 → `/contest/kafN.html` / `/archive/kafN.html`)。メニューの訴求枠は「写真がある最新大会のイベント風景」と
+  「CMS `contest_winnersMenu` がオンのときの現在大会の受賞作品」。一覧は訴求枠に出ているタイルを除いたもの(`splitArchiveIndex`)。
+  メニューの入口は「過去のコンテスト受賞作品」(`/archive_contest.html`)と「過去のイベント風景Photoギャラリー」(`/archive.html`)の 2 項目(案 C・採用)。
+  受賞作品ページを増やすときは `contests` 台帳に 1 行追加 + ページ作成(KAF7 以降は JSON 化を予定: docs/archive-feature-design.md 13 章)
 
 ## ドキュメント
 

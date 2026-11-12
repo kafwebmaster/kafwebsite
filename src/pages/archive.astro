@@ -1,27 +1,31 @@
 ---
 import DevBanner from '../components/DevBanner.astro';
 // アーカイブ一覧 (/archive.html)
-// 最新大会 (メニューの訴求枠) を除く過去大会をカードで並べる。
+// 大会 (年号) ごとのカードを新しい順に並べ、カードの中に「コンテスト受賞作品」「イベント風景」の
+// ボタンを (あるものだけ) 出す。最新大会 (メニューの訴求枠) は載せない。
+// 大会の索引は CMS (イベント風景) と site.json の contests 台帳 (受賞作品) の突き合わせ
+// (content.js getArchiveIndex)。
 // 有効エントリが 0 件の間は「準備中」+ noindex で生成する (休眠状態)。
-// 設計: docs/archive-feature-design.md 4-2
+// 設計: docs/archive-feature-design.md 4-2 / 13 章
 import HeaderSub from '../components/HeaderSub.astro';
 import Menubar from '../components/Menubar.astro';
 import Footer from '../components/Footer.astro';
-import { getSiteData, getArchiveSplit } from '../lib/content.js';
+import { getSiteData, getArchiveIndex } from '../lib/content.js';
 const data = await getSiteData();
-const { archives, past } = await getArchiveSplit();
+const { past } = await getArchiveIndex();
+const events = past.filter((e) => e.event);   // 案 C: イベント風景を持つ過去大会だけ
 // 過去大会が 0 件の間はメニューからリンクされない (Menubar.astro 参照) ため、
 // 休眠時と同様に noindex にする (準備中ページの誤インデックス防止)
-const dormant = past.length === 0;
+const dormant = events.length === 0;
 ---
 <!DOCTYPE html>
 <html lang="ja">
 
 <head>
     <meta charset="UTF-8">
-    <title>アーカイブ【KADOMA ART FES - 門真のまちをアートで染めよう】</title>
+    <title>イベント風景アーカイブ【KADOMA ART FES - 門真のまちをアートで染めよう】</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="KADOMA ART FES 歴代イベントのアーカイブ">
+    <meta name="description" content="KADOMA ART FES 歴代イベント風景のアーカイブ">
     {dormant && <meta name="robots" content="noindex">}
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/sub-page.css">
@@ -37,23 +41,24 @@ const dormant = past.length === 0;
 
             <section class="bg1">
                 <h2 class="h2-right">
-                    <span class="hosoku fade-in-text pc">KADOMA ART FES ARCHIVE</span>
+                    <span class="hosoku fade-in-text pc">KADOMA ART FES EVENT ARCHIVE</span>
                     <span class="hosoku fade-in-text sp">ARCHIVE</span>
-                    <span class="blur"><br class="sp">アーカイブ</span>
+                    <span class="blur"><br class="sp">イベント風景アーカイブ</span>
                 </h2>
-                <p>歴代の KADOMA ART FES の記録です。</p>
+                <p>歴代の KADOMA ART FES のイベント風景です。大会を選んでください。</p>
             </section>
 
             <section class="bg2">
-{past.length > 0 ? (
+{events.length > 0 ? (
                 <div class="archive-list">
-{past.map((a) => (
-                    <a class="archive-card" href={`/archive/${a.slug}.html`}>
-                        {a.heroImage && <img src={a.heroImage} alt={a.title}>}
+{events.map((e) => (
+                    <a class="archive-card" href={`/archive/${e.event.slug}.html`}>
+                        {(e.event.heroImage || e.event.gallery[0]) && <img src={e.event.heroImage || e.event.gallery[0]} alt="">}
                         <div class="archive-card-body">
-                            <div class="archive-card-year">{a.year}</div>
-                            <div class="archive-card-title">{a.title}</div>
-                            {a.dateRange && <div class="archive-card-date">{a.dateRange}</div>}
+                            <div class="archive-card-year">{e.year}</div>
+                            <div class="archive-card-title">{e.title}</div>
+                            {e.event.dateRange && <div class="archive-card-date">{e.event.dateRange}</div>}
+                            <div class="archive-card-date">イベント風景Photoギャラリー</div>
                         </div>
                     </a>
 ))}

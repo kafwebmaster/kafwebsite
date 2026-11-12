@@ -27,6 +27,7 @@
     "deliveryPeriod": "2026年1月中旬",
     "entryPdf": "KAF7entry.pdf",
     "entryFormUrl": "https://forms.gle/tN6MJoqWRJoSHwF18",
+    "winnersMenu": false,
     "editionName": "KADOMA ART FES 7",
     "venue": "京阪古川橋駅前周辺地域",
     "entryFee": "1点　1,500円",
@@ -185,8 +186,7 @@
       "KADOMA ART FESは、様々なジャンルのアーティストの皆様のアイデアを取り入れ、アートの力で実現できる可能性を見出す事ができるアートフェスタを目指しています。",
       "2021年より毎年開催しているKADOMA ART FESも本年で{edition.yearsRunning}年目となりました。{edition.fiscalYearLabel}も大和田駅前エリアでの「MACHIKADO MACHINAKA GALLERY」を開催致します。",
       "地域の活性化と地元の方たちに喜んで頂けることを目指し職人の街、門真市ならではの『アートとアイデアの可能性』を感じる事ができるKADOMA ART FESをお楽しみください。"
-    ],
-    "winnersEditionShort": "KAF5"
+    ]
   },
   "mmg": {
     "intro": "職人の街、門真市ならではの『アートとアイデアの可能性』を感じることができるのがKADOMA ART FES。 森川ビルをメイン会場とし、大和田南商店街周辺をアートで染める「MACHIKADO MACHINAKA GALLERY」を開催いたします。 今年は過去開催5年間の展示の中での受賞アーティストの作品を集結し、アーティストと来場者・まちの人たちとのギャラリートークを開催いたします。",
@@ -296,9 +296,26 @@
     }
   },
   "visibility": {
-    "winnersPage": false,
     "mediaEventInfo": false
   },
+  "contests": [
+    {
+      "slug": "kaf5",
+      "year": 2026,
+      "title": "KADOMA ART FES 5",
+      "contestTitle": "KADOMA ART FES CONTEST KAF5 受賞作品",
+      "page": "/contest/kaf5.html",
+      "thumb": "/images/contest/thumbs/kaf5.jpg"
+    },
+    {
+      "slug": "kaf4",
+      "year": 2024,
+      "title": "KADOMA ART FES 4",
+      "contestTitle": "KADOMA ART FES CONTEST 2024 受賞作品",
+      "page": "/contest/kaf4.html",
+      "thumb": "/images/contest/thumbs/kaf4.jpg"
+    }
+  ],
   "support": {
     "editionName": "KADOMA ART FES 5",
     "appeal": "「KADOMA ART FES 5」は下記の皆様からのご協力・ご支援にて開催する事ができました。2027年5月開催予定のKAF7に向けて、ぜひご協力とご支援を賜れますと幸いです。",
@@ -321,7 +338,7 @@
       "date": "2026/02/05",
       "category": "コンテスト",
       "text": "KADOMA ART FES CONTEST KAF5受賞作品を発表しました",
-      "link": "contest.html"
+      "link": "contest/kaf5.html"
     },
     {
       "date": "2026/01/25",
