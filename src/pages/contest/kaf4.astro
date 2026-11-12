@@ -129,6 +129,50 @@ const eventPage = edition?.event ? `/archive/${edition.event.slug}.html` : null;
 	}
 
 
+    /* --- 2026-11 レイアウト調整 (ユーザー指示: 審査員写真を小さく白黒・円形に / 本文に余白) --- */
+    /* 受賞作品・審査員・展示情報のブロック幅を揃え、画面端に文字が寄らないよう左右に余白を取る */
+    .award-entry,
+    .left-align,
+    .kaf-event-details {
+        max-width: 760px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: clamp(16px, 5vw, 40px);
+        padding-right: clamp(16px, 5vw, 40px);
+        box-sizing: border-box;
+    }
+    .award-entry p {
+        margin: 0;
+        line-height: 1.6;
+    }
+    .left-align p {
+        line-height: 1.7;
+        margin: 0.5em 0;
+    }
+    /* 審査員: 写真は紹介文の上に小さく (120px)、白黒・円形。名前は写真の下に中央揃え */
+    .profile-section {
+        margin: 48px 0;
+        text-align: left;
+    }
+    .profile-section img {
+        display: block;
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        filter: grayscale(100%);
+        margin: 0 auto 12px;
+    }
+    .profile-section h3 {
+        text-align: center;
+        margin: 0 0 16px;
+    }
+    @media (max-width: 767px) {
+        .profile-section img {
+            width: 96px;
+            height: 96px;
+        }
+    }
     </style>
 
 </head>
