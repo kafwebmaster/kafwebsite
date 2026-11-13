@@ -156,9 +156,10 @@ const eventPage = edition?.event ? `/archive/${edition.event.slug}.html` : null;
     }
     .profile-section img {
         display: block;
-        width: 120px;
-        height: 120px;
+        width: 160px;
+        height: 160px;
         object-fit: cover;
+        object-position: 50% 12%;   /* 顔が写真の上寄りにあるため、頭が切れないよう上側を基準に切り抜く */
         border-radius: 50%;
         filter: grayscale(100%);
         margin: 0 auto 12px;
@@ -169,8 +170,8 @@ const eventPage = edition?.event ? `/archive/${edition.event.slug}.html` : null;
     }
     @media (max-width: 767px) {
         .profile-section img {
-            width: 96px;
-            height: 96px;
+            width: 128px;
+            height: 128px;
         }
     }
     </style>
