@@ -289,6 +289,7 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 | `contest_rules` | 出展規約 | テキストエリア(◆見出し) | contest.rules | 出展規約 |
 | `contest_mailingAddr` | 応募先(郵送) | テキストエリア(1行1項目) | contest.mailingAddr | 応募先：郵送 |
 | `contest_bankInfo` | 出品料振込先 | テキストエリア(1行1項目) | contest.bankInfo | 出品料振込先 |
+| `event_infoPageShow` | イベント開催情報ページの表示 | 真偽値 | visibility.eventInfoPage | オフにするとメニューの「イベント開催情報」とトップの「イベント詳細はこちら」が消え、`/kaf_mmg.html` はトップへ 302。詳細がまとまるまでの一時非公開用。未作成・未入力 = 表示(2026-11-14 追加) |
 | `contest_winnersMenu` | 受賞作品メニューの表示 | 真偽値 | contest.winnersMenu | メニューの「KAF◯コンテスト受賞作品」(訴求枠)。**コンテストを開催した大会の期間中だけオン**。オフの間、その大会の受賞作品はアーカイブ側に載る。現在大会(大会名(正式))の受賞作品ページが無い場合はオンにしても出ない(2026-11-01 追加) |
 
 **登録手順**

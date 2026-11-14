@@ -31,7 +31,7 @@ const eventEditions = past.filter((e) => e.event);
     <ul>
         <li><a href={`${base}index.html`}>HOME</a></li>
         <li><a href={`${base}kaf_info.html`}>KAFとは</a></li>
-        <li><a href={`${base}kaf_mmg.html`}>イベント開催情報</a></li>
+        {data.visibility.eventInfoPage !== false && <li><a href={`${base}kaf_mmg.html`}>イベント開催情報</a></li>}
         <li><a href={`${base}media.html`}>メディア掲載情報</a></li>
         <li><a href={`${base}contest_entry.html`}>KAFコンテスト作品募集(<span data-field="contest.statusLabel">{data.contest.statusLabel}</span>)</a></li>
         {latest ? <li><a href={`${base}archive/${latest.slug}.html`}>{latest.shortName}イベント風景Photoギャラリー</a></li> : <li><a href={`${base}${data.gallery.latestPage}`} data-href-field="gallery.latestPage" data-field="gallery.latestLabel">{data.gallery.latestLabel}</a></li>}
