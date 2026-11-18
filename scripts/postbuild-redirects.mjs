@@ -13,6 +13,7 @@
 //   (ビルド本体との取得結果のズレを構造的に排除)
 // - 既存の _redirects there には追記 (上書きしない)
 import fs from 'node:fs';
+import { getSiteData } from '../src/lib/content.js';
 
 // 旧 URL → アーカイブ詳細ページの slug (大会番号) の対応
 // - /2024gallery: 移行前からある KAF4 の固定ページ (KAF4 をアーカイブ登録したら転送)
@@ -42,6 +43,17 @@ for (const { from, to, unlessSourceExists } of LEGACY) {
     }
     lines.push(`${from} ${to} 302`);
     lines.push(`${from}.html ${to} 302`);
+}
+
+// イベント開催情報ページ (kaf_mmg.html) の一時非公開 (CMS「イベント開催情報ページの表示」がオフのとき)
+// メニュー項目・トップのボタンは Menubar / index 側で同じフラグにより非表示。直接アクセスはトップへ 302。
+// ページ自体はビルドに含めたままなので、オンに戻せば即復活する。
+// 判定は取得層 (content.js) 経由 = CMS 優先・取得失敗時は site.json の既定 (表示)
+const site = await getSiteData();
+if (site.visibility?.eventInfoPage === false) {
+    lines.push('/kaf_mmg / 302');
+    lines.push('/kaf_mmg.html / 302');
+    console.log('[postbuild-redirects] イベント開催情報ページは非公開設定のためトップへ転送します');
 }
 
 if (lines.length === 0) {

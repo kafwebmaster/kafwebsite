@@ -124,6 +124,12 @@ export const FIELD_MAP = {
         youtube: 'social_youtube',
         instagram: 'social_instagram',
     },
+    // 表示のオン/オフ (真偽値)。CMS 未作成・未入力なら site.json の既定 (表示) を使う
+    visibility: {
+        // 「イベント開催情報」ページ (kaf_mmg.html)。オフにするとメニュー項目・トップのボタンを隠し、
+        // URL への直接アクセスはトップへ 302 (postbuild-redirects)。詳細がまとまるまでの一時非公開用
+        eventInfoPage: 'event_infoPageShow',
+    },
 };
 
 // メディア系フィールド (値が { url } オブジェクトで返るもの)
