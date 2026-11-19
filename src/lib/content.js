@@ -136,6 +136,9 @@ export const FIELD_MAP = {
 
 // メディア系フィールド (値が { url } オブジェクトで返るもの)
 const MEDIA_SECTIONS = new Set(['images']);
+// 応募用紙 PDF: CMS にはサイト内のパス (例 /files/KAF7entry_2026-09-01.pdf) を入れる。
+// PDF 本体はリポジトリ public/files/ に置く (microCMS のファイルアップロードは有料のため)。
+// 外部 URL (Google ドライブ等) は権限変更・仕様変更・配信制限でリンク切れになりうるので受け付けない
 const FILE_FIELDS = new Set(['contest_entryPdf']);
 
 // テキストエリア (複数行) を「1 行 = 1 項目」の配列として扱うフィールド。
@@ -206,6 +209,27 @@ const unwrapSelect = (v) => (Array.isArray(v) ? v[0] : v);
 
 // メディア / ファイルの値をローカルパス or CMS URL に解決
 // マニフェストは「CMS の URL → ローカルパス」の対応表 (配列メディアにも対応できる形)
+// サイト内 PDF パスの検証。不正ならローカルの現行値に戻す (リンク切れを出さない)
+export function resolveSitePdf(value, fallback) {
+    const raw = value && typeof value === 'object' ? value.url : value;
+    if (raw == null || String(raw).trim() === '') return fallback;
+    const p = String(raw).trim();
+    if (/^[a-z]+:\/\//i.test(p) || p.startsWith('//')) {
+        console.warn(`[content] 応募用紙 PDF に外部 URL は使えません (${p})。サイト内のパス (/files/…) を入れてください。前回の PDF を出します`);
+        return fallback;
+    }
+    const path = p.startsWith('/') ? p : `/${p}`;
+    if (path.includes('..') || !/\.pdf$/i.test(path)) {
+        console.warn(`[content] 応募用紙 PDF のパスが不正です (${p})。前回の PDF を出します`);
+        return fallback;
+    }
+    if (!fs.existsSync(fromRoot(`public${path}`))) {
+        console.warn(`[content] 応募用紙 PDF が見つかりません (public${path})。GitHub の public/files/ にアップロード済みか、パスの綴りを確認してください。前回の PDF を出します`);
+        return fallback;
+    }
+    return path;
+}
+
 function resolveMedia(value, manifest, fallback) {
     const url = value && typeof value === 'object' ? value.url : value;
     if (!url) return fallback; // CMS 側が未入力ならローカルの現行値を使う
@@ -237,7 +261,9 @@ export function mapSiteSettings(cms, fallback, manifest = {}) {
         for (const [key, cmsId] of Object.entries(fields)) {
             const fb = fallback[section]?.[key];
             let v = cms[cmsId];
-            if (MEDIA_SECTIONS.has(section) || FILE_FIELDS.has(cmsId)) {
+            if (FILE_FIELDS.has(cmsId)) {
+                v = resolveSitePdf(v, fb);
+            } else if (MEDIA_SECTIONS.has(section)) {
                 v = resolveMedia(v, manifest, fb);
             } else if (cmsId === 'contest_status') {
                 v = unwrapSelect(v);

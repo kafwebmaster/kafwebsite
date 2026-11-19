@@ -5,7 +5,7 @@
 //        site.json と同じ入れ子構造に正しく復元されることを、実キー無しで保証する
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { mapSiteSettings, mapNews, mapSponsors, mapArchives, mergeEditions, splitArchiveIndex, shortNameOf, slugOf, editionNumberOf, toTextArea, parseRules } from '../src/lib/content.js';
+import { resolveSitePdf, mapSiteSettings, mapNews, mapSponsors, mapArchives, mergeEditions, splitArchiveIndex, shortNameOf, slugOf, editionNumberOf, toTextArea, parseRules } from '../src/lib/content.js';
 
 const local = JSON.parse(fs.readFileSync('src/data/site.json', 'utf8'));
 
@@ -38,7 +38,9 @@ for (const [section, obj] of Object.entries(local)) {
     if (section === 'news' || section === 'sponsors') continue;
     for (const [key, value] of Object.entries(obj)) {
         const cmsId = RENAMES[`${section}.${key}`] ?? `${section}_${key}`;
-        if (section === 'images' || cmsId === 'contest_entryPdf') {
+        if (cmsId === 'contest_entryPdf') {
+            mock[cmsId] = value; // PDF はサイト内パス (テキスト)
+        } else if (section === 'images') {
             // メディアは { url } オブジェクトで返る
             mock[cmsId] = { url: `https://images.microcms-assets.io/x/${key}.jpg`, width: 100, height: 100 };
         } else if (cmsId === 'contest_status') {
@@ -52,7 +54,7 @@ for (const [section, obj] of Object.entries(local)) {
 
 // 1-a: マニフェストありの場合 → ローカルパスに解決
 const manifest = Object.fromEntries(
-    Object.keys(mock).filter(k => k.startsWith('images_') || k === 'contest_entryPdf')
+    Object.keys(mock).filter(k => k.startsWith('images_'))
         .map(k => [mock[k].url, `/cms-assets/${k}.bin`])
 );
 const mapped = mapSiteSettings(mock, local, manifest);
@@ -61,7 +63,7 @@ for (const [section, obj] of Object.entries(local)) {
     if (section === 'contest') {
         const { entryPdf, ...rest } = obj;
         for (const k of Object.keys(rest)) assert.deepEqual(mapped.contest[k], obj[k], `contest.${k}`);
-        assert.equal(mapped.contest.entryPdf, '/cms-assets/contest_entryPdf.bin');
+        assert.equal(mapped.contest.entryPdf, local.contest.entryPdf, 'PDF はサイト内パスがそのまま通る');
         continue;
     }
     assert.deepEqual(mapped[section], obj, section);
@@ -79,6 +81,23 @@ assert.equal(mapped2.edition.displayNameShort, local.edition.displayNameShort);
 assert.equal(mapped2.images.flyerFront, local.images.flyerFront);
 assert.equal(mapped2.contest.entryPdf, local.contest.entryPdf);
 console.log('OK 2: 部分入力 → 未入力はローカル値でフォールバック');
+
+// --- 2b. 応募用紙 PDF: サイト内パスのみ。外部 URL・不正・不存在はローカル値へ (警告つき) ---
+{
+    const fb = local.contest.entryPdf;
+    const warned = []; const orig = console.warn; console.warn = (m) => warned.push(String(m));
+    assert.equal(resolveSitePdf(fb, fb), fb);
+    assert.equal(resolveSitePdf('files/KAF7entry_2026-09-01.pdf', fb), fb, '先頭のスラッシュは補う');
+    assert.equal(resolveSitePdf('https://drive.google.com/file/d/xxx/view', fb), fb, '外部 URL は拒否');
+    assert.equal(resolveSitePdf({ url: 'https://files.microcms-assets.io/x.pdf' }, fb), fb, '旧ファイルフィールド形式も拒否');
+    assert.equal(resolveSitePdf('/files/nai.pdf', fb), fb, '存在しないファイルはローカル値');
+    assert.equal(resolveSitePdf('/files/../secret.txt', fb), fb, '不正なパスはローカル値');
+    assert.equal(resolveSitePdf('', fb), fb); assert.equal(resolveSitePdf(undefined, fb), fb);
+    console.warn = orig;
+    assert.equal(warned.length, 4, '外部 URL / 旧形式 / 不存在 / 不正 で警告');
+    assert.ok(fs.existsSync('public' + fb), '既定の PDF が public/files/ に存在する');
+}
+console.log('OK 2b: 応募用紙 PDF → サイト内パスのみ受け付け、それ以外はローカル値');
 
 // --- 2. news ---
 const newsMock = local.news.map(n => ({

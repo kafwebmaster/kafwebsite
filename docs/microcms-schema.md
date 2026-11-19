@@ -186,15 +186,15 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 | `contest_exhibPeriod` | 展示期間 | テキスト | 2026年3月7日 (土) 〜 3月8日 (日) |
 | `contest_exhibFull` | 展示期間(時間込) | テキスト | 2026年3月7日（土）8日（日）10:00～16:00 |
 | `contest_delivery` | 作品搬入時期 | テキスト | 2026年1月中旬 |
-| `contest_entryPdf` | 応募用紙PDF | ファイル | **未入力で運用**(下記参照) |
+| `contest_entryPdf` | 応募用紙 PDF の URL | **テキスト**(2026-11-20 に「ファイル」から変更) | `/files/KAF7entry_2026-09-01.pdf` のような**サイト内のパス**。外部 URL は不可(下記参照) |
 
-> **応募用紙 PDF の運用**: microCMS のファイル (PDF) アップロードは有料プラン限定のため、
-> PDF は Git リポジトリ (`public/KAF7entry.pdf`) で管理し Cloudflare から配信する。
-> CMS のこのフィールドは**未入力のまま**にすること (入力すると CMS 側が優先される)。
-> 年度更新時はリポジトリのファイル差し替え + `site.json` の `contest.entryPdf` を変更する。
-> なお外部 URL (Google Drive 等) を使いたい場合は、このフィールドを削除して
-> 同じフィールドID のテキストフィールドを作り URL を入れれば、コード変更なしでそのまま動く
-> (取得層は文字列 URL をそのまま href に使う)。
+> **応募用紙 PDF の運用(2026-11-20 改定)**: microCMS のファイル (PDF) アップロードは有料プラン限定のため、
+> PDF 本体はリポジトリ `public/files/` に**版ごとのファイル名**(例 `KAF7entry_2026-09-01.pdf`)で置き、
+> CMS のこのフィールドには**サイト内のパス**(`/files/KAF7entry_2026-09-01.pdf`)を入れる。
+> 外部 URL(Google ドライブ等)は権限変更・仕様変更・配信制限でリンク切れになりうるため**受け付けない**
+> (ビルドで警告し、前回の PDF を出し続ける)。存在しないパスも同様。
+> フライヤー等に記載の固定 URL `/KAF7entry.pdf` は `_redirects` で現在のファイルへ 302 転送する。
+> 差し替え手順は `docs/update-guide.md` 2-7。
 | `contest_entryFormUrl` | 応募フォームURL | テキスト | https://forms.gle/tN6MJoqWRJoSHwF18 |
 | `contest_status` | 募集状態(内部) | セレクト | closed(選択肢: open / closed) |
 
