@@ -144,7 +144,7 @@
       "fieldId": "contest_entryPdf",
       "name": "応募用紙 PDF の URL",
       "kind": "text",
-      "description": "サイト内のパスを入れます (例: /files/KAF7entry_2026-09-01.pdf)。PDF 本体は GitHub の public/files/ にアップロード。Google ドライブなど外部 URL は使えません (前回の PDF が出続けます)。",
+      "description": "サイト内のパスを入れます (例: /files/KAF7entry.pdf)。通常は同じファイル名で PDF を上書きするだけでよく、この欄を変えるのはファイル名を変えたときだけ。PDF 本体は GitHub の public/files/ にアップロード。Google ドライブなど外部 URL は使えません (前回の PDF が出続けます)。",
       "required": false
     },
     {

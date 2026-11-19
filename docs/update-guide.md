@@ -107,18 +107,16 @@ microCMS → **協賛** で追加・削除。表示順を指定したい場合�
 
 ### 2-7. 応募用紙 PDF を差し替える
 
-PDF はサイト本体(GitHub の `public/files/` フォルダ)に置き、どのファイルを出すかを microCMS で指定します。
+PDF はサイト本体(GitHub の `public/files/` フォルダ)にあります。**同じファイル名(`KAF7entry.pdf`)で上書き**すれば、CMS の操作は不要です。
 
 1. GitHub → リポジトリ `kafwebmaster/kafwebsite` → `public/files/` を開く → 右上 **Add file → Upload files**
-2. 新しい PDF をドロップ。**ファイル名は版が分かるように**(例: `KAF7entry_2026-11-20.pdf`。半角英数字・既存と同名にしない)
+2. 新しい PDF を **`KAF7entry.pdf` という名前で**ドロップ(同名なので上書きになります。古い版は GitHub の履歴に残ります)
 3. 下の「Propose changes」で **Create a new branch for this commit and start a pull request** を選んで Commit → 開いた PR を **develop 向けに**作成 → マージ
-4. microCMS → サイト設定 → **「応募用紙 PDF の URL」** に `/files/KAF7entry_2026-11-20.pdf` と入力 → 公開
-5. 確認用サイトの作品募集ページで「応募用紙PDFダウンロード」を開き、新しい PDF が出ることを確認
-6. 本番へは **develop → main のリリース PR**(Web 担当へ連絡。PDF ファイルがリポジトリにあるため、Retry deployment だけでは本番に入りません)
+4. 確認用サイトの作品募集ページで「応募用紙PDFダウンロード」を開き、新しい PDF が出ることを確認
+5. 本番へは **develop → main のリリース PR**(Web 担当へ連絡。PDF ファイルがリポジトリにあるため、Retry deployment だけでは本番に入りません)
 
-- フライヤー等に印刷した `https://kadoma-artfes.jp/KAF7entry.pdf` は、常に「応募用紙 PDF の URL」で指定した最新ファイルへ自動で転送されます
-- Google ドライブなどの外部リンクは入れないでください(無視され、前回の PDF が出続けます)
-- 古い PDF は削除せず残して構いません(履歴として)
+- フライヤー等に印刷した `https://kadoma-artfes.jp/KAF7entry.pdf` も同じファイルを指します
+- 次回大会などでファイル名を変える場合だけ、microCMS → サイト設定 → **「応募用紙 PDF の URL」** に `/files/新しい名前.pdf` を入れて公開してください。Google ドライブなどの外部リンクは入れないでください(無視され、前の PDF が出続けます)
 
 ---
 

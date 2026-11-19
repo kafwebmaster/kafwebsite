@@ -40,7 +40,7 @@
 - 文中に CMS 値を差し込む場合は差込み記法 `{contest.entryDeadlineShort}` を使う(`fillFields()`)。
   **日付等を文章に直書きしない**(CMS 更新に追従しなくなる事故が実際に起きた)
 - メディア(画像/PDF)はビルド前に `scripts/sync-cms-assets.mjs` がローカルへミラーする(転送量対策)。
-  **応募用紙 PDF は microCMS に置かず**(ファイルアップロードは有料)`public/files/` に版ごとのファイル名で Git 管理し、
+  **応募用紙 PDF は microCMS に置かず**(ファイルアップロードは有料)`public/files/KAF7entry.pdf` を Git 管理し(同名で上書き = 履歴は Git に残る)、
   CMS `contest_entryPdf`(テキスト)にはサイト内パスだけを入れる(外部 URL は拒否・不存在は前回の PDF にフォールバック)。固定 URL `/KAF7entry.pdf` は 302 転送
 - メールアドレスの使い分け: `contact.email`(渉外・協賛) / `contact.entryEmail`(作品応募。応募ページには現在非表示)
 
@@ -74,7 +74,7 @@
 - `src/lib/content.js` … データ取得層(FIELD_MAP・フォールバック・fillFields・アーカイブ正規化)
 - `scripts/` … seed-microcms(初期投入・使用済) / sync-cms-assets(メディアミラー) /
   postbuild-redirects(旧 URL → 新 URL の 302。/2024gallery, /archive/2026, /contest, /contest2024) / test-content-mapping(テスト) / dom-compare(移行時の検証)
-- `public/` … CSS/JS/画像(無変更コピー)+ `files/`(応募用紙 PDF・版ごと)
+- `public/` … CSS/JS/画像(無変更コピー)+ `files/`(応募用紙 PDF)
 - 表示のオン/オフは `site.json` の `visibility` フラグ(メディアページ末尾の開催情報)。
   `visibility.eventInfoPage` は CMS `event_infoPageShow`(真偽値)で制御(イベント開催情報ページの一時非公開: メニュー・トップのボタン非表示 + 302)
 - アーカイブは「大会(年号)が親、その中にコンテスト受賞作品 / イベント風景」の構成

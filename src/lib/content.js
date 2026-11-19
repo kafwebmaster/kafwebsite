@@ -136,7 +136,7 @@ export const FIELD_MAP = {
 
 // メディア系フィールド (値が { url } オブジェクトで返るもの)
 const MEDIA_SECTIONS = new Set(['images']);
-// 応募用紙 PDF: CMS にはサイト内のパス (例 /files/KAF7entry_2026-09-01.pdf) を入れる。
+// 応募用紙 PDF: CMS にはサイト内のパス (例 /files/KAF7entry.pdf) を入れる。
 // PDF 本体はリポジトリ public/files/ に置く (microCMS のファイルアップロードは有料のため)。
 // 外部 URL (Google ドライブ等) は権限変更・仕様変更・配信制限でリンク切れになりうるので受け付けない
 const FILE_FIELDS = new Set(['contest_entryPdf']);
