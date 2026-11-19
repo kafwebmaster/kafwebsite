@@ -486,6 +486,13 @@
       "kind": "boolean",
       "description": "オフにすると、メニューの「イベント開催情報」とトップの「イベント詳細はこちら」が消え、ページへの直接アクセスはトップへ転送されます。詳細がまとまるまでの一時非公開用。通常はオン。",
       "required": false
+    },
+    {
+      "fieldId": "site_aboutText",
+      "name": "KAFとは(ロゴ下の文章)",
+      "kind": "textArea",
+      "description": "「KAFとは」ページのロゴ下の文章。1 行 = 1 段落。{edition.yearsRunning}(開催回数)や {edition.fiscalYearLabel}(年度ラベル)の差込み記法が使えます。空欄なら既定の文章。",
+      "required": false
     }
   ],
   "customFields": []

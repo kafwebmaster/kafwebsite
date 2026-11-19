@@ -23,6 +23,7 @@ const RENAMES = {
     'images.entryThumbnail': 'images_entryThumb',
     'marche.displayName': 'marche_name',
     'visibility.eventInfoPage': 'event_infoPageShow',
+    'siteText.about': 'site_aboutText',
     // KAF7 対応で追加したフィールド
     'contest.entryPeriodNotes': 'contest_periodNotes',
     'contest.entryFeeNotes': 'contest_feeNotes',

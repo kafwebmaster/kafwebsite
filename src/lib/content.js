@@ -85,6 +85,8 @@ export const FIELD_MAP = {
     siteText: {
         intro: 'site_introText',
         mainEvent: 'site_mainEvent',
+        // 「KAFとは」ロゴ下の文章 (1 行 1 段落。差込み記法可)
+        about: 'site_aboutText',
     },
     mmg: {
         contents: 'event_contents',
@@ -141,7 +143,7 @@ const FILE_FIELDS = new Set(['contest_entryPdf']);
 export const LIST_FIELDS = new Set([
     'contest_intro', 'contest_periodNotes', 'contest_feeNotes', 'contest_eligibility',
     'contest_judging', 'contest_awards', 'contest_entryNotes', 'contest_docNotes',
-    'contest_docNotesOnl', 'contest_mailingAddr', 'contest_bankInfo', 'event_contents',
+    'contest_docNotesOnl', 'contest_mailingAddr', 'contest_bankInfo', 'event_contents', 'site_aboutText',
 ]);
 
 // 出展規約: テキストエリアの「◆」で始まる行を見出し、それ以外を条文として
