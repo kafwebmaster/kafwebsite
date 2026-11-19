@@ -271,6 +271,7 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 |---|---|---|---|---|
 | `site_introText` | 紹介文(トップ) | テキストエリア(1段落・改行不可) | siteText.intro | トップ・アートラウンジページの紹介文 |
 | `site_mainEvent` | メインイベント名 | テキスト | siteText.mainEvent | 各ページの「メインイベント」 |
+| `site_aboutText` | KAFとは(ロゴ下の文章) | テキストエリア(1行1段落) | siteText.about | KAFとは ページのロゴ下。差込み記法 `{edition.yearsRunning}` `{edition.fiscalYearLabel}` が使える(2026-11-20 追加) |
 | `event_contents` | 全体コンテンツ | テキストエリア(1行1項目) | mmg.contents | 開催情報・アートラウンジ・KAFとは |
 | `contest_editionName` | コンテスト大会名 | テキスト | contest.editionName | 募集ページ見出し |
 | `contest_venue` | コンテスト展示場所 | テキスト | contest.venue | 開催要項「展示場所」/ 作品展示について【展示場所】(2 箇所に同じ値) |
