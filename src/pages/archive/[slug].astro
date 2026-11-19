@@ -1,25 +1,29 @@
 ---
 import DevBanner from '../../components/DevBanner.astro';
-// 年度別アーカイブ詳細 (/archive/{year}.html)
+// 大会別アーカイブ詳細 (/archive/{slug}.html。slug は大会番号 "kaf5" など)
 // microCMS editions-archive の 1 件 = 1 ページ。
+// URL に開催年を使わないのは、同じ年に 2 大会 (KAF5/KAF6 = 2026) があるため。
 // 見た目は既存 2024gallery.html の構成 (h2 複合構造 + 画像グリッド + grayDisplay
 // モーダル) を踏襲する。設計: docs/archive-feature-design.md 4-3
 import HeaderSub from '../../components/HeaderSub.astro';
 import Menubar from '../../components/Menubar.astro';
 import Footer from '../../components/Footer.astro';
-import { getSiteData, getArchives } from '../../lib/content.js';
+import { getSiteData, getArchives, getArchiveIndex } from '../../lib/content.js';
 
 export async function getStaticPaths() {
     const archives = await getArchives();
-    // params は文字列必須 (数値だと GetStaticPathsInvalidRouteParam でビルド失敗)
+    // params は文字列必須 (数値だと GetStaticPathsInvalidRouteParam でビルド失敗)。
+    // slug は content.js 側で文字列として作られている ("kaf5" / 代替時は "2026")
     return archives.map((a) => ({
-        params: { year: String(a.year) },
+        params: { slug: a.slug },
         props: { archive: a },
     }));
 }
 
 const data = await getSiteData();
 const { archive } = Astro.props;
+// 同じ大会のコンテスト受賞作品ページ (site.json の contests 台帳にあれば) への相互リンク
+const contest = (await getArchiveIndex()).bySlug[archive.slug]?.contest ?? null;
 ---
 <!DOCTYPE html>
 <html lang="ja">
@@ -48,6 +52,8 @@ const { archive } = Astro.props;
                 </h2>
                 <p>{archive.title}{archive.dateRange && ` (${archive.dateRange})`}</p>
                 {archive.description && <p>{archive.description}</p>}
+	<dd><a href="/archive.html">ARCHIVE：イベント風景一覧へ</a></dd>
+	{contest && <dd><a href={contest.page}>{contest.contestTitle}</a></dd>}
                 {archive.heroImage && (
                 <div class="logo-container">
                     <img src={archive.heroImage} alt={archive.title}>

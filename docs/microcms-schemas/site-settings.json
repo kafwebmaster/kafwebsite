@@ -257,6 +257,13 @@
       "required": false
     },
     {
+      "fieldId": "images_supportPoster",
+      "name": "協賛ポスター",
+      "kind": "media",
+      "description": "協賛・応援ページ最上部の画像。未登録の間はメインビジュアルが表示されます",
+      "required": false
+    },
+    {
       "fieldId": "gallery_latestPage",
       "name": "最新ギャラリーのリンク先",
       "kind": "text",
@@ -324,6 +331,160 @@
       "name": "Instagram URL",
       "kind": "text",
       "description": null,
+      "required": false
+    },
+    {
+      "fieldId": "site_introText",
+      "name": "紹介文(トップ)",
+      "kind": "textArea",
+      "description": "トップページ・アートラウンジページの紹介文 (1 段落。改行は表示に反映されません)",
+      "required": false
+    },
+    {
+      "fieldId": "site_mainEvent",
+      "name": "メインイベント名",
+      "kind": "text",
+      "description": "「門真のまちをアートで染めよう　MACHIKADO MACHINAKA GALLERY」など",
+      "required": false
+    },
+    {
+      "fieldId": "event_contents",
+      "name": "全体コンテンツ",
+      "kind": "textArea",
+      "description": "開催情報ページ等の「全体コンテンツ」一覧。複数行入力。1 行 = 1 項目として表示されます (空行は無視)。",
+      "required": false
+    },
+    {
+      "fieldId": "contest_editionName",
+      "name": "コンテスト大会名",
+      "kind": "text",
+      "description": "募集ページの見出し用 (例: KADOMA ART FES 7)。開催中の大会名とは独立",
+      "required": false
+    },
+    {
+      "fieldId": "contest_venue",
+      "name": "コンテスト展示場所",
+      "kind": "text",
+      "description": "開催要項の「展示場所」と「作品展示について」の【展示場所】(2 箇所に同じ値が出ます)",
+      "required": false
+    },
+    {
+      "fieldId": "contest_entryFee",
+      "name": "出品料",
+      "kind": "text",
+      "description": "例: 1点　1,500円",
+      "required": false
+    },
+    {
+      "fieldId": "contest_entryStart",
+      "name": "応募受付開始日",
+      "kind": "text",
+      "description": "例: 2026年11月20日(金)。締切は「応募締切(曜日付)」を使用",
+      "required": false
+    },
+    {
+      "fieldId": "contest_exhibIntro",
+      "name": "作品展示について(導入文)",
+      "kind": "text",
+      "description": "「本コンテスト一次審査通過作品は…展示を行います。」",
+      "required": false
+    },
+    {
+      "fieldId": "contest_intro",
+      "name": "募集ページ紹介文",
+      "kind": "textArea",
+      "description": "複数行入力。1 行 = 1 項目として表示されます (空行は無視)。",
+      "required": false
+    },
+    {
+      "fieldId": "contest_periodNotes",
+      "name": "申込受付期間の注記",
+      "kind": "textArea",
+      "description": "複数行入力。1 行 = 1 項目として表示されます (空行は無視)。",
+      "required": false
+    },
+    {
+      "fieldId": "contest_feeNotes",
+      "name": "出品費の注記",
+      "kind": "textArea",
+      "description": "複数行入力。1 行 = 1 項目として表示されます (空行は無視)。 {contest.entryDeadlineShort} 等の差込み記法が使えます",
+      "required": false
+    },
+    {
+      "fieldId": "contest_eligibility",
+      "name": "参加資格",
+      "kind": "textArea",
+      "description": "複数行入力。1 行 = 1 項目として表示されます (空行は無視)。 「◆平面作品の場合」のような小見出し行もそのまま 1 行で書けます",
+      "required": false
+    },
+    {
+      "fieldId": "contest_judging",
+      "name": "審査",
+      "kind": "textArea",
+      "description": "複数行入力。1 行 = 1 項目として表示されます (空行は無視)。",
+      "required": false
+    },
+    {
+      "fieldId": "contest_awards",
+      "name": "賞",
+      "kind": "textArea",
+      "description": "複数行入力。1 行 = 1 項目として表示されます (空行は無視)。空欄にするとサイト側の既定値に戻ります",
+      "required": false
+    },
+    {
+      "fieldId": "contest_entryNotes",
+      "name": "出品に関しての注意点",
+      "kind": "textArea",
+      "description": "複数行入力。1 行 = 1 項目として表示されます (空行は無視)。 {contest.deliveryPeriod} 等の差込み記法が使えます",
+      "required": false
+    },
+    {
+      "fieldId": "contest_docNotes",
+      "name": "応募書類に関しての注意点",
+      "kind": "textArea",
+      "description": "複数行入力。1 行 = 1 項目として表示されます (空行は無視)。",
+      "required": false
+    },
+    {
+      "fieldId": "contest_docNotesOnl",
+      "name": "オンライン申込の注意点",
+      "kind": "textArea",
+      "description": "複数行入力。1 行 = 1 項目として表示されます (空行は無視)。",
+      "required": false
+    },
+    {
+      "fieldId": "contest_rules",
+      "name": "出展規約",
+      "kind": "textArea",
+      "description": "「◆」で始まる行が見出し、それ以外の行が条文。見出し → 条文… の順で書く。空行は無視",
+      "required": false
+    },
+    {
+      "fieldId": "contest_mailingAddr",
+      "name": "応募先(郵送)",
+      "kind": "textArea",
+      "description": "複数行入力。1 行 = 1 項目として表示されます (空行は無視)。",
+      "required": false
+    },
+    {
+      "fieldId": "contest_bankInfo",
+      "name": "出品料振込先",
+      "kind": "textArea",
+      "description": "複数行入力。1 行 = 1 項目として表示されます (空行は無視)。",
+      "required": false
+    },
+    {
+      "fieldId": "contest_winnersMenu",
+      "name": "受賞作品メニューの表示",
+      "kind": "boolean",
+      "description": "オンにすると、メニューに「KAF◯コンテスト受賞作品」(現在大会の受賞作品ページ) が出ます。コンテストを開催した大会の期間中だけオン。オフの間、その大会の受賞作品はアーカイブ側に載ります。",
+      "required": false
+    },
+    {
+      "fieldId": "event_infoPageShow",
+      "name": "イベント開催情報ページの表示",
+      "kind": "boolean",
+      "description": "オフにすると、メニューの「イベント開催情報」とトップの「イベント詳細はこちら」が消え、ページへの直接アクセスはトップへ転送されます。詳細がまとまるまでの一時非公開用。通常はオン。",
       "required": false
     }
   ],

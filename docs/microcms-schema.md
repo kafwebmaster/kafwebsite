@@ -104,7 +104,7 @@ microCMS には **API スキーマの JSON インポート機能**があり、�
 | `date` | 日付 | テキストフィールド | ✅ | 表示どおりの文字列。例: `2026/02/05` |
 | `category` | カテゴリ | セレクトフィールド | ✅ | 選択肢: `イベント` / `コンテスト` / `メディア掲載情報` |
 | `text` | 本文 | テキストフィールド | ✅ | 一覧に表示される文章 |
-| `link` | リンク先 | テキストフィールド | | 空欄可。例: `contest.html`(空ならリンクなしで表示) |
+| `link` | リンク先 | テキストフィールド | | 空欄可。例: `contest/kaf5.html`(空ならリンクなしで表示) |
 
 > 日付を「日時フィールド」ではなく文字列にしているのは、現行表記(`2026/02/05`)を
 > そのまま維持するため。
@@ -121,7 +121,7 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 | date | category | text | link |
 |---|---|---|---|
 | 2026/02/05 | メディア掲載情報 | アートフェス作品審査会にてご紹介いただきました！ | media.html |
-| 2026/02/05 | コンテスト | KADOMA ART FES CONTEST KAF5受賞作品を発表しました | contest.html |
+| 2026/02/05 | コンテスト | KADOMA ART FES CONTEST KAF5受賞作品を発表しました | contest/kaf5.html(旧 contest.html) |
 | 2026/01/25 | イベント | KADOMA ART FES 5 イベント情報を更新いたしました。 | contest_entry.html |
 | 2025/12/01 | コンテスト | KADOMA ART FES 5 CONTESTの応募が終了しました。たくさんの応募ありがとうございました。 | contest_entry.html |
 | 2025/10/20 | コンテスト | KADOMA ART FES 5 CONTESTの応募締め切り日が変更になりました | contest_entry.html |
@@ -249,15 +249,82 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 
 ---
 
+### 3-7. 募集要項・文章フィールド(KAF7 対応で追加・2026-09-13)
+
+作品募集ページの文面と、トップ/開催情報の紹介文を**管理画面から編集できる**ようにするフィールド。
+未入力の間は `src/data/site.json` の値がそのまま表示される(既存の表示は変わらない)。
+
+**記入ルール(重要)**
+- 種類が「テキストエリア」のものは **1 行 = 1 項目**として表示される。空行・行頭行末の空白は無視
+- `contest_rules`(出展規約)だけは特別: **「◆」で始まる行が見出し**、それ以外が条文。
+  必ず見出し行から書き始める(見出しなしで始まると想定外として site.json の値に戻る)
+- 文中に日付などを差し込みたいときは `{contest.entryDeadlineShort}` `{contest.deliveryPeriod}` の
+  差込み記法が使える(`content.js` の `fillFields`)。日付を直書きしない
+- 主催表記 (`contest.organizer`) はほぼ変わらないため CMS 化せず site.json で管理する(変更は Web 担当へ)
+- 展示場所は既存の `contest_venue` 1 つで、開催要項の「展示場所」と「作品展示について」の
+  【展示場所】の 2 箇所に同じ値を表示する(片方だけ古くなる事故を防ぐため専用フィールドは作らない)
+- 空欄にした場合は「未入力」と同じ扱いで site.json の値に戻る(CMS から空表示にすることはできない)。
+  「賞」の枠を非表示にしたい場合は site.json の `contest.awards` を `[]` にする(Web 担当)
+- `site_introText` はテキストエリアだが 1 段落の文章として扱う(改行は表示に反映されない)
+
+| フィールドID | 表示名 | 種類 | site.json のキー | サイト上の表示箇所 |
+|---|---|---|---|---|
+| `site_introText` | 紹介文(トップ) | テキストエリア(1段落・改行不可) | siteText.intro | トップ・アートラウンジページの紹介文 |
+| `site_mainEvent` | メインイベント名 | テキスト | siteText.mainEvent | 各ページの「メインイベント」 |
+| `event_contents` | 全体コンテンツ | テキストエリア(1行1項目) | mmg.contents | 開催情報・アートラウンジ・KAFとは |
+| `contest_editionName` | コンテスト大会名 | テキスト | contest.editionName | 募集ページ見出し |
+| `contest_venue` | コンテスト展示場所 | テキスト | contest.venue | 開催要項「展示場所」/ 作品展示について【展示場所】(2 箇所に同じ値) |
+| `contest_entryFee` | 出品料 | テキスト | contest.entryFee | 開催要項・出品費 |
+| `contest_entryStart` | 応募受付開始日 | テキスト | contest.entryStart | 募集期間・申込受付期間 |
+| `contest_exhibIntro` | 作品展示について(導入文) | テキスト | contest.exhibitIntro | 作品展示について |
+| `contest_intro` | 募集ページ紹介文 | テキストエリア(1行1項目) | contest.intro | ページ冒頭 |
+| `contest_periodNotes` | 申込受付期間の注記 | テキストエリア(1行1項目) | contest.entryPeriodNotes | 申込受付期間 |
+| `contest_feeNotes` | 出品費の注記 | テキストエリア(1行1項目) | contest.entryFeeNotes | 出品費 |
+| `contest_eligibility` | 参加資格 | テキストエリア(1行1項目) | contest.eligibility | 参加資格 |
+| `contest_judging` | 審査 | テキストエリア(1行1項目) | contest.judging | 審査 |
+| `contest_awards` | 賞 | テキストエリア(1行1項目) | contest.awards | 賞 |
+| `contest_entryNotes` | 出品に関しての注意点 | テキストエリア(1行1項目) | contest.entryNotes | 出品に関しての注意点 |
+| `contest_docNotes` | 応募書類に関しての注意点 | テキストエリア(1行1項目) | contest.docNotes | 応募書類に関しての注意点 |
+| `contest_docNotesOnl` | オンライン申込の注意点 | テキストエリア(1行1項目) | contest.docNotesOnline | オンライン申込の場合 |
+| `contest_rules` | 出展規約 | テキストエリア(◆見出し) | contest.rules | 出展規約 |
+| `contest_mailingAddr` | 応募先(郵送) | テキストエリア(1行1項目) | contest.mailingAddr | 応募先：郵送 |
+| `contest_bankInfo` | 出品料振込先 | テキストエリア(1行1項目) | contest.bankInfo | 出品料振込先 |
+| `event_infoPageShow` | イベント開催情報ページの表示 | 真偽値 | visibility.eventInfoPage | オフにするとメニューの「イベント開催情報」とトップの「イベント詳細はこちら」が消え、`/kaf_mmg.html` はトップへ 302。詳細がまとまるまでの一時非公開用。未作成・未入力 = 表示(2026-11-14 追加) |
+| `contest_winnersMenu` | 受賞作品メニューの表示 | 真偽値 | contest.winnersMenu | メニューの「KAF◯コンテスト受賞作品」(訴求枠)。**コンテストを開催した大会の期間中だけオン**。オフの間、その大会の受賞作品はアーカイブ側に載る。現在大会(大会名(正式))の受賞作品ページが無い場合はオンにしても出ない(2026-11-01 追加) |
+
+**登録手順**
+
+フィールドの追加には 2 通りある。**⚠️ スキーマのインポートは「置き換え」**のため、
+現在の定義がファイル側に揃っていないとフィールドが消える(実際に管理画面で手動追加された
+`images_supportPoster` がファイル側に無く、消失する状態になっていた。2026-09-17 に修正済み)。
+
+**方法 a: スキーマをインポートする(速い・要注意)**
+1. microCMS → サイト設定 → API 設定 → スキーマ → **エクスポート**して現在の定義を保存(バックアップ)
+2. そのエクスポート結果と `docs/microcms-schemas/site-settings.json`(全 66 フィールド)の
+   フィールド ID を突き合わせ、**ファイル側に無い項目が無いこと**を確認する
+3. 問題なければ同ファイルを**インポート**
+4. 画像・ファイル系が正しい型で作られたか管理画面で目視確認
+
+**方法 b: 管理画面で 20 個を手で追加する(確実・20〜30 分)** ← 2026-09-17 にこの方法で実施済み
+- 上の表の「フィールドID / 表示名 / 種類」をそのまま入力。**必須はすべてオフ**
+- ID は 1 文字でも違うとサイトに反映されないため、コピーして貼り付ける
+2. 初期値は投入スクリプトで自動投入できる(手入力不要):
+   Cloudflare(ステージング)の環境変数に `SEED_MICROCMS=1` と `SEED_ONLY_MISSING=1` を追加し、
+   API キーに一時的に PATCH 権限を付与 → Retry deployment → 完了後に両方を元に戻す。
+   `--only-missing` により**未入力のフィールドだけ**に site.json の現在値が入り、
+   管理画面で更新済みの値(大会名・開催日など)は上書きされない。
+   ⚠️ 判定は公開済みの値で行うため、**実行前に未公開の下書きを残さない**こと
+   (下書きのみの値は「未入力」とみなされ、投入で公開値に置き換わる)
+
 ## 4. API③ `editions-archive`(リスト形式)【新機能】
 
-過去大会を年度別ページとして自動生成するためのデータ。
-**1 件登録すると `/archive/{year}.html` が 1 ページ生成される。**
+過去大会を大会別ページとして自動生成するためのデータ。
+**1 件登録すると `/archive/{slug}.html`(slug = 大会番号 `kaf5` など)が 1 ページ生成される。**
 
 | フィールドID | 表示名 | 種類 | 必須 | 備考 |
 |---|---|---|---|---|
-| `year` | 開催年 | 数値 | ✅ | URL とソートに使用。例: `2024` |
-| `title` | 大会名 | テキスト | ✅ | 例: KADOMA ART FES 4 |
+| `year` | 開催年 | 数値 | ✅ | 並び順と一覧の年表示に使用。例: `2024` |
+| `title` | 大会名 | テキスト | ✅ | **必ず `KADOMA ART FES 4` の形式(番号まで)**。番号から表示名 `KAF4` と URL `/archive/kaf4.html` を導出する |
 | `dateRange` | 開催期間 | テキスト | | 例: 2024年11月30日 〜 12月1日 |
 | `description` | 紹介文 | テキストエリア | | その年の展示の説明 |
 | `heroImage` | 代表画像 | 画像 | | 一覧ページのサムネイルに使用 |
@@ -267,7 +334,13 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 - **写真 (gallery) が空の登録は「準備中」として無視される**。翌年大会を先行登録しても
   写真をアップロードするまで最新枠は切り替わらない (安全設計)
 - **登録の推奨タイミングは「開催後・写真が揃ってから」**
-- year は開催年の整数 (KAF5 = 2026)。小数や重複は警告されて無視される
+- year は開催年の整数 (KAF5 = 2026)。小数は警告されて無視される。
+  **同じ開催年に 2 大会あってもよい** (KAF5 = 2026年3月 / KAF6 = 2026年9月)。
+  大会の識別は大会名の番号で行う (2026-09 に開催年キーから変更)。
+  大会名から番号が読み取れない場合は警告のうえ開催年を代わりに使う
+  (URL が `/archive/2026.html` 形式になる)。同じ番号の重複登録は公開が新しい方が採用される
+  (ビルドログに採用/除外の両方が出る)。番号の後ろに語が続く「KADOMA ART FES 7 CONTEST」は
+  KAF7 と同じ大会として扱う (1 大会 = 1 登録)
 - Webhook は **4 API すべて** (site-settings / news / sponsors / editions-archive) に
   設定すること。editions-archive に無いと、大会を登録しても自動反映されない
 - 管理画面で editions-archive の「ギャラリー画像」フィールドが**複数画像**として
@@ -293,7 +366,7 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 | └ `image` | 作品画像 | 画像 |
 
 > 初期データとして KAF4(2024)を 1 件登録する(素材は既存の `2024gallery.html` /
-> `contest2024.html` から流用可能)。KAF1〜3 の遡及はオプション(別途見積)。
+> `src/pages/contest/kaf4.astro`(旧 contest2024.html)から流用可能)。KAF1〜3 の遡及はオプション(別途見積)。
 
 ---
 
@@ -354,6 +427,12 @@ PAJERO / （株）beleef / フジイハウス産業（株） / ぶらっと / �
   | contest.deliveryPeriod | `contest_delivery` |
   | images.entryThumbnail | `images_entryThumb` |
   | marche.displayName | `marche_name` |
+  | contest.entryPeriodNotes | `contest_periodNotes` |
+  | contest.entryFeeNotes | `contest_feeNotes` |
+  | contest.docNotesOnline | `contest_docNotesOnl` |
+  | contest.exhibitIntro | `contest_exhibIntro` |
+  | siteText.intro | `site_introText` |
+  | mmg.contents | `event_contents` |
   ⚠️ `contest_deadline`(短い表記)と `contest_deadlineFull`(曜日付)の対応に注意
 - **日付を文字列で保持**しているのは、現行サイトの多様な表記(`2026年3月6日 (金)` /
   `2026年03月06日 (金)` 等)を 1 文字も変えずに再現するため

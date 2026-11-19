@@ -1,6 +1,6 @@
 // 旧ギャラリー URL のリダイレクト生成 (ビルド後に実行)
 //
-// dist/archive/2024.html が実際に存在するビルドのときだけ、
+// 転送先 (dist/archive/{slug}.html) が実際に存在するビルドのときだけ、
 // dist/_redirects に旧 URL → 新 URL の 302 を出力する。
 //
 // 設計判断 (docs/archive-feature-design.md 7 章):
@@ -13,30 +13,47 @@
 //   (ビルド本体との取得結果のズレを構造的に排除)
 // - 既存の _redirects there には追記 (上書きしない)
 import fs from 'node:fs';
+import { getSiteData } from '../src/lib/content.js';
 
-// 旧 URL → アーカイブ年 の対応 (今後、年別の旧ページを増やす場合はここに追記)
+// 旧 URL → アーカイブ詳細ページの slug (大会番号) の対応
+// - /2024gallery: 移行前からある KAF4 の固定ページ (KAF4 をアーカイブ登録したら転送)
+// - /archive/2026: アーカイブのキーが開催年だった時期の KAF5 の URL
+//   (KAF5/KAF6 が同じ 2026 年のため、キーを大会番号に変更した。旧 URL は本番メニューに
+//    載っていたので転送で救う)
+//   ただし /archive/{year}.html は「大会名から番号を導出できない大会」の URL としても
+//   生成されうる (content.js の代替規則)。_redirects は実ファイルより優先されるため、
+//   転送元のページが実在するビルドではその大会が到達不能になる。転送元が実在する場合は
+//   ルールを出力しない (unlessSourceExists)
+// - /contest, /contest2024: 受賞作品ページを /contest/{slug}.html に移設した (アーカイブを
+//   「大会 → コンテスト / イベント風景」の構成にしたため)。旧 URL の中身と 1 対 1 で対応する
+//   新 URL へ送る (旧 /contest = KAF5 受賞作品 → /contest/kaf5、旧 /contest2024 → /contest/kaf4)
 const LEGACY = [
-    { from: '/2024gallery', year: 2024 },
+    { from: '/2024gallery', to: '/archive/kaf4' },
+    { from: '/archive/2026', to: '/archive/kaf5', unlessSourceExists: true },
+    { from: '/contest2024', to: '/contest/kaf4' },
+    { from: '/contest', to: '/contest/kaf5' },
 ];
 
 const lines = [];
-for (const { from, year } of LEGACY) {
-    if (fs.existsSync(`dist/archive/${year}.html`)) {
-        lines.push(`${from} /archive/${year} 302`);
-        lines.push(`${from}.html /archive/${year} 302`);
+for (const { from, to, unlessSourceExists } of LEGACY) {
+    if (!fs.existsSync(`dist${to}.html`)) continue;   // 転送先が実在するビルドのときだけ
+    if (unlessSourceExists && fs.existsSync(`dist${from}.html`)) {
+        console.warn(`[postbuild-redirects] ${from}.html が実在するため ${from} → ${to} の転送は出力しません`);
+        continue;
     }
+    lines.push(`${from} ${to} 302`);
+    lines.push(`${from}.html ${to} 302`);
 }
 
-// 受賞作品ページ (contest.html) の非公開化 (KAF6 対応)
-// site.json の visibility.winnersPage が false の間はトップへ 302 し、
-// 直接アクセスも不能にする (メニュー非表示は Menubar.astro 側の同じフラグで連動)。
-// ページ自体は削除せずビルドに含めたままなので、フラグを true に戻せば即復活する。
-// Cloudflare Pages の _redirects は静的ファイルより優先されるため、
-// dist/contest.html が存在していてもリダイレクトが有効になる。
-const visibility = JSON.parse(fs.readFileSync('src/data/site.json', 'utf8')).visibility ?? {};
-if (visibility.winnersPage === false) {
-    lines.push('/contest / 302');
-    lines.push('/contest.html / 302');
+// イベント開催情報ページ (kaf_mmg.html) の一時非公開 (CMS「イベント開催情報ページの表示」がオフのとき)
+// メニュー項目・トップのボタンは Menubar / index 側で同じフラグにより非表示。直接アクセスはトップへ 302。
+// ページ自体はビルドに含めたままなので、オンに戻せば即復活する。
+// 判定は取得層 (content.js) 経由 = CMS 優先・取得失敗時は site.json の既定 (表示)
+const site = await getSiteData();
+if (site.visibility?.eventInfoPage === false) {
+    lines.push('/kaf_mmg / 302');
+    lines.push('/kaf_mmg.html / 302');
+    console.log('[postbuild-redirects] イベント開催情報ページは非公開設定のためトップへ転送します');
 }
 
 if (lines.length === 0) {

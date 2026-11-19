@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 const ORIG = 'kadoma-artfes.jp';
 const DIST = 'dist';
 
-const PAGES = ['index','kaf_info','kaf_mmg','kaf_marche','contest','contest2024',
+const PAGES = ['index','kaf_info','kaf_mmg','kaf_marche','contest/kaf5','contest/kaf4',
                'contest_entry','media','2024gallery','kaf_support'];
 
 const INCLUDES = {

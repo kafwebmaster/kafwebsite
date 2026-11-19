@@ -58,6 +58,36 @@ export const FIELD_MAP = {
         deliveryPeriod: 'contest_delivery',
         entryPdf: 'contest_entryPdf',
         entryFormUrl: 'contest_entryFormUrl',
+        // --- KAF7 対応で追加 (募集要項の文面を管理画面から編集できるように) ---
+        // organizer はほぼ変わらないため CMS 化せず site.json で管理する。
+        // 展示場所は既存の venue (contest_venue) 1 つを 2 箇所で表示する (二重管理による食い違いを避ける)
+        editionName: 'contest_editionName',
+        venue: 'contest_venue',
+        entryFee: 'contest_entryFee',
+        entryStart: 'contest_entryStart',
+        exhibitIntro: 'contest_exhibIntro',
+        intro: 'contest_intro',
+        entryPeriodNotes: 'contest_periodNotes',
+        entryFeeNotes: 'contest_feeNotes',
+        eligibility: 'contest_eligibility',
+        judging: 'contest_judging',
+        awards: 'contest_awards',
+        entryNotes: 'contest_entryNotes',
+        docNotes: 'contest_docNotes',
+        docNotesOnline: 'contest_docNotesOnl',
+        rules: 'contest_rules',
+        mailingAddr: 'contest_mailingAddr',
+        bankInfo: 'contest_bankInfo',
+        // 「{大会}コンテスト受賞作品」メニュー (訴求枠) の表示 (真偽値)。
+        // コンテストを開催した大会の期間中だけオンにする。オフの間はその大会の受賞作品もアーカイブ側に載る
+        winnersMenu: 'contest_winnersMenu',
+    },
+    siteText: {
+        intro: 'site_introText',
+        mainEvent: 'site_mainEvent',
+    },
+    mmg: {
+        contents: 'event_contents',
     },
     marche: {
         displayName: 'marche_name',
@@ -94,11 +124,57 @@ export const FIELD_MAP = {
         youtube: 'social_youtube',
         instagram: 'social_instagram',
     },
+    // 表示のオン/オフ (真偽値)。CMS 未作成・未入力なら site.json の既定 (表示) を使う
+    visibility: {
+        // 「イベント開催情報」ページ (kaf_mmg.html)。オフにするとメニュー項目・トップのボタンを隠し、
+        // URL への直接アクセスはトップへ 302 (postbuild-redirects)。詳細がまとまるまでの一時非公開用
+        eventInfoPage: 'event_infoPageShow',
+    },
 };
 
 // メディア系フィールド (値が { url } オブジェクトで返るもの)
 const MEDIA_SECTIONS = new Set(['images']);
 const FILE_FIELDS = new Set(['contest_entryPdf']);
+
+// テキストエリア (複数行) を「1 行 = 1 項目」の配列として扱うフィールド。
+// 管理画面では箇条書きを 1 行ずつ書くだけでよく、空行は無視される
+export const LIST_FIELDS = new Set([
+    'contest_intro', 'contest_periodNotes', 'contest_feeNotes', 'contest_eligibility',
+    'contest_judging', 'contest_awards', 'contest_entryNotes', 'contest_docNotes',
+    'contest_docNotesOnl', 'contest_mailingAddr', 'contest_bankInfo', 'event_contents',
+]);
+
+// 出展規約: テキストエリアの「◆」で始まる行を見出し、それ以外を条文として
+// [{ heading, items[] }] に組み立てる (site.json の rules と同じ形)
+export const RULES_FIELDS = new Set(['contest_rules']);
+
+const isBlank = (v) => v == null || String(v).trim() === '';
+export const splitLines = (v) => String(v).split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+
+export function parseRules(v) {
+    const sections = [];
+    for (const line of splitLines(v)) {
+        if (line.startsWith('◆')) {
+            sections.push({ heading: line, items: [] });
+        } else if (sections.length) {
+            sections[sections.length - 1].items.push(line);
+        } else {
+            // 先頭が見出しでない = 想定外の書き方。ローカル値へ戻す (呼び出し側で undefined 扱い)
+            console.warn('[content] contest_rules: 先頭行が「◆」で始まっていないためローカル値を使います');
+            return undefined;
+        }
+    }
+    return sections.length ? sections : undefined;
+}
+
+// 配列/規約を管理画面のテキストエリア表記へ戻す (投入スクリプトが使う)
+export function toTextArea(cmsId, value) {
+    if (RULES_FIELDS.has(cmsId)) {
+        return value.map((s) => [s.heading, ...s.items].join('\n')).join('\n\n');
+    }
+    if (LIST_FIELDS.has(cmsId)) return value.join('\n');
+    return value;
+}
 
 const env = () => ({
     domain: import.meta.env?.MICROCMS_SERVICE_DOMAIN ?? process.env.MICROCMS_SERVICE_DOMAIN,
@@ -163,14 +239,25 @@ export function mapSiteSettings(cms, fallback, manifest = {}) {
                 v = resolveMedia(v, manifest, fb);
             } else if (cmsId === 'contest_status') {
                 v = unwrapSelect(v);
+            } else if (LIST_FIELDS.has(cmsId)) {
+                v = isBlank(v) ? undefined : splitLines(v);
+            } else if (RULES_FIELDS.has(cmsId)) {
+                v = isBlank(v) ? undefined : parseRules(v);
+            } else if (typeof v === 'string' && isBlank(v)) {
+                // 一度入力して消した場合などに空文字が返ることがある。
+                // 「空ならローカル値」を全フィールドで統一する (空見出しの表示を防ぐ)
+                v = undefined;
             }
             out[section][key] = v ?? fb; // CMS 未入力はローカル値で補完
         }
     }
     // FIELD_MAP に無いセクション・キーは site.json の値をそのまま通す
-    // (news / sponsors などの配列セクションは別処理のため対象外)
+    // (news / sponsors は CMS の別 API で置き換えるため対象外。
+    //  contests のような JSON 専用の配列セクションはそのまま通す)
     for (const [section, obj] of Object.entries(fallback)) {
-        if (Array.isArray(obj) || typeof obj !== 'object' || obj === null) continue;
+        if (section === 'news' || section === 'sponsors') continue;
+        if (typeof obj !== 'object' || obj === null) continue;
+        if (Array.isArray(obj)) { out[section] ??= obj; continue; }
         out[section] ??= {};
         for (const [key, value] of Object.entries(obj)) {
             if (!(key in out[section])) out[section][key] = value;
@@ -241,21 +328,40 @@ export async function getSiteData() {
 // - year が正の整数でないものは警告して除外
 // - gallery (写真) が空のものは「準備中」とみなし除外
 //   (翌年大会の先行登録で空ギャラリーが最新枠を奪う事故の防止)
-// - year 重複は警告し、公開が新しい方 (publishedAt 降順で先勝ち) を採用
-// - year 降順に整列して返す
-// 表示用の短縮名 (「KAF5」など) を大会名から導出する。
-// 同じ年に 2 大会ある場合 (KAF5=2026年3月 / KAF6=2026年9月) に
-// 「2026イベント風景Photoギャラリー」では区別できないため、
-// メニューと詳細ページの見出しはこの短縮名を使う。
-// 大会名が想定の形式でなければ開催年を使う (表示が空にならないように)。
-export const shortNameOf = (title, year) => {
-    const m = String(title ?? '').match(/KADOMA\s*ART\s*FES\s*0*(\d+)/i);
-    return m ? `KAF${m[1]}` : String(year);
+// - 大会の識別キー (slug) は大会番号 (「kaf5」)。同じ開催年に 2 大会ある
+//   (KAF5=2026年3月 / KAF6=2026年9月) ため、開催年はキーにできない。
+//   大会番号は大会名「KADOMA ART FES N」から導出し、導出できなければ開催年で代替する
+// - slug 重複は警告し、公開が新しい方 (publishedAt 降順で先勝ち) を採用
+// - 開催年 降順 → 大会番号 降順 に整列して返す (同年なら番号の大きい方が新しい)
+//
+// 大会名から大会番号 (半角数字の文字列。先頭ゼロは除く) を取り出す。想定外の表記なら null。
+// 番号の後ろに語が続いてもよい (「KADOMA ART FES 7 CONTEST」= KAF7。
+// KAF7 はコンテスト展示そのものが本体なので同じ大会として扱う)
+const editionDigitsOf = (title) => {
+    const m = String(title ?? '').match(/KADOMA\s*ART\s*FES\s*(\d+)/i);
+    return m ? (m[1].replace(/^0+/, '') || '0') : null;
 };
+
+// 大会番号 (数値)。並び順の判定に使う。想定外の表記なら null
+export const editionNumberOf = (title) => {
+    const d = editionDigitsOf(title);
+    return d == null ? null : Number(d);
+};
+
+// 表示用の短縮名 (「KAF5」など)。メニューと詳細ページの見出しに使う。
+// 大会名が想定の形式でなければ開催年を使う (表示が空にならないように)。
+// 数字は文字列のまま連結する (Number 経由だと極端な桁数で指数表記になり slug が壊れる)
+export const shortNameOf = (title, year) => {
+    const d = editionDigitsOf(title);
+    return d != null ? `KAF${d}` : String(year);
+};
+
+// URL 用の識別子 (/archive/{slug}.html)。「kaf5」、導出できなければ「2026」
+export const slugOf = (title, year) => shortNameOf(title, year).toLowerCase();
 
 export function mapArchives(contents, manifest = {}) {
     const seen = new Map();
-    // publishedAt 降順で処理し、重複 year は最初 (=公開が新しい方) を採用
+    // publishedAt 降順で処理し、重複 slug は最初 (=公開が新しい方) を採用
     const byNewest = [...contents].sort((a, b) =>
         String(b.publishedAt ?? '').localeCompare(String(a.publishedAt ?? '')));
     for (const item of byNewest) {
@@ -269,21 +375,46 @@ export function mapArchives(contents, manifest = {}) {
             console.warn(`[content] editions-archive: 写真が未登録のため準備中として除外します (year=${year}, title=${item.title})`);
             continue;
         }
-        if (seen.has(year)) {
-            console.warn(`[content] editions-archive: year=${year} が重複しています。公開が新しい方を採用します`);
+        const edition = editionNumberOf(item.title);
+        if (edition == null) {
+            console.warn(`[content] editions-archive: 大会名から大会番号を導出できないため開催年をキーにします (year=${year}, title=${item.title})`);
+        }
+        const slug = slugOf(item.title, year);
+        if (seen.has(slug)) {
+            // 同じ大会番号が 2 件 = 大会名の番号の打ち間違い (前回の登録を複製して番号を
+            // 直し忘れる等) の可能性が高い。どちらが残りどちらが消えたかをログで特定できるようにする
+            const kept = seen.get(slug);
+            console.warn(`[content] editions-archive: ${slug} が重複しています。公開が新しい方を採用します`
+                + ` (採用: year=${kept.year} title=${kept.title} publishedAt=${kept.publishedAt}`
+                + ` / 除外: year=${year} title=${item.title} publishedAt=${item.publishedAt ?? ''})`
+                + (kept.year !== year ? ' ⚠️ 開催年が違うのに同じ大会番号です。大会名の番号を確認してください' : ''));
             continue;
         }
-        seen.set(year, {
+        seen.set(slug, {
+            slug,
             year,
+            edition,
             title: item.title ?? '',
             shortName: shortNameOf(item.title, year),
             dateRange: item.dateRange ?? '',
             description: item.description ?? '',
             heroImage: resolveMedia(item.heroImage, manifest, null),
             gallery: gallery.map((g) => resolveMedia(g, manifest, null)).filter(Boolean),
+            publishedAt: item.publishedAt ?? '',
         });
     }
-    return [...seen.values()].sort((a, b) => b.year - a.year);
+    // 開催年が第一キー (番号を導出できない大会も年で並べられるように)。同年なら番号の大きい方が新しい
+    const sorted = [...seen.values()].sort((a, b) => (b.year - a.year) || ((b.edition ?? 0) - (a.edition ?? 0)));
+    // 年の順と番号の順が食い違う (番号が大きいのに年が古い) データは入力ミスの可能性が高いので警告する。
+    // 最新枠は年で決まるため、黙って「番号の小さい方が最新」になるのを防ぐ
+    const numbered = sorted.filter((a) => a.edition != null);
+    for (let i = 1; i < numbered.length; i++) {
+        if (numbered[i].edition > numbered[i - 1].edition) {
+            console.warn(`[content] editions-archive: 大会番号と開催年の順序が食い違っています`
+                + ` (${numbered[i].slug} year=${numbered[i].year} が ${numbered[i - 1].slug} year=${numbered[i - 1].year} より古い扱い)。開催年を確認してください`);
+        }
+    }
+    return sorted;
 }
 
 const loadLocalArchives = () => {
@@ -332,5 +463,85 @@ export async function getArchiveSplit() {
         archives,
         latest: archives[0] ?? null,
         past: archives.slice(1),
+    };
+}
+
+// ===== 大会別アーカイブ索引 (イベント風景 + コンテスト受賞作品) =====
+//
+// アーカイブ一覧は「大会 (年号) が親、その中にコンテスト受賞作品 / イベント風景」の形。
+// 2 つの情報源を大会番号 (slug: "kaf5") で突き合わせて 1 つの索引にする。
+//   - イベント風景: microCMS editions-archive (写真あり = 有効。上の mapArchives と同じ)
+//   - コンテスト受賞作品: site.json の contests 台帳 (静的ページ /contest/{slug}.html)
+// 片方にしかない大会も索引に載る (2024 は受賞作品のみ、KAF6 は写真のみ、など)。
+// 年・大会名は CMS の値を優先し、無ければ台帳の値を使う。
+// 「最新」はメニューの訴求枠 = CMS の最新大会 (写真あり) で、一覧には載せない (重複を避ける)。
+export function mergeEditions(archives, contests = []) {
+    const map = new Map();
+    for (const a of archives) {
+        map.set(a.slug, { slug: a.slug, year: a.year, edition: a.edition, title: a.title, shortName: a.shortName, event: a, contest: null });
+    }
+    const seenContest = new Set();
+    for (const c of contests) {
+        // 台帳の行は mapArchives と同じ水準で検査する (不正な行は警告して除外)
+        if (!c?.slug || !c.page) {
+            console.warn(`[content] contests: slug または page が無い行を無視します (${JSON.stringify(c)})`);
+            continue;
+        }
+        const slug = String(c.slug).toLowerCase();   // CMS 側の slug (小文字) と確実に結合する
+        const year = Number(c.year);
+        if (!Number.isInteger(year) || year <= 0) {
+            console.warn(`[content] contests: year が正の整数ではないため無視します (slug=${slug}, year=${c.year})`);
+            continue;
+        }
+        if (seenContest.has(slug)) {
+            console.warn(`[content] contests: slug=${slug} が重複しています。先に書かれた行を採用します`);
+            continue;
+        }
+        seenContest.add(slug);
+        const cur = map.get(slug);
+        if (cur) {
+            cur.contest = { ...c, slug };
+        } else {
+            map.set(slug, {
+                slug, year, edition: editionNumberOf(c.title),
+                title: c.title ?? slug, shortName: shortNameOf(c.title, year), event: null, contest: { ...c, slug },
+            });
+        }
+    }
+    return [...map.values()].sort((a, b) => (b.year - a.year) || ((b.edition ?? 0) - (a.edition ?? 0)));
+}
+
+// 訴求枠とアーカイブ一覧の振り分け (純粋関数。テスト対象)
+//   - イベント風景の訴求枠 (latest): 写真がある最新大会。メニュー「KAF◯イベント風景Photoギャラリー」
+//   - コンテスト受賞作品の訴求枠 (featuredContest): CMS の contest_winnersMenu がオンで、
+//     現在大会 (edition_name から導出) の受賞作品ページが台帳にあるとき。メニュー「KAF◯コンテスト受賞作品」。
+//     コンテストが無い大会 (KAF6) ではオフにしておく → 前回 (KAF5) の受賞作品はアーカイブ側に載る
+//   - 一覧 (past): 訴求枠に出ているタイルを除いたもの。タイルが残らない大会は載せない (重複させない)
+export function splitArchiveIndex(editions, latest, site = {}) {
+    const currentSlug = site.edition?.displayName ? slugOf(site.edition.displayName, site.edition.eventYear) : null;
+    let featuredContest = null;
+    if (site.contest?.winnersMenu) {
+        const cur = editions.find((e) => e.slug === currentSlug);
+        if (cur?.contest) featuredContest = cur;
+        else console.warn(`[content] contest_winnersMenu がオンですが、現在大会 (${currentSlug}) の受賞作品ページが contests 台帳にありません。メニューには出しません`);
+    }
+    const past = editions
+        .map((e) => ({
+            ...e,
+            contest: e.slug === featuredContest?.slug ? null : e.contest,
+            event: e.slug === latest?.slug ? null : e.event,
+        }))
+        .filter((e) => e.contest || e.event);
+    return { latest, featuredContest, past };
+}
+
+export async function getArchiveIndex() {
+    const [archives, site] = await Promise.all([getArchives(), getSiteData()]);
+    const editions = mergeEditions(archives, site.contests ?? []);
+    const latest = archives[0] ?? null;
+    return {
+        editions,
+        ...splitArchiveIndex(editions, latest, site),
+        bySlug: Object.fromEntries(editions.map((e) => [e.slug, e])),
     };
 }
