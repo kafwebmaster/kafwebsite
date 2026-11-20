@@ -56,6 +56,14 @@ if (site.visibility?.eventInfoPage === false) {
     console.log('[postbuild-redirects] イベント開催情報ページは非公開設定のためトップへ転送します');
 }
 
+// 応募用紙 PDF の固定 URL (/KAF7entry.pdf。フライヤー等に記載) → CMS で指定した現在のファイル (/files/…)。
+// PDF 本体は public/files/ に版ごとに置き、CMS「応募用紙 PDF の URL」で切り替える。
+// 固定 URL のファイルが dist に実在せず、転送先が実在するときだけ出力する
+const pdfPath = site.contest?.entryPdf;
+if (pdfPath && pdfPath !== '/KAF7entry.pdf' && !fs.existsSync('dist/KAF7entry.pdf') && fs.existsSync(`dist${pdfPath}`)) {
+    lines.push(`/KAF7entry.pdf ${pdfPath} 302`);
+}
+
 if (lines.length === 0) {
     console.log('[postbuild-redirects] 対象のアーカイブページが無いためリダイレクトは出力しません');
     process.exit(0);

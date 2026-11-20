@@ -5,7 +5,7 @@
 // (public/cms-assets/) から配信する。
 //
 // 対象:
-//   - site-settings のメディア 9 フィールド (画像 8 + PDF 1)
+//   - site-settings の画像 9 フィールド (PDF はリポジトリ管理のため対象外)
 //   - editions-archive 全件の heroImage / gallery (保存先は archive/{year}/ 配下、
 //     ファイル名にアセット ID を含めて同名衝突を防ぐ)
 //
@@ -33,8 +33,7 @@ const SITE_MEDIA_FIELDS = [
     'images_flyerFront', 'images_flyerFull', 'images_mainVisual',
     'images_supportList', 'images_entryThumb', 'images_contestBanner',
     'images_flyerBack', 'images_webBanner', 'images_supportPoster',
-    'contest_entryPdf',
-];
+]   // 応募用紙 PDF はリポジトリ public/files/ で管理 (CMS はパスのみ) のためミラーしない;
 
 if (!DOMAIN || !API_KEY) {
     console.log('[sync-cms-assets] 環境変数が未設定のためスキップ (ローカルデータでビルドします)');
@@ -104,7 +103,7 @@ try {
     for (const fieldId of SITE_MEDIA_FIELDS) {
         const url = mediaUrl(settings[fieldId]);
         if (!url) continue;
-        await mirror(url, '', { isImage: fieldId !== 'contest_entryPdf' });
+        await mirror(url, '', { isImage: true });
     }
 } catch (e) {
     console.warn(`[sync-cms-assets] site-settings の取得に失敗 (${e.message.replace(/^GET [^:]+: /, '')})。ミラーをスキップします`);

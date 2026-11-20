@@ -1,0 +1,4 @@
+# Cloudflare Pages のレスポンスヘッダ設定
+# 応募用紙 PDF は同じファイル名で上書き運用するため、ブラウザに毎回サーバーへ確認させる (古い版が残らない)
+/files/*
+  Cache-Control: public, max-age=0, must-revalidate
