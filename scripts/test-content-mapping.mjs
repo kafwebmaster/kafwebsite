@@ -24,6 +24,7 @@ const RENAMES = {
     'marche.displayName': 'marche_name',
     'visibility.eventInfoPage': 'event_infoPageShow',
     'siteText.about': 'site_aboutText',
+    'links.mainVisual': 'link_mainVisual',
     // KAF7 対応で追加したフィールド
     'contest.entryPeriodNotes': 'contest_periodNotes',
     'contest.entryFeeNotes': 'contest_feeNotes',
@@ -87,7 +88,7 @@ console.log('OK 2: 部分入力 → 未入力はローカル値でフォール�
     const fb = local.contest.entryPdf;
     const warned = []; const orig = console.warn; console.warn = (m) => warned.push(String(m));
     assert.equal(resolveSitePdf(fb, fb), fb);
-    assert.equal(resolveSitePdf('files/KAF7entry_2026-09-01.pdf', fb), fb, '先頭のスラッシュは補う');
+    assert.equal(resolveSitePdf('files/KAF7entry.pdf', fb), fb, '先頭のスラッシュは補う');
     assert.equal(resolveSitePdf('https://drive.google.com/file/d/xxx/view', fb), fb, '外部 URL は拒否');
     assert.equal(resolveSitePdf({ url: 'https://files.microcms-assets.io/x.pdf' }, fb), fb, '旧ファイルフィールド形式も拒否');
     assert.equal(resolveSitePdf('/files/nai.pdf', fb), fb, '存在しないファイルはローカル値');

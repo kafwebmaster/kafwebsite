@@ -9,6 +9,10 @@ import Footer from '../components/Footer.astro';
 import NewsList from '../components/NewsList.astro';
 import { getSiteData } from '../lib/content.js';
 const data = await getSiteData();
+// メインビジュアルのリンク先 (CMS「メインビジュアルのリンク先」)。空ならリンクなし。
+// サイト内ページ (contest_entry.html など) はそのまま、https:// の外部 URL は新しいタブで開く
+const mainVisualLink = String(data.links?.mainVisual ?? '').trim();
+const mainVisualExternal = /^https?:\/\//i.test(mainVisualLink);
 ---
 <!DOCTYPE html>
 <html lang="ja">
@@ -44,7 +48,13 @@ const data = await getSiteData();
 
         <main>
             <section class="c">
+{mainVisualLink ? (
+                <a href={mainVisualLink} class="main-visual-link" target={mainVisualExternal ? '_blank' : undefined} rel={mainVisualExternal ? 'noopener' : undefined} data-href-field="links.mainVisual">
                 <img src={data.images.mainVisual} alt={data.edition.displayName} data-src-field="images.mainVisual" data-alt-field="edition.displayName">
+                </a>
+) : (
+                <img src={data.images.mainVisual} alt={data.edition.displayName} data-src-field="images.mainVisual" data-alt-field="edition.displayName">
+)}
             </section>
 
 

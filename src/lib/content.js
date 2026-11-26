@@ -126,6 +126,11 @@ export const FIELD_MAP = {
         youtube: 'social_youtube',
         instagram: 'social_instagram',
     },
+    // リンク先 (任意)。空ならリンクなし
+    links: {
+        // トップのメインビジュアルをクリックしたときのリンク先 (サイト内のページ名 or https:// の URL)
+        mainVisual: 'link_mainVisual',
+    },
     // 表示のオン/オフ (真偽値)。CMS 未作成・未入力なら site.json の既定 (表示) を使う
     visibility: {
         // 「イベント開催情報」ページ (kaf_mmg.html)。オフにするとメニュー項目・トップのボタンを隠し、
