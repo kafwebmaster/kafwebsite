@@ -493,6 +493,13 @@
       "kind": "textArea",
       "description": "「KAFとは」ページのロゴ下の文章。1 行 = 1 段落。{edition.yearsRunning}(開催回数)や {edition.fiscalYearLabel}(年度ラベル)の差込み記法が使えます。空欄なら既定の文章。",
       "required": false
+    },
+    {
+      "fieldId": "link_mainVisual",
+      "name": "メインビジュアルのリンク先",
+      "kind": "text",
+      "description": "トップページのメインビジュアル(上から 2 番目の画像)をクリックしたときの飛び先。サイト内はページ名 (例: contest_entry.html)、外部サイトは https:// から入力 (新しいタブで開きます)。空ならリンクなし。",
+      "required": false
     }
   ],
   "customFields": []

@@ -247,6 +247,7 @@ microCMS の既定の並び順は「**登録(公開)が新しいものが先頭*
 | `organization_support` | 後援 | テキスト | 京阪ホールディングス株式会社 |
 | `social_youtube` | YouTube URL | テキスト | https://www.youtube.com/@kadomaartfes |
 | `social_instagram` | Instagram URL | テキスト | https://www.instagram.com/pilot_kadoma/ |
+| `link_mainVisual` | メインビジュアルのリンク先 | テキスト | (空) … トップのメインビジュアルをクリックしたときの飛び先。サイト内はページ名(例 `contest_entry.html`)、外部は `https://` から(新しいタブで開く)。空ならリンクなし(2026-11-26 追加) |
 
 ---
 
